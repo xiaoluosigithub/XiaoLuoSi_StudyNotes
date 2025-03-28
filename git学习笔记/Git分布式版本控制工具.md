@@ -318,7 +318,7 @@ git checkout {n-1次commitID} {文件路径}
 
 
 
-![image-20250208174238769](E:\软件\ACM\XiaoLuoSi_StudyNotes\git学习笔记\image-20250208174238769.png)
+![image-20250208174238769](./image-20250208174238769.png)
 
 
 
