@@ -330,6 +330,8 @@ git checkout {n-1次commitID} {文件路径}
 
 
 
+# .gitattributes
+
 
 
 
