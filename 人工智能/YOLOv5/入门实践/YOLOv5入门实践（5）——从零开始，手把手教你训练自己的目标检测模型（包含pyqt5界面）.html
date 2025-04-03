@@ -1,0 +1,1401 @@
+<!doctype html>
+<html lang="zh-CN">
+ <head> 
+  <meta charset="utf-8"> 
+  <link rel="canonical" href="https://blog.csdn.net/weixin_43334693/article/details/130044342"> 
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"> 
+  <meta name="renderer" content="webkit"> 
+  <meta name="force-rendering" content="webkit"> 
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+  <meta name="report" content="{&quot;pid&quot;: &quot;blog&quot;, &quot;spm&quot;:&quot;1001.2101&quot;}"> 
+  <meta name="referrer" content="always"> 
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <link rel="alternate" media="handheld" href="#"> 
+  <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848"> 
+  <meta name="applicable-device" content="pc"> 
+  <link href="https://g.csdnimg.cn/static/logo/favicon32.ico" rel="shortcut icon" type="image/x-icon"> 
+  <title>YOLOv5入门实践（5）——从零开始，手把手教你训练自己的目标检测模型（包含pyqt5界面）_pyqt5选择预训练模型-CSDN博客</title>  
+  <meta name="keywords" content="pyqt5选择预训练模型"> 
+  <meta name="csdn-baidu-search" content="{&quot;autorun&quot;:true,&quot;install&quot;:true,&quot;keyword&quot;:&quot;pyqt5选择预训练模型&quot;}"> 
+  <meta name="description" content="文章浏览阅读1.2w次，点赞39次，收藏98次。本文详细介绍了如何从零开始使用YOLOv5训练自己的目标检测模型，包括环境配置、数据集标注、数据集划分、模型训练、测试与推理，以及使用PYQT5构建可视化界面。通过实例演示了每个步骤，适合初学者参考。
+"> 
+  <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/release/blogv2/dist/pc/css/detail_enter-af0ead44cd.min.css"> 
+  <style>
+        #content_views{
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none; 
+            user-select: none; 
+        }
+    </style>  
+  <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/release/blogv2/dist/pc/themesSkin/skin-finalboss/skin-finalboss-b2ba816980.min.css">    
+  <meta name="toolbar" content="{&quot;type&quot;:&quot;0&quot;,&quot;fixModel&quot;:&quot;1&quot;}">    
+  <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/public/sandalstrap/1.4/css/sandalstrap.min.css"> 
+  <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>    
+ 	<style>
+	main div.blog-content-box pre {
+		max-height: 100%;
+		overflow-y: hidden;
+	}
+	</style>
+ </head>  
+ <body class="nodata  " style=""> 
+  <div id="toolbarBox" style="min-height: 48px;"></div>    
+  <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/pc/css/blog_code-01256533b5.min.css"> 
+  <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/chart-3456820cac.css"> 
+  <link rel="stylesheet" href="https://g.csdnimg.cn/lib/swiper/6.0.4/css/swiper.css">   
+  <div class="main_father clearfix d-flex justify-content-center mainfather-concision" style="height:100%;"> 
+   <div class="container clearfix container-concision" id="mainBox">  
+    <main>  
+     <div class="blog-content-box"> 
+      <div class="article-header-box"> 
+       <div class="article-header"> 
+        <div class="article-title-box"> 
+         <h1 class="title-article" id="articleContentId">YOLOv5入门实践（5）——从零开始，手把手教你训练自己的目标检测模型（包含pyqt5界面）</h1> 
+        </div> 
+        <div class="article-info-box"> 
+         <div class="article-bar-top"> 
+          <img class="article-type-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/original.png" alt=""> 
+          <div class="bar-content"> 
+           <a class="follow-nickName vip-name" href="https://jrs0511.blog.csdn.net" target="_blank" rel="noopener" title="路人贾'ω'">路人贾'ω'</a> 
+           <img class="article-time-img article-heard-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newUpTime2.png" alt=""> 
+           <span class="time">已于&nbsp;2023-05-17 18:39:36&nbsp;修改</span> 
+           <div class="read-count-box"> 
+            <img class="article-read-img article-heard-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/articleReadEyes2.png" alt=""> 
+            <span class="read-count">阅读量1.2w</span> 
+            <a id="blog_detail_zk_collection" class="un-collection" data-report-click="{&quot;mod&quot;:&quot;popu_823&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4232&quot;,&quot;ab&quot;:&quot;new&quot;}"> <img class="article-collect-img article-heard-img un-collect-status isdefault" style="display:inline-block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollect2.png" alt=""> <img class="article-collect-img article-heard-img collect-status isactive" style="display:none" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollectionActive2.png" alt=""> <span class="name">收藏</span> <span class="get-collection"> 98 </span> </a> 
+            <div class="read-count-box is-like"> 
+             <img class="article-read-img article-heard-img" style="display:none" id="is-like-imgactive-new" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newHeart2023Active.png" alt=""> 
+             <img class="article-read-img article-heard-img" style="display:block" id="is-like-img-new" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newHeart2023Black.png" alt=""> 
+             <span class="read-count" id="blog-digg-num">点赞数 39 </span> 
+            </div> 
+           </div> 
+          </div> 
+         </div> 
+         <div class="blog-tags-box"> 
+          <div class="tags-box artic-tag-box"> 
+           <span class="label">分类专栏：</span> 
+           <a class="tag-link" href="https://blog.csdn.net/weixin_43334693/category_12233704.html" target="_blank" rel="noopener">YOLOv5入门＋实践＋改进</a> 
+           <span class="label">文章标签：</span> 
+           <a rel="noopener" data-report-query="spm=1001.2101.3001.4223" data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;目标检测&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;目标检测\&quot;}&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;目标检测&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;目标检测\&quot;}&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank">目标检测</a> 
+           <a rel="noopener" data-report-query="spm=1001.2101.3001.4223" data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;计算机视觉&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;计算机视觉\&quot;}&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;计算机视觉&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;计算机视觉\&quot;}&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank">计算机视觉</a> 
+           <a rel="noopener" data-report-query="spm=1001.2101.3001.4223" data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;YOLO&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;YOLO\&quot;}&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;YOLO&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;YOLO\&quot;}&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=YOLO&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank">YOLO</a> 
+           <a rel="noopener" data-report-query="spm=1001.2101.3001.4223" data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;人工智能&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;人工智能\&quot;}&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;人工智能&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;人工智能\&quot;}&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank">人工智能</a> 
+           <a rel="noopener" data-report-query="spm=1001.2101.3001.4223" data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;深度学习&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;深度学习\&quot;}&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;深度学习&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;深度学习\&quot;}&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank">深度学习</a> 
+          </div> 
+         </div> 
+         <div class="up-time">
+          <span>于&nbsp;2023-04-09 22:23:26&nbsp;首次发布</span>
+         </div> 
+         <div class="slide-content-box"> 
+          <div class="article-copyright"> 
+           <div class="creativecommons">
+             版权声明：本文为博主原创文章，遵循
+            <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener"> CC 4.0 BY-SA </a>版权协议，转载请附上原文出处链接和本声明。 
+           </div> 
+           <div class="article-source-link">
+             本文链接：
+            <a href="https://blog.csdn.net/weixin_43334693/article/details/130044342" target="_blank">https://blog.csdn.net/weixin_43334693/article/details/130044342</a> 
+           </div> 
+          </div> 
+         </div> 
+         <div class="operating"> 
+          <a class="href-article-edit slide-toggle">版权</a> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <div id="blogHuaweiyunAdvert"></div> 
+      <div id="blogColumnPayAdvert"> 
+       <div class="column-group"> 
+        <div class="column-group-item column-group0 column-group-item-one"> 
+         <div class="item-l"> 
+          <a class="item-target" href="https://blog.csdn.net/weixin_43334693/category_12233704.html" target="_blank" title="YOLOv5入门＋实践＋改进" data-report-view="{&quot;spm&quot;:&quot;1001.2101.3001.6332&quot;}" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.6332&quot;}"> <img class="item-target" src="https://i-blog.csdnimg.cn/blog_column_migrate/2d39764ecc8e8d41d72673a523e05b4b.png?x-oss-process=image/resize,m_fixed,h_224,w_224" alt=""> <span class="title item-target"> <span> <span class="tit">YOLOv5入门＋实践＋改进</span> <span class="dec">专栏收录该内容</span> </span> <span class="rank"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/columnHotIcon2.png" alt="">该专栏为热销专栏榜&nbsp;第76名</span> </span> </a> 
+         </div> 
+         <div class="item-m"> 
+          <span>47 篇文章</span> 
+          <span class="old-add-new-box"> <span class="price">¥99.90</span> <span class="oldprice">¥299.90</span> </span> 
+         </div> 
+         <div class="item-r"> 
+          <a class="item-target article-column-subscribe">已订阅 </a> 
+          <a class="item-target column-studyvip-discount column-studyvip-pass" data-report-view="{&quot;spm&quot;:&quot;1001.2015.3001.8590&quot;}" data-report-click="{&quot;spm&quot;:&quot;1001.2015.3001.8590&quot;}">8折续费 </a> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="learning_the_member_box"> 
+       <a href="https://www.csdn.net/vip?utm_source=bkzl_cjhy_ckqy" target="_blank"> 
+        <div class="left">
+         <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/iconVIpCrown.png" alt="">
+         <span>您已是超级会员，正在免费阅读会员专享内容</span>
+        </div> 
+        <div class="right">
+         <span>查看更多超级会员权益</span>
+         <img src="https://csdnimg.cn/release/blogv2/dist/components/img/vipIconArrowLeftWhite.png" alt="">
+        </div> </a> 
+      </div> 
+      <div class="ai-abstract-box"> 
+       <div class="ai-abstract"> 
+        <div class="abstract-content"> 
+         <img class="lock-img" src="https://img-home.csdnimg.cn/images/20240711042549.png" alt=""> 本文详细介绍了如何从零开始使用YOLOv5训练自己的目标检测模型，包括环境配置、数据集标注、数据集划分、模型训练、测试与推理，以及使用PYQT5构建可视化界面。通过实例演示了每个步骤，适合初学者参考。 
+        </div> 
+        <p> 摘要生成于 <a href="https://ai.csdn.net?utm_source=cknow_pc_ai_abstract" data-report-query="spm=3001.10128" data-report-view="{&quot;spm&quot;:&quot;3001.10128&quot;,&quot;extra&quot;:{&quot;location&quot;:&quot;ai_abstract&quot;}}" data-report-click="{&quot;spm&quot;:&quot;3001.10128&quot;,&quot;extra&quot;:{&quot;location&quot;:&quot;ai_abstract&quot;,&quot;text&quot;:&quot;C知道&quot;}}" target="_blank"> C知道</a> ，由 DeepSeek-R1 满血版支持， <a href="https://ai.csdn.net?utm_source=cknow_pc_ai_abstract" data-report-query="spm=3001.10128" data-report-click="{&quot;spm&quot;:&quot;3001.10128&quot;,&quot;extra&quot;:{&quot;location&quot;:&quot;ai_abstract&quot;,&quot;text&quot;:&quot;前往体验&quot;}}" target="_blank"> 前往体验 &gt;</a></p> 
+       </div> 
+      </div> 
+      <article class="baidu_pl"> 
+       <div id="article_content" class="article_content clearfix"> 
+        <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/kdoc_html_views-1a98987dfd.css"> 
+        <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/ck_htmledit_views-704d5b9767.css"> 
+        <div id="content_views" class="htmledit_views"> 
+         <h4 id="%F0%9F%8C%9F%E6%9C%AC%E4%BA%BAYOLOv5%E7%B3%BB%E5%88%97%E5%AF%BC%E8%88%AA"><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/a600c7144e678a8eb3c1649a2e1308e1.gif">&nbsp;</h4> 
+         <p style="text-align:center;"><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/0367b2e4a5898aa3ad9a3b2f6ff80ec2.jpeg"></p> 
+         <h2 id="%E5%89%8D%E8%A8%80">前言</h2> 
+         <p>通过前几篇文章，相信大家已经学会训练自己的数据集了。本篇是YOLOv5入门实践系列的最后一篇，也是一篇总结，我们再来一起按着<span style="color:#fe2c24;"><strong>配置环境--&gt;标注数据集--&gt;划分数据集--&gt;训练模型--&gt;测试模型--&gt;推理模型</strong></span><span style="color:#0d0016;">的步骤，从零开始，一起实现自己的目标检测模型吧！</span></p> 
+         <p style="text-align:center;"><span style="color:#0d0016;"><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/c2d0a12a5d03d3a2dcb20ef65bca002d.gif"></span></p> 
+         <p><strong>前期回顾：</strong></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/129981848?spm=1001.2014.3001.5501" title="YOLOv5入门实践（1）——手把手带你环境配置搭建">YOLOv5入门实践（1）——手把手带你环境配置搭建</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/129995604?spm=1001.2014.3001.5501" title="YOLOv5入门实践（2）——手把手教你利用labelimg标注数据集">YOLOv5入门实践（2）——手把手教你利用labelimg标注数据集</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/130025866?spm=1001.2014.3001.5501" title="YOLOv5入门实践（3）——手把手教你划分自己的数据集">YOLOv5入门实践（3）——手把手教你划分自己的数据集</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/130043351?spm=1001.2014.3001.5501" title="YOLOv5入门实践（4）——手把手教你训练自己的数据集">YOLOv5入门实践（4）——手把手教你训练自己的数据集</a><br> &nbsp;</p> 
+         <p><img alt="962f7cb1b48f44e29d9beb1d499d0530.gif" height="69" src="https://i-blog.csdnimg.cn/blog_migrate/ac3c5d6bfbcbf982e8e9e3632d7f20d1.gif" width="69">​&nbsp; &nbsp;🍀<strong>本人<strong><strong><strong><a href="https://so.csdn.net/so/search?q=YOLOv5%E6%BA%90%E7%A0%81&amp;spm=1001.2101.3001.7020" title="YOLOv5源码">YOLOv5源码</a></strong></strong></strong>详解系列：</strong>&nbsp;&nbsp;</p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/129356033?spm=1001.2014.3001.5501" title="YOLOv5源码逐行超详细注释与解读（1）——项目目录结构解析">YOLOv5源码逐行超详细注释与解读（1）——项目目录结构解析</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/129349094?spm=1001.2014.3001.5501" title="​​​​​​YOLOv5源码逐行超详细注释与解读（2）——推理部分detect.py">​​​​​​YOLOv5源码逐行超详细注释与解读（2）——推理部分detect.py</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/129460666?spm=1001.2014.3001.5501" title="YOLOv5源码逐行超详细注释与解读（3）——训练部分train.py">YOLOv5源码逐行超详细注释与解读（3）——训练部分train.py</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/129649553?spm=1001.2014.3001.5501" title="YOLOv5源码逐行超详细注释与解读（4）——验证部分val（test）.py">YOLOv5源码逐行超详细注释与解读（4）——验证部分val（test）.py</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/129697521?spm=1001.2014.3001.5501" title="YOLOv5源码逐行超详细注释与解读（5）——配置文件yolov5s.yaml">YOLOv5源码逐行超详细注释与解读（5）——配置文件yolov5s.yaml</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/129803802?spm=1001.2014.3001.5501" title="YOLOv5源码逐行超详细注释与解读（6）——网络结构（1）yolo.py">YOLOv5源码逐行超详细注释与解读（6）——网络结构（1）yolo.py</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/129854764?spm=1001.2014.3001.5501" title="YOLOv5源码逐行超详细注释与解读（7）——网络结构（2）common.py">YOLOv5源码逐行超详细注释与解读（7）——网络结构（2）common.py</a></p> 
+         <hr> 
+         <p id="main-toc"><strong>目录</strong></p> 
+         <p id="%E5%89%8D%E8%A8%80-toc" style="margin-left:0px;"><a href="#%E5%89%8D%E8%A8%80" rel="nofollow">前言</a></p> 
+         <p id="%F0%9F%8C%9F%E4%B8%80%E3%80%81%20%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83-toc" style="margin-left:0px;"><a href="#%F0%9F%8C%9F%E4%B8%80%E3%80%81%20%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83" rel="nofollow">🌟一、 配置环境</a></p> 
+         <p id="1.1%C2%A0%E5%AE%89%E8%A3%85CUDA%20%E5%92%8CcuDNN-toc" style="margin-left:40px;"><a href="#1.1%C2%A0%E5%AE%89%E8%A3%85CUDA%20%E5%92%8CcuDNN" rel="nofollow">1.1&nbsp;安装CUDA 和cuDNN</a></p> 
+         <p id="1.2%20%E9%85%8D%E7%BD%AEYOLOv5%E7%8E%AF%E5%A2%83-toc" style="margin-left:40px;"><a href="#1.2%20%E9%85%8D%E7%BD%AEYOLOv5%E7%8E%AF%E5%A2%83" rel="nofollow">1.2 配置YOLOv5环境</a></p> 
+         <p id="1.yolov5%E7%9A%84%E6%BA%90%E7%A0%81%E4%B8%8B%E8%BD%BD-toc" style="margin-left:80px;"><a href="#1.yolov5%E7%9A%84%E6%BA%90%E7%A0%81%E4%B8%8B%E8%BD%BD" rel="nofollow">1.yolov5的源码下载</a></p> 
+         <p id="2.%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E4%B8%8B%E8%BD%BD-toc" style="margin-left:80px;"><a href="#2.%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E4%B8%8B%E8%BD%BD" rel="nofollow">2.预训练模型下载</a></p> 
+         <p id="3.%E5%AE%89%E8%A3%85yolov5%E7%9A%84%E4%BE%9D%E8%B5%96%E9%A1%B9%C2%A0-toc" style="margin-left:80px;"><a href="#3.%E5%AE%89%E8%A3%85yolov5%E7%9A%84%E4%BE%9D%E8%B5%96%E9%A1%B9%C2%A0" rel="nofollow">3.安装yolov5的依赖项&nbsp;</a></p> 
+         <p id="%F0%9F%8C%9F%E4%BA%8C%E3%80%81%20%E6%A0%87%E6%B3%A8%E6%95%B0%E6%8D%AE%E9%9B%86-toc" style="margin-left:0px;"><a href="#%F0%9F%8C%9F%E4%BA%8C%E3%80%81%20%E6%A0%87%E6%B3%A8%E6%95%B0%E6%8D%AE%E9%9B%86" rel="nofollow">🌟二、 标注数据集</a></p> 
+         <p id="2.1%20%E5%88%A9%E7%94%A8labelimg%E6%A0%87%E6%B3%A8%E6%95%B0%E6%8D%AE%E9%9B%86-toc" style="margin-left:40px;"><a href="#2.1%20%E5%88%A9%E7%94%A8labelimg%E6%A0%87%E6%B3%A8%E6%95%B0%E6%8D%AE%E9%9B%86" rel="nofollow">2.1 利用labelimg标注数据集</a></p> 
+         <p id="%C2%A02.2%20%E5%88%A9%E7%94%A8make%20sense%E6%A0%87%E6%B3%A8%E6%95%B0%E6%8D%AE%E9%9B%86-toc" style="margin-left:40px;"><a href="#%C2%A02.2%20%E5%88%A9%E7%94%A8make%20sense%E6%A0%87%E6%B3%A8%E6%95%B0%E6%8D%AE%E9%9B%86" rel="nofollow">2.2 利用make sense标注数据集</a></p> 
+         <p id="%C2%A0%F0%9F%8C%9F%E4%B8%89%E3%80%81%20%E5%88%92%E5%88%86%E6%95%B0%E6%8D%AE%E9%9B%86-toc" style="margin-left:0px;"><a href="#%C2%A0%F0%9F%8C%9F%E4%B8%89%E3%80%81%20%E5%88%92%E5%88%86%E6%95%B0%E6%8D%AE%E9%9B%86" rel="nofollow">🌟三、 划分数据集</a></p> 
+         <p id="%F0%9F%8C%9F%E5%9B%9B%E3%80%81%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B-toc" style="margin-left:0px;"><a href="#%F0%9F%8C%9F%E5%9B%9B%E3%80%81%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B" rel="nofollow">🌟四、训练模型</a></p> 
+         <p id="4.1%20%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6-toc" style="margin-left:40px;"><a href="#4.1%20%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6" rel="nofollow">4.1 配置文件</a></p> 
+         <p id="%E4%BA%8C%E3%80%81%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B-toc" style="margin-left:40px;"><a href="#%E4%BA%8C%E3%80%81%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B" rel="nofollow">4.2 训练模型</a></p> 
+         <p id="%F0%9F%8C%9F%E4%BA%94%E3%80%81%E6%B5%8B%E8%AF%95%E6%A8%A1%E5%9E%8B-toc" style="margin-left:0px;"><a href="#%F0%9F%8C%9F%E4%BA%94%E3%80%81%E6%B5%8B%E8%AF%95%E6%A8%A1%E5%9E%8B" rel="nofollow">🌟五、测试模型</a></p> 
+         <p id="%F0%9F%8C%9F%E5%85%AD%E3%80%81%E6%8E%A8%E7%90%86%E6%A8%A1%E5%9E%8B-toc" style="margin-left:0px;"><a href="#%F0%9F%8C%9F%E5%85%AD%E3%80%81%E6%8E%A8%E7%90%86%E6%A8%A1%E5%9E%8B" rel="nofollow">🌟六、推理模型</a></p> 
+         <p id="%F0%9F%8C%9F%E4%B8%83%E3%80%81PYQT%E5%8F%AF%E8%A7%86%E5%8C%96%E7%95%8C%E9%9D%A2%E6%98%BE%E7%A4%BA-toc" style="margin-left:0px;"><a href="#%F0%9F%8C%9F%E4%B8%83%E3%80%81PYQT%E5%8F%AF%E8%A7%86%E5%8C%96%E7%95%8C%E9%9D%A2%E6%98%BE%E7%A4%BA" rel="nofollow">🌟七、PYQT可视化界面显示</a></p> 
+         <p id="7.1%20%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83-toc" style="margin-left:40px;"><a href="#7.1%20%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83" rel="nofollow">7.1 配置环境</a></p> 
+         <p id="%EF%BC%881%EF%BC%89QtDesigner-toc" style="margin-left:80px;"><a href="#%EF%BC%881%EF%BC%89QtDesigner" rel="nofollow">（1）QtDesigner</a></p> 
+         <p id="%EF%BC%882%EF%BC%89PyUIC-toc" style="margin-left:80px;"><a href="#%EF%BC%882%EF%BC%89PyUIC" rel="nofollow">（2）PyUIC</a></p> 
+         <p id="%EF%BC%883%EF%BC%89PyRcc-toc" style="margin-left:80px;"><a href="#%EF%BC%883%EF%BC%89PyRcc" rel="nofollow">（3）PyRcc</a></p> 
+         <p id="%EF%BC%884%EF%BC%89pycharm%E4%B8%AD%E6%9F%A5%E7%9C%8B%E5%B7%A5%E5%85%B7-toc" style="margin-left:80px;"><a href="#%EF%BC%884%EF%BC%89pycharm%E4%B8%AD%E6%9F%A5%E7%9C%8B%E5%B7%A5%E5%85%B7" rel="nofollow">（4）pycharm中查看工具</a></p> 
+         <p id="7.2%20%E7%95%8C%E9%9D%A2%E6%98%BE%E7%A4%BA-toc" style="margin-left:40px;"><a href="#7.2%20%E7%95%8C%E9%9D%A2%E6%98%BE%E7%A4%BA" rel="nofollow">7.2 界面显示</a></p> 
+         <p id="%E6%9C%80%E5%90%8E%E4%B8%80%E4%BA%9B%E7%A2%8E%E7%A2%8E%E5%BF%B5%EF%BC%9A-toc" style="margin-left:0px;"><a href="#%E6%9C%80%E5%90%8E%E4%B8%80%E4%BA%9B%E7%A2%8E%E7%A2%8E%E5%BF%B5%EF%BC%9A" rel="nofollow">最后一些碎碎念：</a></p> 
+         <p style="text-align:center;"><span style="color:#fe2c24;"><strong><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/f79ea23009654e4b967f07612955da47.gif"></strong></span></p> 
+         <h2 id="%F0%9F%8C%9F%E4%B8%80%E3%80%81%20%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83">🌟<span style="color:#0d0016;"><strong>一、 配置环境</strong></span></h2> 
+         <blockquote> 
+          <p><span style="color:#0d0016;"><strong>传送门：</strong></span><a href="https://blog.csdn.net/weixin_43334693/article/details/129981848?spm=1001.2014.3001.5501" title="YOLOv5入门实践（1）——手把手带你环境配置搭建">YOLOv5入门实践（1）——手把手带你环境配置搭建</a></p> 
+         </blockquote> 
+         <h3 id="1.1%C2%A0%E5%AE%89%E8%A3%85CUDA%20%E5%92%8CcuDNN">1.1&nbsp;安装CUDA 和cuDNN</h3> 
+         <p>官方教程：</p> 
+         <p><strong>CUDA：</strong><a href="https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html" rel="nofollow" title="cuda-installation-guide-microsoft-windows 12.1 documentation">cuda-installation-guide-microsoft-windows 12.1 documentation</a></p> 
+         <p><strong>cuDNN：</strong><a href="https://docs.nvidia.com/deeplearning/cudnn/install-guide/index.html#installwindows" rel="nofollow" title="Installation Guide :: NVIDIA Deep Learning cuDNN Documentation">Installation Guide :: NVIDIA Deep Learning cuDNN Documentation</a></p> 
+         <p><strong>CUDA下载地址</strong>→&nbsp;&nbsp;<a href="https://www.nvidia.cn/Download/index.aspx?lang=cn" rel="nofollow" title="官方驱动 | NVIDIA">官方驱动 | NVIDIA</a>&nbsp;</p> 
+         <p><strong>cuDNN下载地址→&nbsp;&nbsp;</strong><a href="https://developer.nvidia.com/rdp/cudnn-download" rel="nofollow" title="cuDNN Download | NVIDIA Developer">cuDNN Download | NVIDIA Developer</a>&nbsp;&nbsp;<img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/01719853b63a55b09a1e15acd93a381d.png"></p> 
+         <hr> 
+         <h3 id="1.2%20%E9%85%8D%E7%BD%AEYOLOv5%E7%8E%AF%E5%A2%83">1.2 配置YOLOv5环境</h3> 
+         <h4 id="1.yolov5%E7%9A%84%E6%BA%90%E7%A0%81%E4%B8%8B%E8%BD%BD">1.yolov5的源码下载</h4> 
+         <p><strong>下载地址：</strong><a href="https://gitcode.net/mirrors/ultralytics/yolov5?utm_source=csdn_github_accelerator" rel="nofollow" title="mirrors / ultralytics / yolov5 · GitCode">mirrors / ultralytics / yolov5 · GitCode</a></p> 
+         <p>安装压缩包<br><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/dd4cb4029bef328574fbbeea44164a2e.png"></p> 
+         <hr> 
+         <h4 id="2.%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E4%B8%8B%E8%BD%BD"><strong>2.预训练模型下载</strong></h4> 
+         <p>将安装好的预训练模型放在YOLO文件下。</p> 
+         <p style="text-align:center;"><img alt="" height="352" src="https://i-blog.csdnimg.cn/blog_migrate/7988800d62699d4682e3b3b93048ddcc.png" width="266"></p> 
+         <hr> 
+         <h4 id="3.%E5%AE%89%E8%A3%85yolov5%E7%9A%84%E4%BE%9D%E8%B5%96%E9%A1%B9%C2%A0"><strong>3.安装yolov5的依赖项&nbsp;</strong></h4> 
+         <p>可以在终端输入 <span style="background-color:#fef2f0;">pip3 install -r requirements.txt</span> 来安装这个记事本里的全部需要的库，不过不建议windows系统下这么做。</p> 
+         <p>因为在windows系统里有pycocotools这个库。而我们没有办法通过pip直接安装这个库。</p> 
+         <blockquote> 
+          <p><strong>两个解决办法</strong></p> 
+          <ul>
+           <li>1、直接运行<span style="background-color:#fef2f0;">pip3 install pycocotools-windows</span>，这个方法有个小缺陷，就是在某些情况下系统依旧会显示警告信息：找不到pycocotools库，但是程序可以正常运行，</li>
+           <li>2、自行下载pycocotools库，安装包<a href="https://pan.baidu.com/s/1nWQdPRtGwNnOO2DkxRuGuA" rel="nofollow" title="点击这里">点击这里</a>提取码：i5d7 。下载之后解压，解压下来的文件， conda环境放到 \Lib\site-packages之中，python环境放到 site-packages中。</li>
+          </ul> 
+         </blockquote> 
+         <p>配置环境是个很繁琐的过程，因为电脑设备不同，大家可能会遇到各种各样的问题，warning级别错误直接无视，报红色的错复制下来在网上也有对应的解决办法，这里就不一 一说了。&nbsp;</p> 
+         <hr> 
+         <h2 id="%F0%9F%8C%9F%E4%BA%8C%E3%80%81%20%E6%A0%87%E6%B3%A8%E6%95%B0%E6%8D%AE%E9%9B%86">🌟<span style="color:#0d0016;"><strong>二、 标注数据集</strong></span></h2> 
+         <h3 id="2.1%20%E5%88%A9%E7%94%A8labelimg%E6%A0%87%E6%B3%A8%E6%95%B0%E6%8D%AE%E9%9B%86">2.1 利用labelimg标注数据集</h3> 
+         <p>这个之前介绍过，大家可以看这篇回顾一下</p> 
+         <blockquote> 
+          <p>传送门：<a href="https://blog.csdn.net/weixin_43334693/article/details/129995604?spm=1001.2014.3001.5501" title="YOLOv5入门实践（2）——手把手教你利用labelimg标注数据集">YOLOv5入门实践（2）——手把手教你利用labelimg标注数据集</a></p> 
+         </blockquote> 
+         <hr> 
+         <h3 id="%C2%A02.2%20%E5%88%A9%E7%94%A8make%20sense%E6%A0%87%E6%B3%A8%E6%95%B0%E6%8D%AE%E9%9B%86">&nbsp;2.2 利用make sense标注数据集</h3> 
+         <p>Labelimg和Labelme每次打开比较麻烦，后来看大佬文章被安利了这个在线标注数据集的工具<strong><code>Make Sense：</code ></strong><a href="https://www.makesense.ai/" rel="nofollow" title="Make Sense">Make Sense</a>。我们来介绍一下它的使用：</p> 
+         <p><strong>第1步：</strong>打开这个网站之后，点击<strong><span style="color:#0d0016;"><span style="background-color:#fef2f0;">Get Started</span></span></strong>开始使用&nbsp;</p> 
+         <p style="text-align:center;"><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/73baaa5548f5b50e026bfce1a0df52c2.png"></p> 
+         <p><strong>第2步：</strong>点击<strong><span style="background-color:#fef2f0;">Drop images</span></strong>，然后<strong><span style="background-color:#fef2f0;">Ctrl+A</span></strong>选中整个数据集里面的图片</p> 
+         <p style="text-align:center;"><img alt="" height="1157" src="https://i-blog.csdnimg.cn/blog_migrate/755f4040141cdda0798fb81c202c474c.png" width="1200"></p> 
+         <p>&nbsp;<strong>第3步：</strong>点击<strong><span style="background-color:#fef2f0;">Object Detection</span></strong> 进入目标检测标注模式</p> 
+         <p class="img-center"><img alt="" height="398" src="https://i-blog.csdnimg.cn/blog_migrate/8910532bb5b2b17f9fb25d3731ffd298.png" width="476"></p> 
+         <p><strong>第4步：</strong>点击<strong><span style="background-color:#fef2f0;">Create Labels </span></strong>创建标签，这里有两种方法：</p> 
+         <ul>
+          <li> <p>法1：导入文件自动生成标签（Load labels from file ）一行一个</p> </li>
+          <li> <p>法2：手动创建标签，点击左边栏的“＋”符号</p> </li>
+         </ul> 
+         <p>因为我这里只检测火焰一类，所以只添加一个标签 fire。</p> 
+         <p style="text-align:center;"><img alt="" height="529" src="https://i-blog.csdnimg.cn/blog_migrate/f44fecba05febd890691950993ebfb57.png" width="488"></p> 
+         <p><strong>&nbsp;第5步：</strong>创建成功后点击<strong><span style="background-color:#fef2f0;">Start project</span></strong>开始标注。</p> 
+         <p style="text-align:center;"><img alt="" height="337" src="https://i-blog.csdnimg.cn/blog_migrate/ddcddbbb602a4f1b1d35b7c7c086ff39.png" width="608"></p> 
+         <p>标注界面支持矩形(Rect)、点(Point)、线(Line)、多边形(Polyygon)多种标注模式，点选相应的模式就可以直接标注了。</p> 
+         <p>（水了一上午的课，终于标注完了。。。）</p> 
+         <p><strong>第6步：</strong>点击<strong><span style="background-color:#fef2f0;">Action</span></strong>，然后点击<strong><span style="background-color:#fef2f0;">Export Annotation </span></strong>就可以导出yolo格式的标签文件</p> 
+         <p style="text-align:center;"><img alt="" height="278" src="https://i-blog.csdnimg.cn/blog_migrate/b3203b883dcf54a1d5ca97e96a4c7112.png" width="248">&nbsp;<img alt="" height="276" src="https://i-blog.csdnimg.cn/blog_migrate/3428a3b0cc08592f71ed084cce104c61.png" width="330"></p> 
+         <p>导出之后的标签文件就是酱婶儿的</p> 
+         <p style="text-align:center;"><img alt="" height="372" src="https://i-blog.csdnimg.cn/blog_migrate/fcc67825d4ff5ffaea9c3829b2c768d1.png" width="408"></p> 
+         <hr> 
+         <h2 id="%C2%A0%F0%9F%8C%9F%E4%B8%89%E3%80%81%20%E5%88%92%E5%88%86%E6%95%B0%E6%8D%AE%E9%9B%86">&nbsp;🌟三<span style="color:#0d0016;"><strong>、 划分数据集</strong></span></h2> 
+         <blockquote> 
+          <p>直通车：<a href="https://blog.csdn.net/weixin_43334693/article/details/130025866?spm=1001.2014.3001.5501" title="YOLOv5入门实践（3）——手把手教你划分自己的数据集">YOLOv5入门实践（3）——手把手教你划分自己的数据集</a></p> 
+         </blockquote> 
+         <p>&nbsp;<strong>第1步：创建split.py&nbsp;</strong></p> 
+         <p>在YOLOv5项目目录下创建split.py项目。</p> 
+         <p class="img-center"><img alt="43186ecef51c4280854e08583a036ce2.png" height="348" src="https://i-blog.csdnimg.cn/blog_migrate/ee28a8d0a3ad8ad60a671f0ce3a7d0fc.png" width="331"></p> 
+         <p>&nbsp;<strong>第2步：运行split.py&nbsp;</strong></p> 
+         <pre><code  style="height: 50vh;" class="language-python">import os
+import shutil
+import random
+
+# 设置随机种子
+random.seed(0)
+
+
+def split_data(file_path,xml_path, new_file_path, train_rate, val_rate, test_rate):
+    '''====1.将数据集打乱===='''
+    each_class_image = []
+    each_class_label = []
+    for image in os.listdir(file_path):
+        each_class_image.append(image)
+    for label in os.listdir(xml_path):
+        each_class_label.append(label)
+     # 将两个文件通过zip（）函数绑定。
+    data=list(zip(each_class_image,each_class_label))
+    # 计算总长度
+    total = len(each_class_image)
+    # random.shuffle（）函数打乱顺序
+    random.shuffle(data)
+    # 再将两个列表解绑
+    each_class_image,each_class_label=zip(*data)
+
+    '''====2.分别获取train、val、test这三个文件夹对应的图片和标签===='''
+    train_images = each_class_image[0:int(train_rate * total)]
+    val_images = each_class_image[int(train_rate * total):int((train_rate + val_rate) * total)]
+    test_images = each_class_image[int((train_rate + val_rate) * total):]
+    train_labels = each_class_label[0:int(train_rate * total)]
+    val_labels = each_class_label[int(train_rate * total):int((train_rate + val_rate) * total)]
+    test_labels = each_class_label[int((train_rate + val_rate) * total):]
+
+    '''====3.设置相应的路径保存格式，将图片和标签对应保存下来===='''
+    # train
+    for image in train_images:
+        print(image)
+        old_path = file_path + '/' + image
+        new_path1 = new_file_path + '/' + 'train' + '/' + 'images'
+        if not os.path.exists(new_path1):
+            os.makedirs(new_path1)
+        new_path = new_path1 + '/' + image
+        shutil.copy(old_path, new_path)
+
+    for label in train_labels:
+        print(label)
+        old_path = xml_path + '/' + label
+        new_path1 = new_file_path + '/' + 'train' + '/' + 'labels'
+        if not os.path.exists(new_path1):
+            os.makedirs(new_path1)
+        new_path = new_path1 + '/' + label
+        shutil.copy(old_path, new_path)
+    # val
+    for image in val_images:
+        old_path = file_path + '/' + image
+        new_path1 = new_file_path + '/' + 'val' + '/' + 'images'
+        if not os.path.exists(new_path1):
+            os.makedirs(new_path1)
+        new_path = new_path1 + '/' + image
+        shutil.copy(old_path, new_path)
+
+    for label in val_labels:
+        old_path = xml_path + '/' + label
+        new_path1 = new_file_path + '/' + 'val' + '/' + 'labels'
+        if not os.path.exists(new_path1):
+            os.makedirs(new_path1)
+        new_path = new_path1 + '/' + label
+        shutil.copy(old_path, new_path)
+    # test
+    for image in test_images:
+        old_path = file_path + '/' + image
+        new_path1 = new_file_path + '/' + 'test' + '/' + 'images'
+        if not os.path.exists(new_path1):
+            os.makedirs(new_path1)
+        new_path = new_path1 + '/' + image
+        shutil.copy(old_path, new_path)
+
+    for label in test_labels:
+        old_path = xml_path + '/' + label
+        new_path1 = new_file_path + '/' + 'test' + '/' + 'labels'
+        if not os.path.exists(new_path1):
+            os.makedirs(new_path1)
+        new_path = new_path1 + '/' + label
+        shutil.copy(old_path, new_path)
+
+
+if __name__ == '__main__':
+    file_path = "D:\yolov5-6.1\datasets\image"
+    xml_path = "D:\yolov5-6.1\datasets\Annotation"
+    new_file_path = "D:\yolov5-6.1\datasets\ImageSets"
+    # 设置划分比例
+    split_data(file_path,xml_path, new_file_path, train_rate=0.7, val_rate=0.1, test_rate=0.2)</code ></pre> 
+         <p>至此，我们的数据集就划分好了。</p> 
+         <p>来运行一下看看效果吧：</p> 
+         <p style="text-align:center;"><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/790fa0220cf6c75d563bcf29520f98da.png"></p> 
+         <hr> 
+         <h2 id="%F0%9F%8C%9F%E5%9B%9B%E3%80%81%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B">🌟<span style="color:#0d0016;"><strong>四、训练模型</strong></span></h2> 
+         <blockquote> 
+          <p>直通车：<a href="https://blog.csdn.net/weixin_43334693/article/details/130043351?spm=1001.2014.3001.5501" title="YOLOv5入门实践（4）——手把手教你训练自己的数据集">YOLOv5入门实践（4）——手把手教你训练自己的数据集</a>&nbsp;</p> 
+         </blockquote> 
+         <h3 id="4.1%20%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6">4.1 配置文件</h3> 
+         <p><strong>（1）修改数据集配置文件</strong><br> 首先在data的目录下新建一个yaml文件，自定义命名（嫌麻烦的话你可以直接复制voc.yaml文件，重命名然后在文件内直接修改。）</p> 
+         <p style="text-align:center;"><img alt="" height="314" src="https://i-blog.csdnimg.cn/blog_migrate/9959fe8363c5727dee888ca0b3d6dc92.png" width="271"></p> 
+         <p>然后修改文件内的路径和参数。</p> 
+         <p><strong>train</strong>和<strong>val</strong>就是上一步通过split划分好的数据集文件（最好要填绝对路径，有时候由目录结构的问题会莫名奇妙的报错）</p> 
+         <p>下面是两个参数，根据自己数据集的检测目标个数和名字来设定：</p> 
+         <ul>
+          <li><strong><span style="background-color:#fef2f0;">nc: </span></strong>&nbsp;存放检测目标类别个数</li>
+          <li><strong><span style="background-color:#fef2f0;">name：</span></strong> 存放检测目标类别的名字（个数和nc对应）</li>
+         </ul> 
+         <p>这里我做的是火焰检测，所以目标类别只有一个。</p> 
+         <p style="text-align:center;"><img alt="" height="268" src="https://i-blog.csdnimg.cn/blog_migrate/39f10404db73b4bf5f8ba4a0452607c8.png" width="615"></p> 
+         <hr> 
+         <p><strong>（2）修改模型配置文件</strong><br> 我们本次使用的是yolov5s.pt这个预训练权重，同上修改<strong>data</strong>目录下的<strong>yaml</strong>文件一样，我们最好将<strong>yolov5s.yaml</strong>文件复制一份，然后将其重命名，这里我将其重命名为yolov5s_fire.yaml。</p> 
+         <p style="text-align:center;"><img alt="" height="292" src="https://i-blog.csdnimg.cn/blog_migrate/25e755e959ae01e77b4481f3f7e8bcc7.png" width="284"></p> 
+         <p>&nbsp;同样，这里改一下<strong><span style="color:#0d0016;"><span style="background-color:#fef2f0;">nc</span></span></strong><span style="color:#0d0016;">就行哒</span></p> 
+         <p style="text-align:center;"><img alt="" height="248" src="https://i-blog.csdnimg.cn/blog_migrate/7a4e009906f5f4e6a0303e70d72e93f8.png" width="466"></p> 
+         <hr> 
+         <h3 id="%E4%BA%8C%E3%80%81%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B">4.2 训练模型</h3> 
+         <p>训练模型是通过<span style="color:#1c7331;"><strong>train.py</strong></span>文件，在训练前我们先介绍一下文件内的参数</p> 
+         <p style="text-align:center;"><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/9bee8e1a0f9357cc66a211b79518ddb1.png"></p> 
+         <blockquote> 
+          <p><strong>opt参数解析：&nbsp;</strong></p> 
+          <ul>
+           <li><strong><span style="background-color:#fef2f0;">cfg: </span></strong>&nbsp; 模型配置文件，网络结构</li>
+           <li><strong><span style="background-color:#fef2f0;">data: </span></strong>&nbsp; 数据集配置文件，数据集路径，类名等</li>
+           <li><strong><span style="background-color:#fef2f0;">hyp:</span></strong> &nbsp; 超参数文件</li>
+           <li><strong><span style="background-color:#fef2f0;">epochs:</span></strong> &nbsp; 训练总轮次</li>
+           <li><strong><span style="background-color:#fef2f0;">batch-size: </span></strong>&nbsp; 批次大小</li>
+           <li><strong><span style="background-color:#fef2f0;">img-size: </span></strong>&nbsp; 输入图片分辨率大小</li>
+           <li><strong><span style="background-color:#fef2f0;">rect: </span></strong>&nbsp; 是否采用矩形训练，默认False</li>
+           <li><strong><span style="background-color:#fef2f0;">resume:</span> </strong>&nbsp; 接着打断训练上次的结果接着训练</li>
+           <li><strong><span style="background-color:#fef2f0;">nosave:</span> &nbsp;</strong> 不保存模型，默认False</li>
+           <li><strong><span style="background-color:#fef2f0;">notest: </span></strong>&nbsp; 不进行test，默认False</li>
+           <li><strong><span style="background-color:#fef2f0;">noautoanchor: </span></strong>&nbsp; 不自动调整anchor，默认False</li>
+           <li><strong><span style="background-color:#fef2f0;">evolve: &nbsp;</span></strong> 是否进行超参数进化，默认False</li>
+           <li><strong><span style="background-color:#fef2f0;">bucket: </span>&nbsp;</strong> 谷歌云盘bucket，一般不会用到</li>
+           <li><strong><span style="background-color:#fef2f0;">cache-images: </span></strong><span style="background-color:#fef2f0;">&nbsp;</span> 是否提前缓存图片到内存，以加快训练速度，默认False</li>
+           <li><strong><span style="background-color:#fef2f0;">weights: </span></strong>&nbsp; 加载的权重文件</li>
+           <li><strong><span style="background-color:#fef2f0;">name: </span></strong>&nbsp; 数据集名字，如果设置：results.txt to results_name.txt，默认无</li>
+           <li><strong><span style="background-color:#fef2f0;">device: &nbsp;</span></strong> 训练的设备，cpu；0(表示一个gpu设备cuda:0)；0,1,2,3(多个gpu设备)</li>
+           <li><strong><span style="background-color:#fef2f0;">multi-scale: </span></strong>&nbsp; 是否进行多尺度训练，默认False</li>
+           <li><strong><span style="background-color:#fef2f0;">single-cls:</span></strong> &nbsp; &nbsp;数据集是否只有一个类别，默认False</li>
+           <li><strong><span style="background-color:#fef2f0;">adam: </span></strong>&nbsp; 是否使用adam优化器</li>
+           <li><strong><span style="background-color:#fef2f0;">sync-bn: </span></strong>&nbsp; 是否使用跨卡同步BN,在DDP模式使用</li>
+           <li><strong><span style="background-color:#fef2f0;">local_rank:</span></strong> &nbsp; gpu编号</li>
+           <li><strong><span style="background-color:#fef2f0;">logdir: </span></strong>&nbsp; 存放日志的目录</li>
+           <li><strong><span style="background-color:#fef2f0;">workers: </span></strong>&nbsp; dataloader的最大worker数量</li>
+          </ul> 
+          <p>（关于<span style="color:#fe2c24;"><strong>train.py</strong></span>更多学习请看：<a href="https://blog.csdn.net/weixin_43334693/article/details/129460666?spm=1001.2014.3001.5501" title="YOLOv5源码逐行超详细注释与解读（3）——训练部分train.py">YOLOv5源码逐行超详细注释与解读（3）——训练部分train.py</a>）</p> 
+         </blockquote> 
+         <hr> 
+         <p>然后做以下修改：</p> 
+         <pre><code class="language-python">parser.add_argument('--weights', type=str, default=ROOT / 'yolov5s_fire.pt', help='initial weights path')</code ></pre> 
+         <p><strong><span style="color:#fe2c24;">&nbsp;--weight ：</span></strong>先选用官方的yolov5s.pt权重，当自己的训练完成后可更换为自己的权重。</p> 
+         <pre><code class="language-python">&nbsp;parser.add_argument('--cfg', type=str, default='models/yolov5s_fire.yaml', help='model.yaml path')</code ></pre> 
+         <p><strong><span style="color:#fe2c24;">--cfg：</span></strong>选用上一步model目录下我们刚才改好的模型配置文件。</p> 
+         <pre><code class="language-python">parser.add_argument('--data', type=str, default=ROOT / 'data/fire.yaml', help='dataset.yaml path')</code ></pre> 
+         <p><strong><span style="color:#fe2c24;">&nbsp;--data：</span></strong>选用上一步data目录下我们刚才改好的数据集配置文件。</p> 
+         <pre><code class="language-python">parser.add_argument('--epochs', type=int, default=300)</code ></pre> 
+         <p><strong><span style="color:#fe2c24;">&nbsp;--epoch：</span></strong>指的就是训练过程中整个数据集将被迭代多少轮，默认是300，显卡不行就调小点</p> 
+         <pre><code class="language-python">parser.add_argument('--batch-size', type=int, default=16, help='total batch size for all GPUs, -1 for autobatch')</code ></pre> 
+         <p><strong><span style="color:#fe2c24;">--batch-size：</span></strong>一次看完多少张图片才进行权重更新，默认是16，显卡不行就调小点</p> 
+         <pre><code class="language-python">parser.add_argument('--workers', type=int, default=0, help='max dataloader workers (per RANK in DDP mode)')</code ></pre> 
+         <p><span style="color:#fe2c24;"><strong>&nbsp;--workers:</strong></span> &nbsp; dataloader的最大worker数量，一般用来处理多线程问题，默认是8，显卡不行就调小点</p> 
+         <hr> 
+         <p>以上都设置好了就可以开始训练啦~</p> 
+         <p><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/398a85afbbe70a20e1aa0ea0726e5064.png"></p> 
+         <p>若干个hours之后~&nbsp;</p> 
+         <p>训练结果会保存在<strong>runs</strong>的<strong>train文件</strong>里。</p> 
+         <p class="img-center"><img alt="" height="473" src="https://i-blog.csdnimg.cn/blog_migrate/3deb47751c305d5d7bd8cb92bd207253.png" width="239"></p> 
+         <p>至此，我们的模型训练就全部完成了~&nbsp;</p> 
+         <hr> 
+         <h2 id="%F0%9F%8C%9F%E4%BA%94%E3%80%81%E6%B5%8B%E8%AF%95%E6%A8%A1%E5%9E%8B">🌟五<span style="color:#0d0016;"><strong>、测试模型</strong></span></h2> 
+         <p>评估模型好坏就是在有标注的测试集或者验证集上进行模型效果的评估，在目标检测中最常使用的评估指标为mAP。在<span style="color:#4da8ee;"><strong>val.py</strong></span>文件中指定数据集配置文件和训练最优结果模型。</p> 
+         <p style="text-align:center;"><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/2564b12d48e9ea177ded1e6c55992a1e.png"></p> 
+         <blockquote> 
+          <p><strong>opt参数解析：&nbsp;</strong></p> 
+          <ul>
+           <li><strong><span style="background-color:#fef2f0;">data：</span></strong> &nbsp;数据集文件的路径，默认为COCO128数据集的配置文件路径</li>
+           <li><strong><span style="background-color:#fef2f0;">weights：</span></strong> &nbsp;模型权重文件的路径，默认为YOLOv5s的权重文件路径</li>
+           <li><strong><span style="background-color:#fef2f0;">batch_size: </span></strong>&nbsp; 前向传播的批次大小，运行val.py传入默认32 。运行train.py则传入batch_size // WORLD_SIZE * 2</li>
+           <li><strong><span style="background-color:#fef2f0;">imgsz：</span></strong> &nbsp;输入图像的大小，默认为640x640</li>
+           <li><strong><span style="background-color:#fef2f0;">conf_thres：</span></strong> &nbsp;置信度阈值，默认为0.001</li>
+           <li><strong><span style="background-color:#fef2f0;">iou_thres：</span></strong> &nbsp;非极大值抑制的iou阈值，默认为0.6</li>
+           <li><strong><span style="background-color:#fef2f0;">task: </span></strong>&nbsp; 设置测试的类型 有train, val, test, speed or study几种，默认val</li>
+           <li><strong><span style="background-color:#fef2f0;">device：</span></strong> &nbsp;使用的设备类型，默认为空，表示自动选择最合适的设备</li>
+           <li><strong><span style="background-color:#fef2f0;">single_cls: </span></strong>&nbsp; 数据集是否只用一个类别，运行val.py传入默认False 运行train.py则传入single_cls</li>
+           <li><strong><span style="background-color:#fef2f0;">augment：</span></strong> &nbsp;是否使用数据增强的方式进行检测，默认为False</li>
+           <li><strong><span style="background-color:#fef2f0;">verbose:</span></strong> &nbsp; 是否打印出每个类别的mAP，运行val.py传入默认Fasle。运行train.py则传入nc &lt; 50 and final_epoch</li>
+           <li><strong><span style="background-color:#fef2f0;">save_txt：</span></strong> &nbsp;是否将检测结果保存为文本文件，默认为False</li>
+           <li><strong><span style="background-color:#fef2f0;">save_hybrid:</span></strong> &nbsp; 是否保存 label+prediction hybrid results to *.txt 默认False</li>
+           <li><strong><span style="background-color:#fef2f0;">save_conf：</span></strong> &nbsp;是否在保存的文本文件中包含置信度信息，默认为False</li>
+           <li><strong><span style="background-color:#fef2f0;">save_json：</span></strong> &nbsp;是否按照coco的json格式保存预测框，并且使用cocoapi做评估（需要同样coco的json格式的标签）运行test.py传入默认Fasle。运行train.py则传入is_coco and final_epoch(一般也是False)</li>
+           <li><strong><span style="background-color:#fef2f0;">project：</span></strong> &nbsp;结果保存的项目文件夹路径，默认为“runs/val”</li>
+           <li><strong><span style="background-color:#fef2f0;">name：</span></strong> &nbsp;结果保存的文件名，默认为“exp”</li>
+           <li><strong><span style="background-color:#fef2f0;">exist_ok：</span></strong> &nbsp;如果结果保存的文件夹已存在，是否覆盖，默认为False，即不覆盖</li>
+           <li><strong><span style="background-color:#fef2f0;">half：</span> &nbsp;</strong>是否使用FP16的半精度推理模式，默认为False</li>
+           <li><strong><span style="background-color:#fef2f0;">dnn：</span></strong> &nbsp;是否使用OpenCV DNN作为ONNX推理的后端，默认为False</li>
+          </ul> 
+          <p>（关于<span style="color:#fe2c24;"><strong>val.py</strong></span>更多学习请看：<a href="https://blog.csdn.net/weixin_43334693/article/details/129649553?spm=1001.2014.3001.5501" title="YOLOv5源码逐行超详细注释与解读（4）——验证部分val（test）.py">YOLOv5源码逐行超详细注释与解读（4）——验证部分val（test）.py</a>）</p> 
+         </blockquote> 
+         <hr> 
+         <p>然后做以下修改：</p> 
+         <pre><code class="language-python"> parser.add_argument('--data', type=str, default=ROOT / 'data/fire_data.yaml', help='dataset.yaml path')</code ></pre> 
+         <p><strong><span style="color:#fe2c24;">--data：</span></strong>选用上一步data目录下我们刚才改好的数据集配置文件</p> 
+         <pre><code class="language-python">parser.add_argument('--weights', nargs='+', type=str, default=ROOT / 'runs/train/exp8/weights/best.pt', help='model.pt path(s)')</code ></pre> 
+         <p><strong><span style="color:#fe2c24;">&nbsp;--weight ：</span></strong><span style="color:#0d0016;">换成我们</span>训练完成后最好的权重</p> 
+         <hr> 
+         <p>同样的，我们验证完后依然可以得到一个文件夹：</p> 
+         <p style="text-align:center;"><img alt="" height="377" src="https://i-blog.csdnimg.cn/blog_migrate/fb97198475c20290e05e8578f838a31f.png" width="288"></p> 
+         <p>哒哒~让我们来看一下检测效果：&nbsp;</p> 
+         <p style="text-align:center;"><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/2fe081970607bdb5097e39bcd97cfc3a.png"></p> 
+         <p>&nbsp;注意，在这个过程中可能会遇到报错：<span style="color:#fe2c24;"><span style="background-color:#fef2f0;">Exception: Dataset not found.</span></span></p> 
+         <p style="text-align:center;"><img alt="" height="197" src="https://i-blog.csdnimg.cn/blog_migrate/4b5e6abae16f0ec41c701fd6180c66c8.png" width="623"></p> 
+         <p>&nbsp;这是数据集路径问题，这是就要检查一下你的数据集和YOLOv5项目是否在同一级目录哦。</p> 
+         <hr> 
+         <h2 id="%F0%9F%8C%9F%E5%85%AD%E3%80%81%E6%8E%A8%E7%90%86%E6%A8%A1%E5%9E%8B">🌟六<span style="color:#0d0016;"><strong>、推理模型</strong></span></h2> 
+         <p>最后，在没有标注的数据集上进行推理，在YOLOv5目录下的<span style="color:#ad720d;"><strong>detect.py</strong></span>文件下修改参数即可：</p> 
+         <p style="text-align:center;"><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/bf664d35d36d560047bd5471fd6671a2.png"></p> 
+         <blockquote> 
+          <p><strong>opt参数解析：&nbsp;</strong>&nbsp;</p> 
+          <ul>
+           <li><strong><span style="background-color:#fef2f0;">weights：</span></strong> &nbsp;训练的权重路径，可以使用自己训练的权重，也可以使用官网提供的权重。默认官网的权重yolov5s.pt(yolov5n.pt/yolov5s.pt/yolov5m.pt/yolov5l.pt/yolov5x.pt/区别在于网络的宽度和深度以此增加)</li>
+           <li><strong><span style="background-color:#fef2f0;">source：</span></strong> &nbsp;测试数据，可以是图片/视频路径，也可以是'0'(电脑自带摄像头)，也可以是rtsp等视频流, 默认data/images</li>
+           <li><strong><span style="background-color:#fef2f0;">data：</span></strong> &nbsp;配置数据文件路径，包括image/label/classes等信息，训练自己的文件，需要作相应更改，可以不用管</li>
+           <li><strong><span style="background-color:#fef2f0;">imgsz：</span></strong> &nbsp;预测时网络输入图片的尺寸，默认值为 [640]</li>
+           <li><strong><span style="background-color:#fef2f0;">conf-thres：</span></strong> &nbsp;置信度阈值，默认为 0.50</li>
+           <li><strong><span style="background-color:#fef2f0;">iou-thres：</span> </strong>&nbsp;非极大抑制时的 IoU 阈值，默认为 0.45</li>
+           <li><strong><span style="background-color:#fef2f0;">max-det：</span> &nbsp;</strong>保留的最大检测框数量，每张图片中检测目标的个数最多为1000类</li>
+           <li><strong><span style="background-color:#fef2f0;">device：</span></strong> &nbsp;使用的设备，可以是 cuda 设备的 ID（例如 0、0,1,2,3）或者是 'cpu'，默认为 '0'</li>
+           <li><strong><span style="background-color:#fef2f0;">view-img：</span></strong> &nbsp;是否展示预测之后的图片/视频，默认False</li>
+           <li><strong><span style="background-color:#fef2f0;">save-txt：</span></strong> &nbsp;是否将预测的框坐标以txt文件形式保存，默认False，使用--save-txt 在路径runs/detect/exp*/labels/*.txt下生成每张图片预测的txt文件</li>
+           <li><strong><span style="background-color:#fef2f0;">save-conf：</span></strong> &nbsp;是否保存检测结果的置信度到 txt文件，默认为 False</li>
+           <li><strong><span style="background-color:#fef2f0;">save-crop：</span></strong> &nbsp;是否保存裁剪预测框图片，默认为False，使用--save-crop 在runs/detect/exp*/crop/剪切类别文件夹/ 路径下会保存每个接下来的目标</li>
+           <li><strong><span style="background-color:#fef2f0;">nosave：</span></strong> &nbsp;不保存图片、视频，要保存图片，不设置--nosave 在runs/detect/exp*/会出现预测的结果</li>
+           <li><strong><span style="background-color:#fef2f0;">classes：</span></strong> &nbsp;仅检测指定类别，默认为 None</li>
+           <li><strong><span style="background-color:#fef2f0;">agnostic-nms：</span></strong> &nbsp;是否使用类别不敏感的非极大抑制（即不考虑类别信息），默认为 False</li>
+           <li><strong><span style="background-color:#fef2f0;">augment：</span></strong> &nbsp;是否使用数据增强进行推理，默认为 False</li>
+           <li><strong><span style="background-color:#fef2f0;">visualize：</span></strong> &nbsp;是否可视化特征图，默认为 False</li>
+           <li><strong><span style="background-color:#fef2f0;">update： </span></strong>&nbsp;如果为True，则对所有模型进行strip_optimizer操作，去除pt文件中的优化器等信息，默认为False</li>
+           <li><strong><span style="background-color:#fef2f0;">project：</span></strong> &nbsp;结果保存的项目目录路径，默认为 'ROOT/runs/detect'</li>
+           <li><strong><span style="background-color:#fef2f0;">name： </span></strong>&nbsp;结果保存的子目录名称，默认为 'exp'</li>
+           <li><strong><span style="background-color:#fef2f0;">exist-ok：</span></strong> &nbsp;是否覆盖已有结果，默认为 False</li>
+           <li><strong><span style="background-color:#fef2f0;">line-thickness：</span></strong> &nbsp;画 bounding box 时的线条宽度，默认为 3</li>
+           <li><strong><span style="background-color:#fef2f0;">hide-labels：</span></strong> &nbsp;是否隐藏标签信息，默认为 False</li>
+           <li><strong><span style="background-color:#fef2f0;">hide-conf：</span></strong> &nbsp;是否隐藏置信度信息，默认为 False</li>
+           <li><strong><span style="background-color:#fef2f0;">half：</span></strong> &nbsp;是否使用 FP16 半精度进行推理，默认为 False</li>
+           <li><strong><span style="background-color:#fef2f0;">dnn：</span></strong> &nbsp;是否使用 OpenCV DNN 进行 ONNX 推理，默认为 False</li>
+          </ul> 
+          <p>（关于<span style="color:#fe2c24;"><strong>detect.py</strong></span>更多学习请看：<a href="https://blog.csdn.net/weixin_43334693/article/details/129349094?spm=1001.2014.3001.5501" title="YOLOv5源码逐行超详细注释与解读（2）——推理部分detect.py">YOLOv5源码逐行超详细注释与解读（2）——推理部分detect.py</a>）</p> 
+         </blockquote> 
+         <hr> 
+         <p>然后做以下修改：</p> 
+         <pre><code class="language-python"> parser.add_argument('--data', type=str, default=ROOT / 'data/fire_data.yaml', help='dataset.yaml path')</code ></pre> 
+         <p><strong><span style="color:#fe2c24;">--data：</span></strong>选用上一步data目录下我们刚才改好的数据集配置文件</p> 
+         <pre><code class="language-python">parser.add_argument('--weights', nargs='+', type=str, default=ROOT / 'runs/train/exp8/weights/best.pt', help='model.pt path(s)')</code ></pre> 
+         <p><strong><span style="color:#fe2c24;">&nbsp;--weight ：</span></strong><span style="color:#0d0016;">换成我们</span>训练完成后最好的权重</p> 
+         <hr> 
+         <p>同样的，我们推理完后依然可以得到一个文件夹：</p> 
+         <p style="text-align:center;"><img alt="" height="325" src="https://i-blog.csdnimg.cn/blog_migrate/16c91e645d6ede88d66aab9633d1b89c.png" width="285"></p> 
+         <p>Come On！让我们来看一下检测效果：</p> 
+         <p style="text-align:center;"><img alt="" height="311" src="https://i-blog.csdnimg.cn/blog_migrate/846204301a1a9a1924818df6875df7ad.png" width="466"></p> 
+         <hr> 
+         <p>注意，在这个过程中可能会遇到报错：<span style="color:#fe2c24;"><span style="background-color:#fef2f0;">AssertionError: Image Not Found D:\fire项目\yolov5-fire\data\images\1_20.jpg</span></span>&nbsp;<img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/6d5909ca82fcfe2ca9e0014377628b49.png"></p> 
+         <p>这个问题很简单，错误原因就是测试图片中包含中文路径，把文件夹中文全部修改成英文即可（太低级的错误了。。。）</p> 
+         <hr> 
+         <h2 id="%F0%9F%8C%9F%E4%B8%83%E3%80%81PYQT%E5%8F%AF%E8%A7%86%E5%8C%96%E7%95%8C%E9%9D%A2%E6%98%BE%E7%A4%BA">🌟七<span style="color:#0d0016;"><strong>、PYQT可视化界面显示</strong></span></h2> 
+         <h3 id="7.1%20%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83"><span style="color:#0d0016;"><strong>7.1 配置环境</strong></span></h3> 
+         <p><span style="color:#0d0016;"><strong>第1步：先安装pyqt5</strong></span></p> 
+         <pre><code class="language-python">pip install PyQt5
+pip install PyQt5-tools</code ></pre> 
+         <p>安装成功后，可以在pycharm的解释器的安装包列表中查看到pyqt5对应的库名称</p> 
+         <p><img alt="" height="226" src="https://i-blog.csdnimg.cn/blog_migrate/4d6c2cca723ab03ef17825c84e7100cd.png" width="943"></p> 
+         <p><strong>第2步：配置pycharm工具</strong></p> 
+         <p>pycharm工具配置后可以快速便捷的打开工具以及使用，避免复杂的文件拷贝与打开应用程序地址等操作。</p> 
+         <p><img alt="" height="970" src="https://i-blog.csdnimg.cn/blog_migrate/d8c9ceb108b01fba47095098da99ce4e.png" width="1200"></p> 
+         <h4 id="%EF%BC%881%EF%BC%89QtDesigner"><strong>（1）QtDesigner</strong></h4> 
+         <p><strong><span style="color:#fe2c24;">QtDesigner</span></strong>是一个图形化的界面设计工具，可以直观的进行界面设计。</p> 
+         <p>pycharm的External Tools添加可以按照以下步骤进行：</p> 
+         <p><strong>1.在pycharm中依次选择：</strong><span style="background-color:#fef2f0;"><strong>File-settings--&gt;</strong></span><strong><span style="background-color:#fef2f0;">Tools--&gt;External Tools--&gt;左上角‘+’号</span></strong></p> 
+         <p>步骤如下图所示：</p> 
+         <p><img alt="" height="781" src="https://i-blog.csdnimg.cn/blog_migrate/23579d53829b145c59b22e7ea3bbaa00.png" width="1143"></p> 
+         <p><strong>2.在弹出的窗口中填写tool的配置内容：</strong></p> 
+         <ul>
+          <li><span style="color:#4da8ee;"><strong>Name：&nbsp;</strong></span>QtDesigner（用于在Tools-External中显示的名称，可自行填写）</li>
+          <li><strong><span style="color:#4da8ee;">Program：</span>&nbsp;&nbsp;</strong>可以通过点击右侧文件夹标识选择QtDesigner的安装位置；也可直接粘贴designer.exe的绝对物理地址</li>
+          <li><span style="color:#4da8ee;"><strong>Working directory：</strong></span> 可点击右侧<span style="color:#1c7331;"><strong><span style="background-color:#fef2f0;">‘+’</span></strong></span>号选择<strong><span style="background-color:#fef2f0;">FileDir --&gt; File directory</span></strong>，见下图；或者也可直接输入<span style="color:#0d0016;"><span style="background-color:#fef2f0;"> <strong>$FileDir$</strong></span>（</span>用于设置默认的文件保存位置）</li>
+         </ul> 
+         <p class="img-center"><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/41a9a7ec6206e1c735f0912043b0f3f5.png"></p> 
+         <p><strong>3.配置完成后点击OK即可。</strong></p> 
+         <hr> 
+         <h4 id="%EF%BC%882%EF%BC%89PyUIC"><strong>（2）PyUIC</strong></h4> 
+         <p><span style="color:#fe2c24;"><strong>PyUIC</strong></span>是一个代码转换工具，可以将QtDesigner输出的.ui文件转换为py文件。</p> 
+         <p>pycharm的External Tools按照同样的步骤进行：</p> 
+         <p><strong>1.在pycharm中依次选择：<span style="background-color:#fef2f0;">File-settings--&gt;Tools--&gt;External Tools--&gt;左上角‘+’号</span></strong></p> 
+         <p>步骤如下图所示：</p> 
+         <p><img alt="" height="649" src="https://i-blog.csdnimg.cn/blog_migrate/687de68396cad6be71eccbabcb1cd301.png" width="963"><br><strong>2.在弹出的窗口中填写tool的配置内容:</strong></p> 
+         <ul>
+          <li><span style="color:#4da8ee;"><strong>Name：</strong></span>PyUIC（用于在Tools-External中显示的名称，可自行填写）</li>
+          <li><strong><span style="color:#4da8ee;">Program：</span></strong>可以通过右侧文件夹标识选择PyUIC的安装位置，也可直接粘贴pyuic5.exe的绝对物理地址</li>
+          <li><span style="color:#4da8ee;"><strong>Arguments：</strong></span>直接填写<strong><span style="background-color:#fef2f0;">$FileName$ -o $FileNameWithoutExtension$.py</span></strong>（用于设置生成的py文件的名称，此语句的含义为 原有的文件名称+.py）</li>
+          <li><span style="color:#4da8ee;"><strong>Working directory：</strong></span>可点击右侧<strong><span style="background-color:#fef2f0;">‘+’</span></strong>号选择<strong><span style="background-color:#fef2f0;">FileDir --&gt;&nbsp;File directory</span></strong>；也可直接输入 <strong><span style="background-color:#fef2f0;">$FileDir$</span></strong>（用于设置默认的文件保存位置）</li>
+         </ul> 
+         <p><strong>3.配置完成后点击OK即可。</strong></p> 
+         <hr> 
+         <h4 id="%EF%BC%883%EF%BC%89PyRcc">（3）PyRcc</h4> 
+         <p><strong><span style="color:#fe2c24;">PyRcc</span></strong>是一个代码转换工具，用于将界面设计时的图像编辑文件qrc转换为py文件。<br> 如果不涉及界面的图片添加等内容时，可以暂不考虑此工具的添加。</p> 
+         <p><strong>1.在pycharm中依次选择：<span style="background-color:#fef2f0;">File-settings--&gt;Tools--&gt;External Tools--&gt;左上角‘+’号</span></strong></p> 
+         <p>步骤如下图所示：</p> 
+         <p><img alt="" height="655" src="https://i-blog.csdnimg.cn/blog_migrate/cdac0101a33040733cbb4177a3a3a659.png" width="974"></p> 
+         <p><strong>2.在弹出的窗口中填写tool的配置内容：</strong></p> 
+         <ul>
+          <li><span style="color:#4da8ee;"><strong>Name：</strong></span>PyRcc（用于在Tools-External中显示的名称，可自行填写）</li>
+          <li><span style="color:#4da8ee;"><strong>Program：</strong></span>可以通过右侧文件夹标识选择PyRcc的安装位置，也可直接粘贴pyrcc5.exe的绝对物理地址</li>
+          <li><span style="color:#4da8ee;"><strong>Arguments：</strong></span>直接填写<strong><span style="background-color:#fef2f0;">$FileName$ -o $FileNameWithoutExtension$.py</span></strong>（用于设置生成的py文件的名称，此语句的含义为原有的文件名称+.py）</li>
+          <li><span style="color:#4da8ee;"><strong>Working directory：</strong></span>可点击右侧<strong><span style="background-color:#fef2f0;">‘+’</span></strong>号选择<strong><span style="background-color:#fef2f0;">FileDir - File directory</span></strong>；也可直接输入 <strong><span style="background-color:#fef2f0;">$FileDir$</span></strong>（用于设置默认的文件保存位置）</li>
+         </ul> 
+         <p><strong>3.配置完成后点击OK即可。</strong></p> 
+         <hr> 
+         <h4 id="%EF%BC%884%EF%BC%89pycharm%E4%B8%AD%E6%9F%A5%E7%9C%8B%E5%B7%A5%E5%85%B7">（4）pycharm中查看工具</h4> 
+         <p>配置完以上三个工具之后，可以在pycharm的Tools-External Tools中查看到以下三个工具：</p> 
+         <p><img alt="" height="414" src="https://i-blog.csdnimg.cn/blog_migrate/1b8dfde6a07837fabc069ff18365d05b.png" width="774"></p> 
+         <p>至此，PYQT的环境配置就完成啦~</p> 
+         <hr> 
+         <h3 id="7.2%20%E7%95%8C%E9%9D%A2%E6%98%BE%E7%A4%BA"><span style="color:#0d0016;"><strong>7.2 界面显示</strong></span></h3> 
+         <p><strong>（1）图片/视频检测</strong></p> 
+         <p class="img-center"><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/f16255f5d8fcfb13330e8c76a3a8daec.png"></p> 
+         <p><strong>（2）摄像头检测</strong></p> 
+         <p class="img-center"><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/12707a101b861d6485ab3062bdc1f4b9.png"></p> 
+         <p>（PYQT的页面制作教程以后有空会单独出的）&nbsp;&nbsp;</p> 
+         <hr> 
+         <h2 id="%E6%9C%80%E5%90%8E%E4%B8%80%E4%BA%9B%E7%A2%8E%E7%A2%8E%E5%BF%B5%EF%BC%9A"><strong>最后一些碎碎念：</strong></h2> 
+         <p>好啦~至此我们YOLOv5的入门实践系列就结束了~</p> 
+         <p>其实火灾系统检测这个项目是寒假开始做的，那时候我还不知道啥是YOLO，直接从网上扒来开源项目就开始跑了，甚至数据集都是人家现成划分好的。</p> 
+         <p>后来从二月中旬开始从头读YOLO论文，了解了个大概算法过程，三月份开始做源码详解，自认为把每个文件都熟悉了，当时啥都懂了但很快又忘了，知识也只是短暂又浅显地划过大脑，我很清楚实际上我还是啥也不会。</p> 
+         <p>这周开启了入门实践项目，从配置环境开始，自己标注数据集，划分数据集，训练模型，检测和验证模型等等。真的是从零开始一步一步地进行，终于自己独立完成了这个过程，也解决了很多当时并没理解的问题，有了新的认识，前期的知识也串在了一起，所以亲手实践真的很重要！（呜呜，我真的太棒了！）</p> 
+         <p>哈哈，我的YOLO学习也算入门了，接下来要进行更深入的研究了！一起加油吧！&nbsp;</p> 
+         <hr> 
+         <p style="text-align:center;"><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/06053374a2c9b14f7b4f5d530f1dce4f.gif"></p> 
+         <hr> 
+        </div> 
+       </div> 
+      </article>  
+     </div> 
+     <div class="directory-boxshadow-dialog" style="display:none;"> 
+      <div class="directory-boxshadow-dialog-box"> 
+      </div> 
+      <div class="vip-limited-time-offer-box-new" id="vip-limited-time-offer-box-new"> 
+       <img class="limited-img limited-img-new" src="https://csdnimg.cn/release/blogv2/dist/pc/img/vip-limited-close-newWhite.png"> 
+       <div class="vip-limited-time-top">
+         确定要放弃本次机会？ 
+       </div> 
+       <span class="vip-limited-time-text">福利倒计时</span> 
+       <div class="limited-time-box-new"> 
+        <span class="time-hour"></span> 
+        <i>:</i> 
+        <span class="time-minite"></span> 
+        <i>:</i> 
+        <span class="time-second"></span> 
+       </div> 
+       <div class="limited-time-vip-box"> 
+        <p> <img class="coupon-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/vip-limited-close-roup.png"> <span class="def">立减 ¥</span> <span class="active limited-num"></span> </p> 
+        <span class="">普通VIP年卡可用</span> 
+       </div> 
+       <a class="limited-time-btn-new" href="https://mall.csdn.net/vip" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.9621&quot;}" data-report-query="spm=1001.2101.3001.9621">立即使用</a> 
+      </div> 
+     </div> 
+     <div class="more-toolbox-new more-toolbar" id="toolBarBox"> 
+      <div class="left-toolbox"> 
+       <div class="toolbox-left"> 
+        <div class="profile-box"> 
+         <a class="profile-href" target="_blank" href="https://jrs0511.blog.csdn.net"><img class="profile-img" src="https://profile-avatar.csdnimg.cn/da983c398fca4f14a19ea48d137f6ca3_weixin_43334693.jpg!1"> <span class="profile-name"> 路人贾'ω' </span> </a> 
+        </div> 
+        <div class="profile-attend"> 
+         <a class="tool-attend tool-bt-button tool-unbt-attend" href="javascript:;" data-report-view="{&quot;mod&quot;:&quot;1592215036_002&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4232&quot;,&quot;extend1&quot;:&quot;已关注&quot;}">已关注</a> 
+         <a class="tool-item-follow active-animation" style="display:none;">关注</a> 
+        </div> 
+       </div> 
+       <div class="toolbox-middle"> 
+        <ul class="toolbox-list"> 
+         <li class="tool-item tool-item-size tool-active is-like" id="is-like"> <a class="tool-item-href"> <img style="display:none;" id="is-like-imgactive-animation-like" class="animation-dom active-animation" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarThumbUpactive.png" alt=""> <img class="isactive" style="display:none" id="is-like-imgactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/like-active.png" alt=""> <img class="isdefault" style="display:block" id="is-like-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/like.png" alt=""> <span id="spanCount" class="count "> 39 </span> </a> 
+          <div class="tool-hover-tip">
+           <span class="text space">点赞</span>
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active is-unlike" id="is-unlike"> <a class="tool-item-href"> <img class="isactive" style="margin-right:0px;display:none" id="is-unlike-imgactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/unlike-active.png" alt=""> <img class="isdefault" style="margin-right:0px;display:block" id="is-unlike-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/unlike.png" alt=""> <span id="unlikeCount" class="count "></span> </a> 
+          <div class="tool-hover-tip">
+           <span class="text space">踩</span>
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active is-collection "> <a class="tool-item-href" href="javascript:;" data-report-click="{&quot;mod&quot;:&quot;popu_824&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4130&quot;,&quot;ab&quot;:&quot;new&quot;}"> <img style="display:none" id="is-collection-img-collection" class="animation-dom active-animation" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/collect-active.png" alt=""> <img class="isdefault" id="is-collection-img" style="display:block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/collect.png" alt=""> <img class="isactive" id="is-collection-imgactive" style="display:none" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newCollectActive.png" alt=""> <span class="count get-collection " data-num="98" id="get-collection"> 98 </span> </a> 
+          <div class="tool-hover-tip collect"> 
+           <div class="collect-operate-box"> 
+            <span class="collect-text" id="is-collection"> 收藏 </span> 
+           </div> 
+          </div> 
+          <div class="tool-active-list"> 
+           <div class="text">
+             觉得还不错? 
+            <span class="collect-text" id="tool-active-list-collection"> 一键收藏 </span> 
+            <img id="tool-active-list-close" src="https://csdnimg.cn/release/blogv2/dist/pc/img/collectionCloseWhite.png" alt=""> 
+           </div> 
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active tool-item-comment"> 
+          <div class="guide-rr-first"> 
+           <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/guideRedReward01.png" alt=""> 
+           <button class="btn-guide-known">知道了</button> 
+          </div> <a class="tool-item-href go-side-comment" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.7009&quot;}"> <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/comment.png" alt=""> <span class="count"> 55 </span> </a> 
+          <div class="tool-hover-tip">
+           <span class="text space">评论</span>
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active tool-QRcode" data-type="article" id="tool-share"> <a class="tool-item-href" href="javascript:;" data-report-view="{&quot;spm&quot;:&quot;3001.4129&quot;,&quot;extra&quot;:{&quot;type&quot;:&quot;blogdetail&quot;}}"> <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/share.png" alt=""> <span class="count">分享</span> </a> 
+          <div class="QRcode" id="tool-QRcode"> 
+           <div class="share-bg-box"> 
+            <div class="share-content"> 
+             <a id="copyPosterUrl" data-type="link" class="btn-share">复制链接</a> 
+            </div> 
+            <div class="share-content"> 
+             <a class="btn-share" data-type="qq">分享到 QQ</a> 
+            </div> 
+            <div class="share-content"> 
+             <a class="btn-share" data-type="weibo">分享到新浪微博</a> 
+            </div> 
+            <div class="share-code"> 
+             <div class="share-code-box" id="shareCode"></div> 
+             <div class="share-code-text"> 
+              <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/share/icon-wechat.png" alt="">扫一扫 
+             </div> 
+            </div> 
+           </div> 
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active tool-item-reward"> <a class="tool-item-href" href="javascript:;" data-report-click="{&quot;mod&quot;:&quot;popu_830&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4237&quot;,&quot;dest&quot;:&quot;&quot;,&quot;ab&quot;:&quot;new&quot;}"> <img class="isdefault reward-bt" id="rewardBtNew" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/reward.png" alt="打赏"> <span class="count">打赏</span> </a> 
+          <div class="tool-hover-tip">
+           <span class="text space">打赏</span>
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active is-more" id="is-more"> <a class="tool-item-href"> <img class="isdefault" style="margin-right:0px;display:block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/more.png" alt=""> <span class="count"></span> </a> 
+          <div class="more-opt-box"> 
+           <div class="mini-box"> 
+            <a class="tool-item-href" id="rewardBtNewHide" data-report-click="{&quot;spm&quot;:&quot;3001.4237&quot;,&quot;extra&quot;:&quot;{\&quot;type\&quot;:\&quot;hide\&quot;}&quot;}"> <img class="isdefault reward-bt" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/reward.png" alt="打赏"> <span class="count">打赏</span> </a> 
+            <a class="tool-item-href" id="toolReportBtnHide"> <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/report.png" alt=""> <span class="count">举报</span> </a> 
+           </div> 
+           <div class="normal-box"> 
+            <a class="tool-item-href" id="toolReportBtnHideNormal"> <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/report.png" alt=""> <span class="count">举报</span> </a> 
+           </div> 
+          </div> </li> 
+        </ul> 
+       </div> 
+       <div class="toolbox-right"> 
+        <div class="tool-directory"> 
+         <a class="bt-columnlist-show" data-id="12233704" data-free="false" data-description="全网最详细的手把手带你从0开始学习YOLOv5教程。文章平均质量分97！专栏内含网络结构解读+源代码逐行解析+入门实践+各种最新改进算法等等。持续更新，欢迎订阅！" data-subscribe="true" data-title="YOLOv5入门＋实践＋改进" data-img="https://i-blog.csdnimg.cn/blog_column_migrate/2d39764ecc8e8d41d72673a523e05b4b.png?x-oss-process=image/resize,m_fixed,h_224,w_224" data-url="https://blog.csdn.net/weixin_43334693/category_12233704.html" data-sum="47" data-people="1123" data-price="99.90" data-hotrank="76" data-status="true" data-oldprice="299.90" data-join="true" data-studyvip="true" data-studysubscribe="true" data-report-view="{&quot;spm&quot;:&quot;1001.2101.3001.6334&quot;,&quot;extend1&quot;:&quot;专栏目录&quot;}" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.6334&quot;,&quot;extend1&quot;:&quot;专栏目录&quot;}">专栏目录</a> 
+        </div> 
+        <div class="tool-column"> 
+         <a class="tool-bt-button tool-unbt-subscribe" href="javascript:;" data-report-view="{&quot;mod&quot;:&quot;1592215036_001&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4405&quot;,&quot;extend1&quot;:&quot;已订阅&quot;}" data-report-click="{&quot;mod&quot;:&quot;1592215036_001&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4405&quot;,&quot;extend1&quot;:&quot;已订阅&quot;}">已订阅</a> 
+        </div> 
+       </div> 
+      </div> 
+     </div>   
+     <a id="commentBox" name="commentBox"></a> 
+     <div id="pcCommentBox" class="comment-box comment-box-new2 login-comment-box-new" style="display:none"> 
+      <div class="has-comment" style="display:block"> 
+       <div class="one-line-box"> 
+        <div class="has-comment-tit go-side-comment"> 
+         <span class="count">55</span>&nbsp;条评论 
+        </div> 
+        <div class="has-comment-con comment-operate-item"></div> 
+        <a class="has-comment-bt-right go-side-comment focus">写评论</a> 
+       </div> 
+      </div> 
+     </div> 
+     <div class="first-recommend-box recommend-box recommend-highlight-default"> 
+      <div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/m0_75166003/article/details/131850175" data-report-view="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6661.1&quot;,&quot;mod&quot;:&quot;popu_871&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant_t0.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-131850175-blog-130044342.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743597301024_14546\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743597301024_14546&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/m0_75166003/article/details/131850175&quot;}"> 
+       <div class="content-box"> 
+        <div class="content-blog display-flex"> 
+         <div class="title-box"> 
+          <span class="type"> <img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt=""> <span class="tip">博客</span> </span> 
+          <a href="https://blog.csdn.net/m0_75166003/article/details/131850175" class="tit" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6661.1&quot;,&quot;mod&quot;:&quot;popu_871&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant_t0.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-131850175-blog-130044342.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743597301024_14546\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743597301024_14546&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/m0_75166003/article/details/131850175&quot;}" data-report-query="spm=1001.2101.3001.6661.1&amp;utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-131850175-blog-130044342.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-131850175-blog-130044342.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+           <div class="left ellipsis-online ellipsis-online-1">
+            如何从0开始
+            <em>训练</em>自己的数据集（
+            <em>YOLOv5</em>）（一）
+           </div> </a> 
+         </div> 
+         <div class="info-box display-flex"> 
+          <div class="info"> 
+           <a href="https://blog.csdn.net/m0_75166003" target="_blank"><span class="blog-title">m0_75166003的博客</span></a> 
+          </div> 
+          <div class="info display-flex"> 
+           <span class="info-block time">07-21</span> 
+           <span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> 359 </span> 
+          </div> 
+         </div> 
+        </div> 
+        <div class="desc-box"> 
+         <a href="https://blog.csdn.net/m0_75166003/article/details/131850175" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6661.1&quot;,&quot;mod&quot;:&quot;popu_871&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant_t0.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-131850175-blog-130044342.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743597301024_14546\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743597301024_14546&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/m0_75166003/article/details/131850175&quot;}" data-report-query="spm=1001.2101.3001.6661.1&amp;utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-131850175-blog-130044342.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-131850175-blog-130044342.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+          <div class="desc ellipsis-online ellipsis-online-1">
+           我使用
+           <em>YOLOv5</em>做西红柿的识别，虽然权重很低，但是我只用了40张照片，以后调大自己的
+           <em>训练</em>量就可以了，我只是测试一下
+           <em>YOLO</em>是否可以跑通这个步骤，以后再根据实际的情况去跑不同的
+           <em>模型</em>即可。
+          </div> </a> 
+        </div> 
+       </div> 
+      </div> 
+     </div>  
+     <div class="second-recommend-box recommend-box recommend-highlight-default"> 
+      <div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/yourgreatfather/article/details/85248107" data-report-view="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.1&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-85248107-blog-130044342.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743597301024_14546\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743597301024_14546&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/yourgreatfather/article/details/85248107&quot;}"> 
+       <div class="content-box"> 
+        <div class="content-blog display-flex"> 
+         <div class="title-box"> 
+          <span class="type"> <img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt=""> <span class="tip">博客</span> </span> 
+          <a href="https://blog.csdn.net/yourgreatfather/article/details/85248107" class="tit" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.1&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-85248107-blog-130044342.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743597301024_14546\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743597301024_14546&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/yourgreatfather/article/details/85248107&quot;}" data-report-query="spm=1001.2101.3001.6650.1&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-85248107-blog-130044342.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-85248107-blog-130044342.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+           <div class="left ellipsis-online ellipsis-online-1">
+            【学习笔记】
+            <em>pyQt5</em>学习笔记(6）——Google object detection API
+            <em>训练</em>&amp;识别用软件更新
+           </div> </a> 
+         </div> 
+         <div class="info-box display-flex"> 
+          <div class="info"> 
+           <a href="https://blog.csdn.net/yourgreatfather" target="_blank"><span class="blog-title">野生C++程序员</span></a> 
+          </div> 
+          <div class="info display-flex"> 
+           <span class="info-block time">12-25</span> 
+           <span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> 559 </span> 
+          </div> 
+         </div> 
+        </div> 
+        <div class="desc-box"> 
+         <a href="https://blog.csdn.net/yourgreatfather/article/details/85248107" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.1&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-85248107-blog-130044342.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743597301024_14546\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743597301024_14546&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/yourgreatfather/article/details/85248107&quot;}" data-report-query="spm=1001.2101.3001.6650.1&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-85248107-blog-130044342.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-85248107-blog-130044342.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+          <div class="desc ellipsis-online ellipsis-online-1">
+           对
+           <em>训练</em>软件和识别软件均再一次进行更新。 针对
+           <em>训练</em>用软件，V1.0版本是通过下拉框
+           <em>选择</em>标注物体的标签，而下拉框中是我预定义的a~f 6个标签。因此存在的问题就是标签不能客制化，且若标记超过6类物体标签数量不够。 针对这个问题进行了更新，现在允许用户自己输入标签名称，标签会保存在下拉菜单中，妈妈再也不担心我瞎××标or标签不够使的问题，~\(≧▽≦)/~。同时上个版本中存在不能指定迭代次数batch...
+          </div> </a> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <div class="recommend-box insert-baidu-box  recommend-highlight-default"> 
+      <div class="recommend-item-box no-index" style="display:none"></div> 
+      <div class="recommend-item-box type_blog clearfix" data-url="https://devpress.csdn.net/v1/article/detail/130070964" data-report-view="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.2&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~activity-2-130070964-blog-130044342.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743597301024_14546\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743597301024_14546&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;2&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~activity&quot;,&quot;dest&quot;:&quot;https://devpress.csdn.net/v1/article/detail/130070964&quot;}"> 
+       <div class="content-box"> 
+        <div class="content-blog display-flex"> 
+         <div class="title-box"> 
+          <span class="type"> <img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt=""> <span class="tip">博客</span> </span> 
+          <a href="https://devpress.csdn.net/v1/article/detail/130070964" class="tit" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.2&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~activity-2-130070964-blog-130044342.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743597301024_14546\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743597301024_14546&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;2&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~activity&quot;,&quot;dest&quot;:&quot;https://devpress.csdn.net/v1/article/detail/130070964&quot;}" data-report-query="spm=1001.2101.3001.6650.2&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Eactivity-2-130070964-blog-130044342.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Eactivity-2-130070964-blog-130044342.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+           <div class="left ellipsis-online ellipsis-online-1">
+            <em>yolo</em>的新手
+            <em>教</em>学
+           </div> 
+           <div class="tag">
+            最新发布
+           </div> </a> 
+         </div> 
+         <div class="info-box display-flex"> 
+          <div class="info"> 
+           <a href="https://blog.csdn.net/liaoyuan1130" target="_blank"><span class="blog-title">liaoyuan1130的博客</span></a> 
+          </div> 
+          <div class="info display-flex"> 
+           <span class="info-block time">04-10</span> 
+           <span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> 370 </span> 
+          </div> 
+         </div> 
+        </div> 
+        <div class="desc-box"> 
+         <a href="https://devpress.csdn.net/v1/article/detail/130070964" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.2&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~activity-2-130070964-blog-130044342.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743597301024_14546\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743597301024_14546&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;2&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~activity&quot;,&quot;dest&quot;:&quot;https://devpress.csdn.net/v1/article/detail/130070964&quot;}" data-report-query="spm=1001.2101.3001.6650.2&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Eactivity-2-130070964-blog-130044342.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Eactivity-2-130070964-blog-130044342.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+          <div class="desc ellipsis-online ellipsis-online-1">
+           在VOCdevkit目录下生成images和labels文件夹，文件夹下分别生成了train文件夹和val文件夹，里面分别保存着
+           <em>训练</em>集的照片和txt格式的标签，还有验证集的照片和txt格式的标签。网上获取一些
+           <em>目标检测</em>的数据集资源标签的格式都是VOC(xml格式)的，而
+           <em>yolov5</em>
+           <em>训练</em>所需要的文件格式是
+           <em>yolo</em>(txt格式)的，这里就需要对xml格式的标签文件转换为txt文件。至此，xml格式的标签文件转换为txt格式的标签文件并划分为
+           <em>训练</em>集和测试集就讲完了。运行代码，就会出现如下文件夹。
+          </div> </a> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <div class="blog-footer-bottom" style="margin-top:10px;"></div>   
+    </main> 
+    <aside class="blog_container_aside"> 
+     <div id="asideProfile" class="aside-box active"> 
+      <div class="profile-intro d-flex"> 
+       <div class="avatar-box d-flex justify-content-center flex-column"> 
+        <a href="https://jrs0511.blog.csdn.net" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_379&quot;,&quot;spm&quot;:&quot;3001.4121&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net&quot;,&quot;ab&quot;:&quot;new&quot;}"> <img src="https://profile-avatar.csdnimg.cn/da983c398fca4f14a19ea48d137f6ca3_weixin_43334693.jpg!1" class="avatar_pic"> </a>
+        <a href="https://jrs0511.blog.csdn.net" data-report-click="{&quot;spm&quot;:&quot;3001.9180&quot;}" target="_blank"><img class="identity" src="https://csdnimg.cn/release/blogv2/dist/mobile/img/vipIcon.png" alt=""></a>  
+       </div> 
+       <div class="user-info d-flex flex-column profile-intro-name-box"> 
+        <div class="profile-intro-name-boxTop"> 
+         <a href="https://jrs0511.blog.csdn.net" target="_blank" class="" id="uid" title="路人贾'ω'" data-report-click="{&quot;mod&quot;:&quot;popu_379&quot;,&quot;spm&quot;:&quot;3001.4122&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net&quot;,&quot;ab&quot;:&quot;new&quot;}"> <span class="name" username="weixin_43334693">路人贾'ω'</span> </a> 
+        </div> 
+        <div class="profile-intro-name-boxFooter-new"> 
+         <p class="profile-intro-name-leve"> <span> 博客等级 </span> <img class="level" src="https://csdnimg.cn/identity/blog7.png"> </p> 
+         <span class="profile-intro-name-years" title="已加入 CSDN 7年">码龄7年</span> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="profile-intro-Identity-information"> 
+       <p class="profile-information-box"> <img class="information-img" data-report-click="{&quot;spm&quot;:&quot;3001.4296&quot;}" src="https://img-home.csdnimg.cn/images/20210412060958.png" alt=""> <span>人工智能领域优质创作者</span> </p> 
+      </div> 
+      <div class="profile-intro-rank-information"> 
+       <dl> 
+        <a href="https://jrs0511.blog.csdn.net" data-report-click="{&quot;mod&quot;:&quot;1598321000_001&quot;,&quot;spm&quot;:&quot;3001.4310&quot;}" data-report-query="t=1"> 
+         <dd>
+          <span>120</span>
+         </dd> 
+         <dt>
+          原创
+         </dt> </a> 
+       </dl> 
+       <dl title="9103"> 
+        <dd>
+         9103
+        </dd> 
+        <dt>
+         点赞
+        </dt> 
+       </dl> 
+       <dl title="36278"> 
+        <dd>
+         3万+
+        </dd> 
+        <dt>
+         收藏
+        </dt> 
+       </dl> 
+       <dl id="fanBox" title="158544"> 
+        <dd>
+         <span id="fan">15万+</span>
+        </dd> 
+        <dt>
+         粉丝
+        </dt> 
+       </dl> 
+      </div> 
+      <div class="profile-intro-name-boxOpration"> 
+       <div class="opt-letter-watch-box"> 
+        <a class="attented personal-watch bt-button" id="btnAttent">已关注</a> 
+       </div> 
+       <div class="opt-letter-watch-box"> 
+        <a rel="noopener" class="bt-button personal-letter" href="https://im.csdn.net/chat/weixin_43334693" target="_blank">私信</a> 
+       </div> 
+      </div> 
+     </div> 
+     <div class="swiper-slide-box-remuneration"> 
+      <a data-report-click="{&quot;spm&quot;:&quot;3001.9728&quot;,&quot;extra&quot;:{&quot;index&quot;:&quot;0&quot;}}" data-report-view="{&quot;spm&quot;:&quot;3001.9728&quot;,&quot;extra&quot;:{&quot;index&quot;:&quot;0&quot;}}" href="https://ai.csdn.net/" target="_blank"> <img src="https://i-operation.csdnimg.cn/images/2dd892a9769b4cce9c086db94eab887f.png" alt=""> </a> 
+     </div> 
+     <div id="asideHotArticle" class="aside-box"> 
+      <h3 class="aside-title">热门文章</h3> 
+      <div class="aside-content"> 
+       <ul class="hotArticle-list"> 
+        <li> <a href="https://jrs0511.blog.csdn.net/article/details/129312409" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;3001.4139&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/129312409&quot;,&quot;ab&quot;:&quot;new&quot;}"> 【YOLO系列】YOLOv5超详细解读（源码详解＋入门实践＋改进） <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">191050</span> </a> </li> 
+        <li> <a href="https://jrs0511.blog.csdn.net/article/details/130189238" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;3001.4139&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/130189238&quot;,&quot;ab&quot;:&quot;new&quot;}"> 【Transformer系列（2）】注意力机制、自注意力机制、多头注意力机制、通道注意力机制、空间注意力机制超详细讲解 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">132906</span> </a> </li> 
+        <li> <a href="https://jrs0511.blog.csdn.net/article/details/129356033" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;3001.4139&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/129356033&quot;,&quot;ab&quot;:&quot;new&quot;}"> YOLOv5源码逐行超详细注释与解读（1）——项目目录结构解析 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">84049</span> </a> </li> 
+        <li> <a href="https://jrs0511.blog.csdn.net/article/details/136383022" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;3001.4139&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/136383022&quot;,&quot;ab&quot;:&quot;new&quot;}"> 【YOLO系列】YOLOv9论文超详细解读（翻译 ＋学习笔记） <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">53110</span> </a> </li> 
+        <li> <a href="https://jrs0511.blog.csdn.net/article/details/129011644" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;3001.4139&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/129011644&quot;,&quot;ab&quot;:&quot;new&quot;}"> 【YOLO系列】YOLOv1论文超详细解读（翻译 ＋学习笔记） <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">47685</span> </a> </li> 
+       </ul> 
+      </div> 
+     </div> 
+     <div id="asideCategory" class="aside-box flexible-box"> 
+      <h3 class="aside-title">分类专栏</h3> 
+      <div class="aside-content"> 
+       <ul> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12233704.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12233704.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/2d39764ecc8e8d41d72673a523e05b4b.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> YOLOv5入门＋实践＋改进 </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">47篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12534739.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12534739.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/9c2589275bee6d84a2f42be4f7fdd306.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 低照度图像增强 </span> </a> <span class="special-column-num">14篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12202773.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12202773.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/31534c7b408a58aa373bf5f58c00bf44.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 目标检测论文 </span> </a> <span class="special-column-num">18篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12127342.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12127342.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/4cc3e83223e8d0023a6303cdd4658cce.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 图像分类经典论文 </span> </a> <span class="special-column-num">9篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12462707.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12462707.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756930.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 论文必备 </span> </a> <span class="special-column-num">4篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12288776.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12288776.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/892c3e48b8251069b7506e1e68c5355a.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> transformer </span> </a> <span class="special-column-num">9篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12186888.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12186888.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/8cc13d2259e721c3b070257331ba2fcf.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> Pytorch </span> </a> <span class="special-column-num">9篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12151162.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12151162.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/b9346faac8287efffed28c8b2d898da7.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 论文代码复现 </span> </a> <span class="special-column-num">6篇</span> </li> 
+       </ul> 
+      </div> 
+      <p class="text-center"> <a class="flexible-btn" data-fbox="aside-archive"><img class="look-more" src="https://csdnimg.cn/release/blogv2/dist/pc/img/arrowDownWhite.png" alt=""></a> </p> 
+     </div> 
+     <div id="asideNewComments" class="aside-box"> 
+      <h3 class="aside-title">最新评论</h3> 
+      <div class="aside-content"> 
+       <ul class="newcomment-list"> 
+        <li> <a class="title text-truncate" target="_blank" href="https://jrs0511.blog.csdn.net/article/details/129349094#comments_36790608" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/129349094#comments_36790608&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/129349094#comments_36790608&quot;,&quot;ab&quot;:&quot;new&quot;}">YOLOv5源码逐行超详细注释与解读（2）——推理部分detect.py</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/qq_58411487" class="user-name" target="_blank">qq_58411487: </a> <span class="code-comments">下个插件就行了</span> </p> </li> 
+        <li> <a class="title text-truncate" target="_blank" href="https://jrs0511.blog.csdn.net/article/details/130208816#comments_36778242" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/130208816#comments_36778242&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/130208816#comments_36778242&quot;,&quot;ab&quot;:&quot;new&quot;}">【Transformer系列（3）】 《Attention Is All You Need》论文超详细解读（翻译＋精读）</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/m0_64252296" class="user-name" target="_blank">荷西、: </a> <span class="code-comments">这篇论文从哪找</span> </p> </li> 
+        <li> <a class="title text-truncate" target="_blank" href="https://jrs0511.blog.csdn.net/article/details/133516890#comments_36767793" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/133516890#comments_36767793&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/133516890#comments_36767793&quot;,&quot;ab&quot;:&quot;new&quot;}">[论文必备]最强科研绘图分析工具Origin（1）——安装教程</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/X224513" class="user-name" target="_blank">X224513: </a> <span class="code-comments">求安装包链接，谢谢！</span> </p> </li> 
+        <li> <a class="title text-truncate" target="_blank" href="https://jrs0511.blog.csdn.net/article/details/133516890#comments_36722559" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/133516890#comments_36722559&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/133516890#comments_36722559&quot;,&quot;ab&quot;:&quot;new&quot;}">[论文必备]最强科研绘图分析工具Origin（1）——安装教程</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/ant_c2" class="user-name" target="_blank">ant_c2: </a> <span class="code-comments">求安装包链接，谢谢！</span> </p> </li> 
+        <li> <a class="title text-truncate" target="_blank" href="https://jrs0511.blog.csdn.net/article/details/133516890#comments_36710842" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/133516890#comments_36710842&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/133516890#comments_36710842&quot;,&quot;ab&quot;:&quot;new&quot;}">[论文必备]最强科研绘图分析工具Origin（1）——安装教程</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/sdtzlxx" class="user-name" target="_blank">sdtzlxx: </a> <span class="code-comments">求安装包链接！！！！！谢谢大佬！</span> </p> </li> 
+       </ul> 
+      </div> 
+     </div> 
+     <div id="asideHotArticle" class="aside-box"> 
+      <h3 class="aside-title">大家在看</h3> 
+      <div class="aside-content"> 
+       <ul class="hotArticle-list"> 
+        <li> <a href="https://blog.csdn.net/selin19860818/article/details/146959360" target="_blank" data-report-click="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/selin19860818/article/details/146959360&quot;,&quot;strategy&quot;:&quot;202_1052723-2643600_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/selin19860818/article/details/146959360&quot;,&quot;strategy&quot;:&quot;202_1052723-2643600_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}"> 高速电路中的PCB及其完整性设计 </a> </li> 
+        <li> <a href="https://blog.csdn.net/2401_85824583/article/details/146770281" target="_blank" data-report-click="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2401_85824583/article/details/146770281&quot;,&quot;strategy&quot;:&quot;202_1052723-2643740_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2401_85824583/article/details/146770281&quot;,&quot;strategy&quot;:&quot;202_1052723-2643740_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}"> PTA 7-7 递归计算Ackermenn函数 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">176</span> </a> </li> 
+        <li> <a href="https://blog.csdn.net/aa2528877987/article/details/146768215" target="_blank" data-report-click="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/aa2528877987/article/details/146768215&quot;,&quot;strategy&quot;:&quot;202_1052723-2643756_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/aa2528877987/article/details/146768215&quot;,&quot;strategy&quot;:&quot;202_1052723-2643756_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}"> 【愚公系列】《高效使用DeepSeek》047-保险业务辅助 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">408</span> </a> </li> 
+        <li> <a href="https://blog.csdn.net/XHRK1/article/details/146959944" target="_blank" data-report-click="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/XHRK1/article/details/146959944&quot;,&quot;strategy&quot;:&quot;202_1052723-2643679_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/XHRK1/article/details/146959944&quot;,&quot;strategy&quot;:&quot;202_1052723-2643679_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}"> ContentProvider+ContentResolver+UriMatcher+SQLite的用法示例 </a> </li> 
+        <li> <a href="https://blog.csdn.net/2401_84543432/article/details/146957918" target="_blank" data-report-click="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2401_84543432/article/details/146957918&quot;,&quot;strategy&quot;:&quot;202_1052723-2643707_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2401_84543432/article/details/146957918&quot;,&quot;strategy&quot;:&quot;202_1052723-2643707_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}"> 动态规划——爬梯子 </a> </li> 
+       </ul> 
+      </div> 
+     </div> 
+     <div id="asideArchive" class="aside-box" style="display:block!important; width:300px;"> 
+      <h3 class="aside-title">最新文章</h3> 
+      <div class="aside-content"> 
+       <ul class="inf_list clearfix"> 
+        <li class="clearfix"> <a href="https://jrs0511.blog.csdn.net/article/details/140203276" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;spm&quot;:&quot;3001.4136&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/140203276&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/140203276&quot;,&quot;ab&quot;:&quot;new&quot;}">【低照度图像增强系列（8）】URetinex-Net算法详解与代码实现（2022|CVPR）</a> </li> 
+        <li class="clearfix"> <a href="https://jrs0511.blog.csdn.net/article/details/140229971" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;spm&quot;:&quot;3001.4136&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/140229971&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/140229971&quot;,&quot;ab&quot;:&quot;new&quot;}">CVPR|《URetinex-Net: Retinex-based Deep Unfolding Network for Low-light Image Enhance》论文超详细解读（翻译＋精读）</a> </li> 
+        <li class="clearfix"> <a href="https://jrs0511.blog.csdn.net/article/details/139832512" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;spm&quot;:&quot;3001.4136&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/139832512&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/139832512&quot;,&quot;ab&quot;:&quot;new&quot;}">YOLOv5改进系列（32）——替换主干网络之PKINet（CVPR2024 | 面向遥感旋转框主干，有效捕获不同尺度上的密集纹理特征）</a> </li> 
+       </ul> 
+       <div class="archive-bar"></div> 
+       <div class="archive-box"> 
+        <div class="archive-list-item">
+         <a href="https://jrs0511.blog.csdn.net?type=blog&amp;year=2024&amp;month=07" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net?type=blog&amp;year=2024&amp;month=07&quot;}"><span class="year">2024年</span><span class="num">23篇</span></a>
+        </div> 
+        <div class="archive-list-item">
+         <a href="https://jrs0511.blog.csdn.net?type=blog&amp;year=2023&amp;month=12" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net?type=blog&amp;year=2023&amp;month=12&quot;}"><span class="year">2023年</span><span class="num">87篇</span></a>
+        </div> 
+        <div class="archive-list-item">
+         <a href="https://jrs0511.blog.csdn.net?type=blog&amp;year=2022&amp;month=12" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net?type=blog&amp;year=2022&amp;month=12&quot;}"><span class="year">2022年</span><span class="num">10篇</span></a>
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 详情页显示目录 --> 
+     <!--文章目录--> 
+     <div id="asidedirectory" class="aside-box"> 
+      <div class="groupfile" id="directory"> 
+       <h3 class="aside-title">目录</h3> 
+       <div class="align-items-stretch group_item"> 
+        <div class="pos-box"> 
+         <div class="scroll-box"> 
+          <div class="toc-box"></div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </aside>    
+   </div> 
+   <div class="recommend-right align-items-stretch clearfix" id="rightAside" data-type="recommend"> 
+    <aside class="recommend-right_aside"> 
+     <div class="rightside-fixed-hide"> 
+     </div> 
+     <div id="recommend-right"> 
+      <div class="flex-column aside-box groupfile" id="groupfile"> 
+       <div class="groupfile-div"> 
+        <h3 class="aside-title">目录</h3> 
+        <div class="align-items-stretch group_item"> 
+         <div class="pos-box"> 
+          <div class="scroll-box"> 
+           <div class="toc-box"></div> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="aside-box kind_person d-flex flex-column"> 
+       <h3 class="aside-title">分类专栏</h3> 
+       <div class="align-items-stretch kindof_item" id="kind_person_column"> 
+        <div class="aside-content"> 
+         <ul> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12233704.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12233704.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/2d39764ecc8e8d41d72673a523e05b4b.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> YOLOv5入门＋实践＋改进 </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">47篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12534739.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12534739.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/9c2589275bee6d84a2f42be4f7fdd306.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 低照度图像增强 </span> </a> <span class="special-column-num">14篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12202773.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12202773.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/31534c7b408a58aa373bf5f58c00bf44.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 目标检测论文 </span> </a> <span class="special-column-num">18篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12127342.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12127342.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/4cc3e83223e8d0023a6303cdd4658cce.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 图像分类经典论文 </span> </a> <span class="special-column-num">9篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12462707.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12462707.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756930.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 论文必备 </span> </a> <span class="special-column-num">4篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12288776.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12288776.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/892c3e48b8251069b7506e1e68c5355a.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> transformer </span> </a> <span class="special-column-num">9篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12186888.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12186888.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/8cc13d2259e721c3b070257331ba2fcf.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> Pytorch </span> </a> <span class="special-column-num">9篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12151162.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12151162.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/b9346faac8287efffed28c8b2d898da7.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 论文代码复现 </span> </a> <span class="special-column-num">6篇</span> </li> 
+         </ul> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </aside> 
+   </div> 
+   <div class="recommend-right1  align-items-stretch clearfix" id="rightAsideConcision" data-type="recommend"> 
+    <aside class="recommend-right_aside"> 
+     <div id="recommend-right-concision"> 
+      <div class="flex-column aside-box groupfile" id="groupfileConcision"> 
+       <div class="groupfile-div1"> 
+        <h3 class="aside-title">目录</h3> 
+        <div class="align-items-stretch group_item"> 
+         <div class="pos-box"> 
+          <div class="scroll-box"> 
+           <div class="toc-box"></div> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </aside> 
+   </div> 
+  </div> 
+  <div class="mask-dark"></div> 
+  <div class="skin-boxshadow"></div> 
+  <div class="directory-boxshadow"></div> 
+  <div class="comment-side-box-shadow comment-side-tit-close" id="commentSideBoxshadow"> 
+   <div class="comment-side-content"> 
+    <div class="comment-side-tit"> 
+     <div class="comment-side-tit-count">
+      评论&nbsp;
+      <span class="count">55</span>
+     </div> 
+     <img class="comment-side-tit-close" src="https://csdnimg.cn/release/blogv2/dist/pc/img/closeBt.png">
+    </div> 
+    <div id="pcCommentSideBox" class="comment-box comment-box-new2 " style="display:block"> 
+     <div class="comment-edit-box d-flex"> 
+      <div class="user-img"> 
+       <a href="https://blog.csdn.net/2401_84444578" target="_blank"> <img src="https://profile-avatar.csdnimg.cn/default.jpg!1"> </a> 
+      </div> 
+      <form id="commentform"> 
+       <textarea class="comment-content" name="comment_content" id="comment_content" placeholder="欢迎高质量的评论，低质的评论会被折叠" maxlength="1000"></textarea> 
+       <div class="comment-reward-box" style="background-image: url('https://img-home.csdnimg.cn/images/20230131025301.png');"> 
+        <a class="btn-remove-reward"></a> 
+        <div class="form-reward-box"> 
+         <div class="info">
+           成就一亿技术人! 
+         </div> 
+         <div class="price-info">
+           拼手气红包
+          <span class="price">6.0元</span> 
+         </div> 
+        </div> 
+       </div> 
+       <div class="comment-operate-box"> 
+        <div class="comment-operate-l"> 
+         <span id="tip_comment" class="tip">还能输入<em>1000</em>个字符</span> 
+        </div> 
+        <div class="comment-operate-c">
+          &nbsp; 
+        </div> 
+        <div class="comment-operate-r"> 
+         <div class="comment-operate-item comment-reward"> 
+          <img class="comment-operate-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentReward.png" alt="红包"> 
+          <span class="comment-operate-tip">添加红包</span> 
+         </div> 
+         <div class="comment-operate-item comment-emoticon"> 
+          <img class="comment-operate-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentEmotionIcon.png" alt="表情包"> 
+          <span class="comment-operate-tip">插入表情</span> 
+          <div class="comment-emoticon-box comment-operate-isshow"> 
+           <div class="comment-emoticon-img-box"></div> 
+          </div> 
+         </div> 
+         <div class="comment-operate-item comment-code"> 
+          <img class="comment-operate-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentCodeIcon.png" alt="表情包"> 
+          <span class="comment-operate-tip">代码片</span> 
+          <div class="comment-code-box comment-operate-isshow"> 
+           <ul id="commentCode"> 
+            <li><a data-code="html">HTML/XML</a></li> 
+            <li><a data-code="objc">objective-c</a></li> 
+            <li><a data-code="ruby">Ruby</a></li> 
+            <li><a data-code="php">PHP</a></li> 
+            <li><a data-code="csharp">C</a></li> 
+            <li><a data-code="cpp">C++</a></li> 
+            <li><a data-code="javascript">JavaScript</a></li> 
+            <li><a data-code="python">Python</a></li> 
+            <li><a data-code="java">Java</a></li> 
+            <li><a data-code="css">CSS</a></li> 
+            <li><a data-code="sql">SQL</a></li> 
+            <li><a data-code="plain">其它</a></li> 
+           </ul> 
+          </div> 
+         </div> 
+         <div class="comment-operate-item"> 
+          <input type="hidden" id="comment_replyId" name="comment_replyId"> 
+          <input type="hidden" id="article_id" name="article_id" value="130044342"> 
+          <input type="hidden" id="comment_userId" name="comment_userId" value=""> 
+          <input type="hidden" id="commentId" name="commentId" value=""> 
+          <a data-report-click="{&quot;mod&quot;:&quot;1582594662_003&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4227&quot;,&quot;ab&quot;:&quot;new&quot;}"> <input type="submit" class="btn-comment btn-comment-input" value="评论"> </a> 
+         </div> 
+        </div> 
+       </div> 
+      </form> 
+     </div> 
+     <div class="comment-list-container"> 
+      <div class="comment-list-box comment-operate-item"> 
+      </div> 
+      <div id="lookGoodComment" class="look-good-comment side-look-comment"> 
+       <a class="look-more-comment">查看更多评论<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowDownWhite.png" alt=""></a> 
+      </div> 
+      <div id="lookFlodComment" class="look-flod-comment"> 
+       <span class="count"></span>&nbsp;条评论被折叠&nbsp;
+       <a class="look-more-flodcomment">查看</a> 
+      </div> 
+      <div class="opt-box text-center"> 
+       <div class="btn btn-sm btn-link-blue" id="btnMoreComment"></div> 
+      </div> 
+     </div> 
+    </div> 
+    <div id="pcFlodCommentSideBox" class="pc-flodcomment-sidebox"> 
+     <div class="comment-fold-tit">
+      <span id="lookUnFlodComment" class="back"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowLeftWhite.png" alt=""></span>被折叠的&nbsp;
+      <span class="count"></span>&nbsp;条评论 
+      <a href="https://blogdev.blog.csdn.net/article/details/122245662" class="tip" target="_blank">为什么被折叠?</a> 
+      <a href="https://bbs.csdn.net/forums/FreeZone" class="park" target="_blank"> <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/iconPark.png">到【灌水乐园】发言</a> 
+     </div> 
+     <div class="comment-fold-content"></div> 
+     <div id="lookBadComment" class="look-bad-comment side-look-comment"> 
+      <a class="look-more-comment">查看更多评论<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowDownWhite.png" alt=""></a> 
+     </div> 
+    </div> 
+   </div> 
+   <div class="comment-rewarddialog-box"> 
+    <div class="form-box"> 
+     <div class="title-box">
+       添加红包 
+      <a class="btn-form-close"></a> 
+     </div> 
+     <form id="commentRewardForm"> 
+      <div class="ipt-box"> 
+       <label for="txtName">祝福语</label> 
+       <div class="ipt-btn-box"> 
+        <input type="text" name="name" id="txtName" autocomplete="off" maxlength="50"> 
+        <a class="btn-ipt btn-random"></a> 
+       </div> 
+       <p class="notice">请填写红包祝福语或标题</p> 
+      </div> 
+      <div class="ipt-box"> 
+       <label for="txtSendAmount">红包数量</label> 
+       <div class="ipt-txt-box"> 
+        <input type="text" name="sendAmount" maxlength="4" id="txtSendAmount" placeholder="请填写红包数量(最小10个)" autocomplete="off"> 
+        <span class="after-txt">个</span> 
+       </div> 
+       <p class="notice">红包个数最小为10个</p> 
+      </div> 
+      <div class="ipt-box"> 
+       <label for="txtMoney">红包总金额</label> 
+       <div class="ipt-txt-box error"> 
+        <input type="text" name="money" maxlength="5" id="txtMoney" placeholder="请填写总金额(最低5元)" autocomplete="off"> 
+        <span class="after-txt">元</span> 
+       </div> 
+       <p class="notice">红包金额最低5元</p> 
+      </div> 
+      <div class="balance-info-box"> 
+       <label>余额支付</label> 
+       <div class="balance-info">
+         当前余额
+        <span class="balance">3.43</span>元 
+        <a href="https://i.csdn.net/#/wallet/balance/recharge" class="link-charge" target="_blank">前往充值 &gt;</a> 
+       </div> 
+      </div> 
+      <div class="opt-box"> 
+       <div class="pay-info">
+         需支付：
+        <span class="price">10.00</span>元 
+       </div> 
+       <button type="button" class="ml-auto btn-cancel">取消</button> 
+       <button type="button" class="ml8 btn-submit" disabled="true">确定</button> 
+      </div> 
+     </form> 
+    </div> 
+   </div> 
+   <div class="rr-guide-box"> 
+    <div class="rr-first-box"> 
+     <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/guideRedReward02.png" alt=""> 
+     <button class="btn-guide-known next">下一步</button> 
+    </div> 
+    <div class="rr-second-box"> 
+     <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/guideRedReward03.png" alt=""> 
+     <button class="btn-guide-known known">知道了</button> 
+    </div> 
+   </div> 
+  </div> 
+  <div class="redEnvolope" id="redEnvolope"> 
+   <div class="env-box"> 
+    <div class="env-container"> 
+     <div class="pre-open" id="preOpen"> 
+      <div class="top"> 
+       <header> 
+        <img class="clearTpaErr" :src="redpacketAuthor.avatar" alt=""> 
+        <div class="author">
+         成就一亿技术人!
+        </div> 
+       </header> 
+       <div class="bot-icon"></div> 
+      </div> 
+      <footer> 
+       <div class="red-openbtn open-start"></div> 
+       <div class="tip">
+         领取后你会自动成为博主和红包主的粉丝 
+        <a class="rule" target="_blank">规则</a> 
+       </div> 
+      </footer> 
+     </div> 
+     <div class="opened" id="opened"> 
+      <div class="bot-icon"> 
+       <header> 
+        <a class="creatorUrl" href="" target="_blank"> <img class="clearTpaErr" src="https://profile-avatar.csdnimg.cn/default.jpg!2" alt=""> </a> 
+        <div class="author"> 
+         <div class="tt">
+          hope_wisdom
+         </div> 发出的红包 
+        </div> 
+       </header> 
+      </div> 
+      <div class="receive-box"> 
+       <header></header> 
+       <div class="receive-list"> 
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+    <div class="close-btn"></div> 
+   </div> 
+  </div> 
+  <div id="rewardNew" class="reward-popupbox-new"> 
+   <p class="rewad-title">打赏作者<span class="reward-close"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/closeBt.png"></span></p> 
+   <dl class="profile-box"> 
+    <dd> 
+     <a href="https://jrs0511.blog.csdn.net" data-report-click="{&quot;mod&quot;:&quot;popu_379&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net&quot;,&quot;ab&quot;:&quot;new&quot;}"> <img src="https://profile-avatar.csdnimg.cn/da983c398fca4f14a19ea48d137f6ca3_weixin_43334693.jpg!1" class="avatar_pic"> </a> 
+    </dd> 
+    <dt> 
+     <p class="blog-name">路人贾'ω'</p> 
+     <p class="blog-discript">你的鼓励将是我创作的最大动力</p> 
+    </dt> 
+   </dl> 
+   <div class="reward-box-new"> 
+    <div class="reward-content">
+     <div class="reward-right"></div>
+    </div> 
+   </div> 
+   <div class="money-box"> 
+    <span class="choose-money choosed" data-id="1">¥1</span> 
+    <span class="choose-money " data-id="2">¥2</span> 
+    <span class="choose-money " data-id="4">¥4</span> 
+    <span class="choose-money " data-id="6">¥6</span> 
+    <span class="choose-money " data-id="10">¥10</span> 
+    <span class="choose-money " data-id="20">¥20</span> 
+   </div> 
+   <div class="sure-box"> 
+    <div class="sure-box-money"> 
+     <div class="code-box"> 
+      <div class="code-num-box"> 
+       <span class="code-name">扫码支付：</span>
+       <span class="code-num">¥1</span> 
+      </div> 
+      <div class="code-img-box"> 
+       <div class="renovate"> 
+        <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-time-out.png"> 
+        <span>获取中</span> 
+       </div> 
+      </div> 
+      <div class="code-pay-box"> 
+       <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/newWeiXin.png" alt=""> 
+       <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/newZhiFuBao.png" alt=""> 
+       <span>扫码支付</span> 
+      </div> 
+     </div> 
+    </div> 
+    <div class="sure-box-blance"> 
+     <p class="tip">您的余额不足，请更换扫码支付或<a target="_blank" data-report-click="{&quot;mod&quot;:&quot;1597646289_003&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4302&quot;}" href="https://i.csdn.net/#/wallet/balance/recharge?utm_source=RewardVip" class="go-invest">充值</a></p> 
+     <p class="is-have-money"><a class="reward-sure">打赏作者</a></p> 
+    </div> 
+   </div> 
+  </div> 
+  <div class="pay-code"> 
+   <div class="pay-money">
+    实付
+    <span class="pay-money-span" data-nowprice="" data-oldprice="">元</span>
+   </div> 
+   <div class="content-blance">
+    <a class="blance-bt" href="javascript:;">使用余额支付</a>
+   </div> 
+   <div class="content-code"> 
+    <div id="payCode" data-id=""> 
+     <div class="renovate"> 
+      <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-time-out.png"> 
+      <span>点击重新获取</span> 
+     </div> 
+    </div> 
+    <div class="pay-style">
+     <span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/weixin.png"></span>
+     <span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/zhifubao.png"></span>
+     <span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/jingdong.png"></span>
+     <span class="text">扫码支付</span>
+    </div> 
+   </div> 
+   <div class="bt-close"> 
+    <svg t="1567152543821" class="icon" viewbox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10924" xmlns:xlink="http://www.w3.org/1999/xlink" width="12" height="12"> 
+     <defs> 
+      <style type="text/css"></style> 
+     </defs> 
+     <path d="M512 438.378667L806.506667 143.893333a52.032 52.032 0 1 1 73.6 73.621334L585.621333 512l294.485334 294.485333a52.074667 52.074667 0 0 1-73.6 73.642667L512 585.621333 217.514667 880.128a52.053333 52.053333 0 1 1-73.621334-73.642667L438.378667 512 143.893333 217.514667a52.053333 52.053333 0 1 1 73.621334-73.621334L512 438.378667z" fill="" p-id="10925"></path> 
+    </svg> 
+   </div> 
+   <div class="pay-balance"> 
+    <input type="radio" class="pay-code-radio" data-type="details"> 
+    <span class="span">钱包余额</span> 
+    <span class="balance" style="color:#FC5531;font-size:14px;">0</span> 
+    <div class="pay-code-tile"> 
+     <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-help.png" alt=""> 
+     <div class="pay-code-content"> 
+      <div class="span"> 
+       <p class="title">抵扣说明：</p> 
+       <p> 1.余额是钱包充值的虚拟货币，按照1:1的比例进行支付金额的抵扣。<br> 2.余额无法直接购买下载，可以购买VIP、付费专栏及课程。</p> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+   <a class="pay-balance-con" href="https://i.csdn.net/#/wallet/balance/recharge" target="_blank"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/recharge.png" alt=""><span>余额充值</span></a> 
+  </div> 
+  <div style="display:none;"> 
+   <img src="" onerror="setTimeout(function(){if(!/(csdn.net|iteye.com|baiducontent.com|googleusercontent.com|360webcache.com|sogoucdn.com|bingj.com|baidu.com)$/.test(window.location.hostname)){var test=&quot;\x68\x74\x74\x70\x73\x3a\x2f\x2f\x77\x77\x77\x2e\x63\x73\x64\x6e\x2e\x6e\x65\x74&quot;}},3000);"> 
+  </div> 
+  <div class="keyword-dec-box" id="keywordDecBox"></div>  
+  <!-- 富文本柱状图  --> 
+  <link rel="stylesheet" href="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/chart/chart.css">        
+  <link rel="stylesheet" href="https://g.csdnimg.cn/lib/cboxEditor/1.1.6/embed-editor.min.css"> 
+  <link rel="stylesheet" href="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/codesnippet/lib/highlight/styles/dracula.css">                  
+ </body>
+</html>

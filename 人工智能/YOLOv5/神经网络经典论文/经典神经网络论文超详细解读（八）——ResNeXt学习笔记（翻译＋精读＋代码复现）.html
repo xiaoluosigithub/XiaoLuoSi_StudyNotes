@@ -1,0 +1,1306 @@
+<!doctype html>
+<html lang="zh-CN">
+ <head> 
+  <meta charset="utf-8"> 
+  <link rel="canonical" href="https://blog.csdn.net/weixin_43334693/article/details/128676690"> 
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"> 
+  <meta name="renderer" content="webkit"> 
+  <meta name="force-rendering" content="webkit"> 
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+  <meta name="report" content="{&quot;pid&quot;: &quot;blog&quot;, &quot;spm&quot;:&quot;1001.2101&quot;}"> 
+  <meta name="referrer" content="always"> 
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <link rel="alternate" media="handheld" href="#"> 
+  <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848"> 
+  <meta name="applicable-device" content="pc"> 
+  <link href="https://g.csdnimg.cn/static/logo/favicon32.ico" rel="shortcut icon" type="image/x-icon"> 
+  <title>经典神经网络论文超详细解读（八）——ResNeXt学习笔记（翻译＋精读＋代码复现）-CSDN博客</title>  
+  <meta name="keywords" content="resnext"> 
+  <meta name="csdn-baidu-search" content="{&quot;autorun&quot;:true,&quot;install&quot;:true,&quot;keyword&quot;:&quot;resnext&quot;}"> 
+  <meta name="description" content="文章浏览阅读1.2w次，点赞38次，收藏165次。ResNeXt是一种深度学习网络架构，通过聚合多个相同拓扑的变换来提升模型性能，它结合了VGG、ResNet和Inception的优点。文章介绍了ResNeXt的模块设计，包括基数（转换集合的大小）的概念，表明在保持计算复杂性和模型大小的同时，增加基数能更有效地提高准确性。实验在ImageNet等数据集上验证了这种方法的有效性，表明基数是一个重要的新维度，优于增加深度或宽度。"> 
+  <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/release/blogv2/dist/pc/css/detail_enter-af0ead44cd.min.css">  
+  <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/release/blogv2/dist/pc/themesSkin/skin-finalboss/skin-finalboss-b2ba816980.min.css">    
+  <meta name="toolbar" content="{&quot;type&quot;:&quot;0&quot;,&quot;fixModel&quot;:&quot;1&quot;}">    
+  <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/public/sandalstrap/1.4/css/sandalstrap.min.css"> 
+  <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>   
+ 	<style>
+	main div.blog-content-box pre {
+		max-height: 100%;
+		overflow-y: hidden;
+	}
+	</style>
+ </head>  
+ <body class="nodata  " style=""> 
+  <div id="toolbarBox" style="min-height: 48px;"></div>    
+  <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/pc/css/blog_code-01256533b5.min.css"> 
+  <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/chart-3456820cac.css"> 
+  <link rel="stylesheet" href="https://g.csdnimg.cn/lib/swiper/6.0.4/css/swiper.css">   
+  <div class="main_father clearfix d-flex justify-content-center mainfather-concision" style="height:100%;"> 
+   <div class="container clearfix container-concision" id="mainBox">  
+    <main>  
+     <div class="blog-content-box"> 
+      <div class="article-header-box"> 
+       <div class="article-header"> 
+        <div class="article-title-box"> 
+         <h1 class="title-article" id="articleContentId">经典神经网络论文超详细解读（八）——ResNeXt学习笔记（翻译＋精读＋代码复现）</h1> 
+        </div> 
+        <div class="article-info-box"> 
+         <div class="article-bar-top"> 
+          <img class="article-type-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/original.png" alt=""> 
+          <div class="bar-content"> 
+           <a class="follow-nickName vip-name" href="https://jrs0511.blog.csdn.net" target="_blank" rel="noopener" title="路人贾'ω'">路人贾'ω'</a> 
+           <img class="article-time-img article-heard-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newUpTime2.png" alt=""> 
+           <span class="time">已于&nbsp;2023-03-02 23:47:58&nbsp;修改</span> 
+           <div class="read-count-box"> 
+            <img class="article-read-img article-heard-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/articleReadEyes2.png" alt=""> 
+            <span class="read-count">阅读量1.2w</span> 
+            <a id="blog_detail_zk_collection" class="un-collection" data-report-click="{&quot;mod&quot;:&quot;popu_823&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4232&quot;,&quot;ab&quot;:&quot;new&quot;}"> <img class="article-collect-img article-heard-img un-collect-status isdefault" style="display:inline-block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollect2.png" alt=""> <img class="article-collect-img article-heard-img collect-status isactive" style="display:none" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollectionActive2.png" alt=""> <span class="name">收藏</span> <span class="get-collection"> 165 </span> </a> 
+            <div class="read-count-box is-like"> 
+             <img class="article-read-img article-heard-img" style="display:none" id="is-like-imgactive-new" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newHeart2023Active.png" alt=""> 
+             <img class="article-read-img article-heard-img" style="display:block" id="is-like-img-new" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newHeart2023Black.png" alt=""> 
+             <span class="read-count" id="blog-digg-num">点赞数 38 </span> 
+            </div> 
+           </div> 
+          </div> 
+         </div> 
+         <div class="blog-tags-box"> 
+          <div class="tags-box artic-tag-box"> 
+           <span class="label">分类专栏：</span> 
+           <a class="tag-link" href="https://blog.csdn.net/weixin_43334693/category_12127342.html" target="_blank" rel="noopener">图像分类经典论文</a> 
+           <span class="label">文章标签：</span> 
+           <a rel="noopener" data-report-query="spm=1001.2101.3001.4223" data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;神经网络&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;神经网络\&quot;}&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;神经网络&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;神经网络\&quot;}&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank">神经网络</a> 
+           <a rel="noopener" data-report-query="spm=1001.2101.3001.4223" data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;人工智能&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;人工智能\&quot;}&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;人工智能&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;人工智能\&quot;}&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank">人工智能</a> 
+           <a rel="noopener" data-report-query="spm=1001.2101.3001.4223" data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;深度学习&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;深度学习\&quot;}&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;深度学习&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;深度学习\&quot;}&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank">深度学习</a> 
+           <a rel="noopener" data-report-query="spm=1001.2101.3001.4223" data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;计算机视觉&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;计算机视觉\&quot;}&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;计算机视觉&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;计算机视觉\&quot;}&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank">计算机视觉</a> 
+           <a rel="noopener" data-report-query="spm=1001.2101.3001.4223" data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;cnn&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;cnn\&quot;}&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;cnn&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;cnn\&quot;}&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=cnn&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank">cnn</a> 
+          </div> 
+         </div> 
+         <div class="up-time">
+          <span>于&nbsp;2023-01-13 20:41:06&nbsp;首次发布</span>
+         </div> 
+         <div class="slide-content-box"> 
+          <div class="article-copyright"> 
+           <div class="creativecommons">
+             版权声明：本文为博主原创文章，遵循
+            <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener"> CC 4.0 BY-SA </a>版权协议，转载请附上原文出处链接和本声明。 
+           </div> 
+           <div class="article-source-link">
+             本文链接：
+            <a href="https://blog.csdn.net/weixin_43334693/article/details/128676690" target="_blank">https://blog.csdn.net/weixin_43334693/article/details/128676690</a> 
+           </div> 
+          </div> 
+         </div> 
+         <div class="operating"> 
+          <a class="href-article-edit slide-toggle">版权</a> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <div id="blogHuaweiyunAdvert"></div> 
+      <div id="blogColumnPayAdvert"> 
+       <div class="column-group"> 
+        <div class="column-group-item column-group0 column-group-item-one"> 
+         <div class="item-l"> 
+          <a class="item-target" href="https://blog.csdn.net/weixin_43334693/category_12127342.html" target="_blank" title="图像分类经典论文" data-report-view="{&quot;spm&quot;:&quot;1001.2101.3001.6332&quot;}" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.6332&quot;}"> <img class="item-target" src="https://i-blog.csdnimg.cn/blog_column_migrate/4cc3e83223e8d0023a6303cdd4658cce.png?x-oss-process=image/resize,m_fixed,h_224,w_224" alt=""> <span class="title item-target"> <span> <span class="tit">图像分类经典论文</span> <span class="dec">专栏收录该内容</span> </span> </span> </a> 
+         </div> 
+         <div class="item-m"> 
+          <span>9 篇文章</span> 
+         </div> 
+         <div class="item-r"> 
+          <a class="item-target article-column-bt articleColumnFreeBt" data-id="12127342">订阅专栏</a> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="ai-abstract-box"> 
+       <div class="ai-abstract"> 
+        <div class="abstract-content"> 
+         <img class="lock-img" src="https://img-home.csdnimg.cn/images/20240711042549.png" alt=""> ResNeXt是一种深度学习网络架构，通过聚合多个相同拓扑的变换来提升模型性能，它结合了VGG、ResNet和Inception的优点。文章介绍了ResNeXt的模块设计，包括基数（转换集合的大小）的概念，表明在保持计算复杂性和模型大小的同时，增加基数能更有效地提高准确性。实验在ImageNet等数据集上验证了这种方法的有效性，表明基数是一个重要的新维度，优于增加深度或宽度。 
+        </div> 
+        <p> 摘要生成于 <a href="https://ai.csdn.net?utm_source=cknow_pc_ai_abstract" data-report-query="spm=3001.10128" data-report-view="{&quot;spm&quot;:&quot;3001.10128&quot;,&quot;extra&quot;:{&quot;location&quot;:&quot;ai_abstract&quot;}}" data-report-click="{&quot;spm&quot;:&quot;3001.10128&quot;,&quot;extra&quot;:{&quot;location&quot;:&quot;ai_abstract&quot;,&quot;text&quot;:&quot;C知道&quot;}}" target="_blank"> C知道</a> ，由 DeepSeek-R1 满血版支持， <a href="https://ai.csdn.net?utm_source=cknow_pc_ai_abstract" data-report-query="spm=3001.10128" data-report-click="{&quot;spm&quot;:&quot;3001.10128&quot;,&quot;extra&quot;:{&quot;location&quot;:&quot;ai_abstract&quot;,&quot;text&quot;:&quot;前往体验&quot;}}" target="_blank"> 前往体验 &gt;</a></p> 
+       </div> 
+      </div> 
+      <article class="baidu_pl"> 
+       <div id="article_content" class="article_content clearfix"> 
+        <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/kdoc_html_views-1a98987dfd.css"> 
+        <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/ck_htmledit_views-704d5b9767.css"> 
+        <div id="content_views" class="htmledit_views"> 
+         <h2 style="text-align:center;"><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/61d57cd84282ef4f532f6859b3acbde9.jpeg">&nbsp;</h2> 
+         <h2 id="%E5%89%8D%E8%A8%80">前言</h2> 
+         <p>今天我们一起来学习何恺明大神的又一经典之作：&nbsp;<strong>ResNeXt（《Aggregated Residual Transformations for Deep Neural Networks》）</strong>。这个网络可以被解释为 VGG、ResNet&nbsp;和 Inception 的结合体，它通过重复多个block（如在 VGG 中）块组成，每个block块聚合了多种转换（如 Inception），同时考虑到跨层连接（来自 ResNet）。</p> 
+         <p>在学习之前，我们先回顾一下这三个经典网络：</p> 
+         <p><strong>VGG：</strong><a href="https://blog.csdn.net/weixin_43334693/article/details/128148803?spm=1001.2014.3001.5501" title="经典神经网络论文超详细解读（二）——VGGNet学习笔记（翻译＋精读）">经典神经网络论文超详细解读（二）——VGGNet学习笔记（翻译＋精读）</a></p> 
+         <p><strong>Inception：</strong><a href="https://blog.csdn.net/weixin_43334693/article/details/128267380?spm=1001.2014.3001.5501" title="经典神经网络论文超详细解读（三）——GoogLeNet InceptionV1学习笔记（翻译＋精读+代码复现）">经典神经网络论文超详细解读（三）——GoogLeNet InceptionV1学习笔记（翻译＋精读+代码复现）</a></p> 
+         <p><strong>ResNet：</strong><a href="https://blog.csdn.net/weixin_43334693/article/details/128401720?spm=1001.2014.3001.5501" title="经典神经网络论文超详细解读（五）——ResNet（残差网络）学习笔记（翻译＋精读＋代码复现）">经典神经网络论文超详细解读（五）——ResNet（残差网络）学习笔记（翻译＋精读＋代码复现）</a></p> 
+         <hr> 
+         <p>原文地址：<a href="https://arxiv.org/abs/1611.05431" rel="nofollow" title="Aggregated Residual Transformations for Deep Neural Networks (arxiv.org)">Aggregated Residual Transformations for Deep Neural Networks (arxiv.org)</a>&nbsp;</p> 
+         <p>代码地址：&nbsp;<a href="https://github.com/facebookresearch/ResNeXt" title="GitHub - facebookresearch/ResNeXt: Implementation of a classification framework from the paper Aggregated Residual Transformations for Deep Neural Networks">GitHub - facebookresearch/ResNeXt: Implementation of a classification framework from the paper Aggregated Residual Transformations for Deep Neural Networks</a></p> 
+         <hr> 
+         <h2 id="main-toc"><strong>目录</strong></h2> 
+         <p id="%E5%89%8D%E8%A8%80-toc" style="margin-left:0px;"><a href="#%E5%89%8D%E8%A8%80" rel="nofollow">前言</a></p> 
+         <p id="Abstract%E2%80%94%E6%91%98%E8%A6%81-toc" style="margin-left:0px;"><a href="#Abstract%E2%80%94%E6%91%98%E8%A6%81" rel="nofollow">Abstract—摘要</a></p> 
+         <p id="%E4%B8%80%E3%80%81Introduction%E2%80%94%E7%AE%80%E4%BB%8B-toc" style="margin-left:0px;"><a href="#%E4%B8%80%E3%80%81Introduction%E2%80%94%E7%AE%80%E4%BB%8B" rel="nofollow">一、Introduction—简介</a></p> 
+         <p id="%E4%BA%8C%E3%80%81Related%20Work%E2%80%94%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C-toc" style="margin-left:0px;"><a href="#%E4%BA%8C%E3%80%81Related%20Work%E2%80%94%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C" rel="nofollow">二、Related Work—相关工作</a></p> 
+         <p id="2.1Multi-branch%20convolutional%20networks%E2%80%94%E5%A4%9A%E5%88%86%E6%94%AF%E5%8D%B7%E7%A7%AF%E7%BD%91%E7%BB%9C-toc" style="margin-left:40px;"><a href="#2.1Multi-branch%20convolutional%20networks%E2%80%94%E5%A4%9A%E5%88%86%E6%94%AF%E5%8D%B7%E7%A7%AF%E7%BD%91%E7%BB%9C" rel="nofollow">2.1Multi-branch convolutional networks—多分支卷积网络</a></p> 
+         <p id="2.2Grouped%20convolutions%E2%80%94%E5%88%86%E7%BB%84%E5%8D%B7%E7%A7%AF-toc" style="margin-left:40px;"><a href="#2.2Grouped%20convolutions%E2%80%94%E5%88%86%E7%BB%84%E5%8D%B7%E7%A7%AF" rel="nofollow">2.2Grouped convolutions—分组卷积</a></p> 
+         <p id="2.3Compressing%20convolutional%20networks%E2%80%94%E5%8E%8B%E7%BC%A9%E5%8D%B7%E7%A7%AF%E7%BD%91%E7%BB%9C-toc" style="margin-left:40px;"><a href="#2.3Compressing%20convolutional%20networks%E2%80%94%E5%8E%8B%E7%BC%A9%E5%8D%B7%E7%A7%AF%E7%BD%91%E7%BB%9C" rel="nofollow">2.3Compressing convolutional networks—压缩卷积网络</a></p> 
+         <p id="2.4Ensembling%E2%80%94%E9%9B%86%E6%88%90-toc" style="margin-left:40px;"><a href="#2.4Ensembling%E2%80%94%E9%9B%86%E6%88%90" rel="nofollow">2.4Ensembling—集成</a></p> 
+         <p id="%E4%B8%89%E3%80%81Method%E2%80%94%E6%96%B9%E6%B3%95-toc" style="margin-left:0px;"><a href="#%E4%B8%89%E3%80%81Method%E2%80%94%E6%96%B9%E6%B3%95" rel="nofollow">三、Method—方法</a></p> 
+         <p id="3.1.%20Template%E2%80%94%E6%A8%A1%E5%9E%8B-toc" style="margin-left:40px;"><a href="#3.1.%20Template%E2%80%94%E6%A8%A1%E5%9E%8B" rel="nofollow">3.1. Template—模型</a></p> 
+         <p id="3.2.%20Revisiting%20Simple%20Neurons%E2%80%94%E5%9B%9E%E9%A1%BE%E5%8D%95%E4%B8%AA%E7%A5%9E%E7%BB%8F%E5%85%83-toc" style="margin-left:40px;"><a href="#3.2.%20Revisiting%20Simple%20Neurons%E2%80%94%E5%9B%9E%E9%A1%BE%E5%8D%95%E4%B8%AA%E7%A5%9E%E7%BB%8F%E5%85%83" rel="nofollow">3.2. Revisiting Simple Neurons—回顾单个神经元</a></p> 
+         <p id="3.3.%20Aggregated%20Transformations%E2%80%94%E8%81%9A%E5%90%88%E5%8F%98%E6%8D%A2-toc" style="margin-left:40px;"><a href="#3.3.%20Aggregated%20Transformations%E2%80%94%E8%81%9A%E5%90%88%E5%8F%98%E6%8D%A2" rel="nofollow">3.3. Aggregated Transformations—聚合变换</a></p> 
+         <p id="3.4.%20Model%20Capacity%E2%80%94%E6%A8%A1%E5%9E%8B%E8%83%BD%E5%8A%9B-toc" style="margin-left:40px;"><a href="#3.4.%20Model%20Capacity%E2%80%94%E6%A8%A1%E5%9E%8B%E8%83%BD%E5%8A%9B" rel="nofollow">3.4. Model Capacity—模型能力</a></p> 
+         <p id="%E5%9B%9B%E3%80%81Implementation%20details%E2%80%94%E6%89%A7%E8%A1%8C%E7%BB%86%E8%8A%82-toc" style="margin-left:0px;"><a href="#%E5%9B%9B%E3%80%81Implementation%20details%E2%80%94%E6%89%A7%E8%A1%8C%E7%BB%86%E8%8A%82" rel="nofollow">四、Implementation details—执行细节</a></p> 
+         <p id="%E4%BA%94%E3%80%81Experiments%E2%80%94%E5%AE%9E%E9%AA%8C-toc" style="margin-left:0px;"><a href="#%E4%BA%94%E3%80%81Experiments%E2%80%94%E5%AE%9E%E9%AA%8C" rel="nofollow">五、Experiments—实验</a></p> 
+         <p id="5.1.%20Experiments%20on%20ImageNet-1K%E2%80%94%E5%9C%A8ImageNet-1K%E7%9A%84%E5%AE%9E%E9%AA%8C-toc" style="margin-left:40px;"><a href="#5.1.%20Experiments%20on%20ImageNet-1K%E2%80%94%E5%9C%A8ImageNet-1K%E7%9A%84%E5%AE%9E%E9%AA%8C" rel="nofollow">5.1. Experiments on ImageNet-1K—在ImageNet-1K的实验</a></p> 
+         <p id="5.2.%20Experiments%20on%20ImageNet-5K%E2%80%94%E5%9C%A8ImgaeNet-5K%E7%9A%84%E5%AE%9E%E9%AA%8C-toc" style="margin-left:40px;"><a href="#5.2.%20Experiments%20on%20ImageNet-5K%E2%80%94%E5%9C%A8ImgaeNet-5K%E7%9A%84%E5%AE%9E%E9%AA%8C" rel="nofollow">5.2. Experiments on ImageNet-5K—在ImgaeNet-5K的实验</a></p> 
+         <p id="5.3.%20Experiments%20on%20CIFAR%E2%80%94%E5%9C%A8CIFAR%E7%9A%84%E5%AE%9E%E9%AA%8C-toc" style="margin-left:40px;"><a href="#5.3.%20Experiments%20on%20CIFAR%E2%80%94%E5%9C%A8CIFAR%E7%9A%84%E5%AE%9E%E9%AA%8C" rel="nofollow">5.3. Experiments on CIFAR—在CIFAR的实验</a></p> 
+         <p id="5.4.%20Experiments%20on%20COCO%20object%20detection%E2%80%94%E5%9C%A8COCO%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E7%9A%84%E5%AE%9E%E9%AA%8C-toc" style="margin-left:40px;"><a href="#5.4.%20Experiments%20on%20COCO%20object%20detection%E2%80%94%E5%9C%A8COCO%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E7%9A%84%E5%AE%9E%E9%AA%8C" rel="nofollow">5.4. Experiments on COCO object detection—在COCO目标检测的实验</a></p> 
+         <p id="%E8%AE%BA%E6%96%87%E5%8D%81%E9%97%AE-toc" style="margin-left:0px;"><a href="#%E8%AE%BA%E6%96%87%E5%8D%81%E9%97%AE" rel="nofollow">论文十问</a></p> 
+         <hr id="hr-toc"> 
+         <h2 style="margin-left:0px;text-align:left;"><strong>Abstract—摘要</strong></h2> 
+         <h3><span style="color:#4da8ee;"><strong>翻译</strong></span></h3> 
+         <p>我们提出了一种简单的，高度模块化的网络结构用于图像分类。我们的网络是通过堆叠Building Block进行构建的，这种Building Block聚合了一组具有相同拓扑的转换。我们简单的设计使得一个同构的、多分枝的体系结构只需要设置几个超参数。这种策略暴露了一个新的维度，我们称之为「基数」（转换集的大小），它是深度和宽度之外的另一个基本要素。在ImageNet-1K数据集上，我们的实验表明，即使在保持复杂度限制的条件下，增加基线也能够提高分类精度。另外，当我们的模型容量增加的时候，增加基线比增加宽度或高度更加有效。我们把模型命名为 ResNeXt，这个模型带领我们进入了ILSVRC 2016分类任务，并获得了第二名的成绩。我们进一步研究了在ImageNet-5K数据集和COCO数据集上的ResNeXt性能表现，也显示出比ResNet更好的效果。代码和模型将在网络上公开访问。</p> 
+         <h3><span style="color:#fe2c24;"><strong>精读</strong></span></h3> 
+         <h4 style="margin-left:0px;text-align:left;"><span style="background-color:#38d8f0;">主要内容</span></h4> 
+         <p style="margin-left:0;text-align:left;"><strong>本文工作：</strong>&nbsp;我们提出了一种用于图像分类的简单、高度模块化的网络架构。该网络通过反复堆叠Building Block实现，Building Block则通过聚集简洁的卷积模块来实现。</p> 
+         <p style="margin-left:0;text-align:left;"><strong>本文方法：</strong>&nbsp;本文提出一个与网络宽度和深度类似作用的参数，用来衡量网络大小，称之为Cardinality基数（转换集的大小）。</p> 
+         <p style="margin-left:0;text-align:left;"><strong>本文优点：</strong>&nbsp;该网络具有相同的、多分支的结构，并且对应的超参数非常少。</p> 
+         <p style="margin-left:0;text-align:left;"><strong>本文结论：</strong></p> 
+         <p style="margin-left:0;text-align:left;">（1）ImageNet-1K数据集上，不增加模型复杂度，增加Cardinality可以提升网络性能。</p> 
+         <p style="margin-left:0;text-align:left;">（2）增加Cardinality比增加网络深度和宽度可以更好的提升网络模型的性能。</p> 
+         <p style="margin-left:0;text-align:left;"><strong>本文成果：</strong>&nbsp;ILSVRC 2016分类任务获得了第二名。</p> 
+         <hr> 
+         <h2 style="margin-left:0px;text-align:left;"><strong>一、Introduction—简介</strong></h2> 
+         <h3><span style="color:#4da8ee;"><strong>翻译</strong></span></h3> 
+         <p><span style="color:#0d0016;">视觉识别的研究正在从“特征工程”到“网络工程”[25,24,44,34,36,38,14]的过渡。与传统的手指特征（例如，SIFT [29]和HOG [5]）相比，由大规模数据的神经网络学习的特征需要在训练期间需要最小的人类参与，并且可以转移到各种识别任务[7,10,28]。尽管如此，人类努力已经转移到设计更好的网络架构以获得学习陈述。</span></p> 
+         <p><span style="color:#0d0016;">设计架构越来越困难，越来越多的超参数（宽度2，过滤尺寸，步幅等），尤其是当有许多层时。 VGG-Net [36]展示了构建非常深网络的简单而有效的策略：堆叠相同shape的组件。该策略继承于Resnet[14]，Resnet堆叠了相同拓扑的模块。这个简单的规则减少了超参数的自由选择，深度揭示了神经网络中的基本维度。此外，我们认为这条规则的简单性可能会降低过度调整超参数到特定数据集的风险。通过各种视觉识别任务[7,10,9,28,31,14]并通过涉及语音[42,30]和语言[4,41,20]的非视觉任务已经被证明的VGGNET和RESNET的鲁棒性。<br> 与VGG-nets不同，Inception模型系列[38,17,39,37]已经证明，精心设计的有着较低理论复杂性的拓扑结构足以实现令人信服的精确率。随着时间的推移，Inception模型已经进化[38,39]，但重要的常见属性是分裂变换合并策略。在Inception模块中，输入被分成几维低维的输入（按1×1卷积），由一组专用过滤器（3×3，5×5等）转换，并通过连接合并。可以表明，这种架构的解决方案是在高维输入的单个大网络层（例如，5×5）的解空间的严格子空间。预计Inception模块的分流变换合并行为将接近大而致密层的代表性，但是具有相当较低的计算复杂性。<br> 尽管准确性良好，但Inception模型的实现已经伴随着一系列复杂的因素——过滤器数量和大小是为每个单独的变换定制的并且模块是分阶段自定义的。虽然这些组件的仔细组合产生了优秀的神经网络结构，但通常不清楚如何将初始化架构调整到新的数据集/任务，特别是当有许多因素和超参数时要设计。<br> 在本文中，我们提出了一种简单的架构，它采用VGG / Resnets的重复层策略，同时以简单，可扩展的方式利用分流交换合并策略。我们网络中的模块执行一组变换，每执行一个低维输入时，其输出通过求和聚合。我们追求这种想法的简单实现 - 要汇总的转换是所有相同的拓扑（例如，图1（右））。这种设计允许我们扩展到任何大量的转换，无需专门设计。我们追求这种想法的简单实现-要汇总的变换是所有相同的拓扑（例如，图1（右））。这种设计使我们能够扩展到没有专门设计的大量变换。<br> 有趣的是，根据这种简化，我们的模型具有另外两种等同形式（图3）。图3（b）中的重构类似于Inception-ResNet模块[37]，其中它连接多个路径;但是我们的模块与所有现有的Inception模块不同，因为我们所有路径都共享相同的拓扑，因此可以容易地隔离路径的数量作为要调查的因素。在更加简洁的重构中，我们的模块可以由Krizhevsky等人重塑。的分组卷积[24]（图3（c）），然而，这一点被制定为工程妥协。<br> 我们经验证明，即使在维持计算复杂度和模型大小的限制条件下，我们的聚合变换也优于原始的Reset模块 - 例如，图1（右）旨在保持图1的浮点复杂性和参数的参数数量。1（剩下）。我们强调，虽然通过增加容量（进展更深或更宽）的方法相对容易地提高准确性，但在维持（或降低）复杂性的同时提高精度的方法是罕见的。<br> 我们的方法表明，除了宽度和深度之外，基数(变换集合的大小)是一个具有中心重要性的具体的、可测量的维度。实验表明，增加基数是一种比增加深度或增加宽度更有效的获得准确性的方法，特别是当深度和宽度开始为现有模型带来递减的回报时。<br> 我们的神经网络，命名为ResNeXt(暗示下一个维度)，在ImageNet分类数据集上优于ResNet-101/152[14]、ResNet200[15]、Inception-v3[39]和Inception- ResNet -v2[37]。特别是，101层的ResNeXt能够达到比resnet - 200[15]更好的精度，但复杂度只有50%。此外，ResNeXt展示的设计比所有Inception模型都要简单得多<br> ResNeXt是我们提交ILSVRC 2016分类任务的基础，我们在该任务中获得了第二名。本文进一步评估了ResNeXtona larger imagenet-5kset和COCO object检测数据集[27]，始终显示出比ResNet同类数据集更好的准确性。我们希望ResNeXt也能很好地推广到其他视觉(和非视觉)识别任务。</span></p> 
+         <h3><span style="color:#fe2c24;"><strong>精读</strong></span></h3> 
+         <h4 style="margin-left:0px;text-align:left;"><span style="background-color:#38d8f0;">之前方法</span></h4> 
+         <p style="margin-left:0;text-align:left;"><span style="color:#ff9900;"><strong>深度研究</strong></span></p> 
+         <p style="margin-left:0;text-align:left;"><strong>VGG: </strong>结构简洁， 堆叠使用3*3卷积。</p> 
+         <p style="margin-left:0;text-align:left;">&nbsp; &nbsp; &nbsp; &nbsp; 不足：但是随着层数增多，出现梯度消失问题</p> 
+         <p style="margin-left:0;text-align:left;"><strong>ResNet：</strong> 堆叠的Building Block采用残差结构，用跨层连接缓解了这个问题，使得网络可以达到上千层。</p> 
+         <p style="margin-left:0;text-align:left;">&nbsp; &nbsp; &nbsp; &nbsp; 不足：但是模型的参数量巨大</p> 
+         <p style="margin-left:0;text-align:left;"><span style="color:#ff9900;"><strong>宽度研究</strong></span></p> 
+         <p style="margin-left:0;text-align:left;"><strong>Inception系列：</strong>采用多分支结构<span style="color:#fe2c24;">Split- Transform-Merge（分割-变换-聚合）</span></p> 
+         <p style="margin-left:0;text-align:left;"><strong>1） Split：</strong>将向量x分成低维嵌入表示；（由1x1卷积降维）</p> 
+         <p style="margin-left:0;text-align:left;"><strong>2） Transform：</strong>每个低维特征经过一个线性变换；（再由3x3或者5x5的卷积进一步提取特征）</p> 
+         <p style="margin-left:0;text-align:left;"><strong>3） Merge：</strong>通过单位加合成最后的输出；（最后拼接各分支的特征）</p> 
+         <p style="margin-left:0;text-align:left;">&nbsp; &nbsp; &nbsp; &nbsp; 不足：但是每个映射变换要量身定制卷积核数量、尺寸，模块在每一阶段都要改变。尤其将 Inception 模型用于新的数据或者任务时如何修改并不清晰。</p> 
+         <h4 style="margin-left:0px;text-align:left;"><span style="background-color:#a2e043;">本文改进</span></h4> 
+         <p style="margin-left:0;text-align:left;">本文提出了一个简单架构，<span style="color:#fe2c24;">采用 VGG/ResNets 重复相同网络层的策略，以一种简单可扩展的方式延续Split-Transform-Merge 策略</span>。将ResNet中高维特征图分组为多个相同的低维特征图，然后在卷积操作之后，将多组结构进行求和，最后得到ResNeXt模型。</p> 
+         <hr> 
+         <h2 style="margin-left:0px;text-align:left;"><strong>二、Related Work—相关工作</strong></h2> 
+         <h3><span style="color:#4da8ee;"><strong>翻译</strong></span></h3> 
+         <p><span style="color:#0d0016;"><strong>多分支卷积网络。</strong>Inception模型[38,17,39,37]是成功的多分支架构，其中每个分支经过仔细定制。 ResNet [14]可以被认为是一个分支网络，其中一个分支是恒等映射。深度神经决策森林[22]是具有学习拆分功能的树模式的多分支网络。<br><strong>分组卷积。</strong>使用分组的卷积可以追溯到AlexNet论文[24]，如果不是之前Krizhevsky等人提供的想法 [24]用于将模型分布在两个GPU上。 Caffe [19]，Torch[3]和其他框架支持分组的卷积，主要用于AlexNet的兼容性。据我们所知，有关利用分组卷积的一点证据，以提高准确性。分组卷积的特殊情况是明智通道的卷积，其中组的数量等于渠道数量。明智通道的卷积是[35]中可分离卷积的一部分。<br><strong>压缩卷积网络。</strong>分解（在空间[6,18]和/或通道[6,21,16]水平）是一种广泛采用的技术，以减少深卷积网络的冗余并加速/压缩它们。 Ioannou等人[16]呈现用于减少计算的“根”-模式网络，并且通过分组的卷积来实现根部的分支。这些方法[6,18,21,16]显示了具有较低复杂性和更小的模型尺寸的精度的优雅妥协。我们的方法代替压缩，而不是压缩，这是一个经验呈现更强大的代表性的架构。<br><strong>集合。</strong>平均一组独立培训的网络是提高准确性的有效解决方案[24]，广泛采用识别竞争[33]。 VEit等人 [40]将单个RESET解释为较浅网络的集合，从ResNet的想加表现导致了[15]。我们的方法利用添加了一组变换。但是，我们认为它是不精确的，以便将我们的方法视为合奏，因为要聚合的成员是联合训练，而不是独立训练的。</span></p> 
+         <h3><span style="color:#fe2c24;"><strong>精读</strong></span></h3> 
+         <p style="margin-left:0px;text-align:left;">（1）ResNets可以被认为是两个分支网络，其中一个分支是identity 映射。深度神经决策森林是具有学习分裂函数的树模式多分支网络；深度网络决策树也是多分支结构。</p> 
+         <p style="margin-left:0;text-align:left;">（2）几乎没有证据表明分组卷积可提升网络性能。</p> 
+         <p style="margin-left:0;text-align:left;">（3）本文不同于模型压缩，本文设计的结构自身就有很强的性能和低计算量。</p> 
+         <p style="margin-left:0;text-align:left;">（4）模型集成是有效的提高精度的方法；本文模型并不是模型集成，因为各模块的训练是一起同时训练的，并不是独立的。</p> 
+         <hr> 
+         <h2 style="margin-left:0px;text-align:left;"><strong>三、Method—方法</strong></h2> 
+         <h3 style="margin-left:0px;text-align:left;">3.1. Template—模型</h3> 
+         <h3><span style="color:#4da8ee;">翻译</span></h3> 
+         <p><span style="color:#0d0016;">我们采用高度模块化的设计，遵循VGG/ResNets.我们的网络由堆叠的残差块组成。这些块具有相同的拓扑，并受到VGG / Resnets的两个简单规则的影响：（i）如果产生相同大小的空间映射，则该块共享相同的超参数（宽度和滤波器大小），以及（II ）每次当空间映射下采样因子为2时，块的宽度就乘以2。第二条规则确保计算复杂性，按照浮点操作（浮点操作中，在＃中乘法添加）对于所有块大致相同。<br> 通过这两个规则，我们只需要设计模板模块，并且可以相应地确定网络中的所有模块。因此，这两个规则极大地缩小了设计空间，让我们专注于一些关键因素。由这些规则构建的网络在表1中。</span></p> 
+         <p style="text-align:center;"><img alt="" height="501" src="https://i-blog.csdnimg.cn/blog_migrate/26885748ede135788e8c15bb50b78c95.png" width="387"></p> 
+         <h3><span style="color:#fe2c24;">精读</span></h3> 
+         <h4 style="margin-left:0px;text-align:left;"><span style="background-color:#38d8f0;">模型设计两个原则：</span></h4> 
+         <p style="margin-left:0;text-align:left;">（1）如果输出的空间尺寸一样，那么模块的超参数（宽度和卷积核尺寸）也是一样的。</p> 
+         <p style="margin-left:0;text-align:left;">（2）每当空间分辨率/2（降采样），则卷积核的宽度*2。这样保持模块计算复杂度。</p> 
+         <h4 style="margin-left:0px;text-align:left;"><span style="background-color:#ffd900;">作用：</span></h4> 
+         <p style="margin-left:0;text-align:left;">这两条规则大大缩小了设计空间，让我们可以专注于几个关键因素。</p> 
+         <p style="margin-left:0px;text-align:center;"><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/c4f8a52197f19e988c3ff92399dd114c.png"></p> 
+         <blockquote> 
+          <p style="margin-left:0;text-align:left;"><strong>32</strong>&nbsp;指进入网络的第一个ResNeXt基本结构的分组数量C（即基数）为32</p> 
+          <p style="margin-left:0;text-align:left;"><strong>4d</strong>&nbsp;表示depth即每一个分组的通道数为4（所以第一个基本结构输入通道数为128）</p> 
+         </blockquote> 
+         <p style="margin-left:0;text-align:left;">可以看到ResNet-50和ResNeXt-50（32x4d）拥有相同的参数，但是精度却更高。</p> 
+         <hr> 
+         <h3 style="margin-left:0px;text-align:left;">3.2. Revisiting Simple Neurons—回顾单个神经元</h3> 
+         <h3><span style="color:#4da8ee;">翻译</span></h3> 
+         <p><span style="color:#0d0016;">人工神经网络中最简单的神经元执行内积(加权和)，这是由全连通和卷积层完成的初等变换。内积可以看作是一种聚集变换形式:</span></p> 
+         <p class="img-center"><img alt="" height="82" src="https://i-blog.csdnimg.cn/blog_migrate/9c8eb052822d9fbdd33bd0fb3665fa6a.png" width="298"></p> 
+         <p style="text-align:justify;"><span style="color:#0d0016;">其中x = [ x1 , x2 , … , xD ]是神经元的一个具有D通道的输入向量，并且wi&nbsp;是一个卷积核第i通道权重。这个操作(通常包括一些输出非线性)被称为“神经元”。参见图2。</span></p> 
+         <p style="text-align:center;">&nbsp;<img alt="" height="168" src="https://i-blog.csdnimg.cn/blog_migrate/8db328a07feefe921d4e2b4de0623b07.png" width="404"></p> 
+         <p><span style="color:#0d0016;">可以将上述操作理解为分裂、变换和聚合的组合。<br> (i) 分割:将向量x切为低维输入，其中为单维子空间xi&nbsp;<br> (ii)变换：对低维表示进行变换，并对其进行简单缩放：wixi&nbsp;<br> (iii)聚合：所有输入的变换由公式（1）聚合</span></p> 
+         <h3><span style="color:#fe2c24;">精读</span></h3> 
+         <h4 style="margin-left:0px;text-align:left;"><span style="background-color:#38d8f0;">单个神经元</span></h4> 
+         <p style="margin-left:0;text-align:left;">单个神经元是构建全链接和卷积网络层的基础元素。</p> 
+         <p style="margin-left:0;text-align:left;"><strong><span style="color:#ff9900;">具体操作：</span></strong></p> 
+         <p style="margin-left:0;text-align:left;"><strong>分割（Splitting）：</strong>&nbsp;把输入x分解为D个元素，可以理解为低维嵌入。</p> 
+         <p style="margin-left:0;text-align:left;"><strong>变换（Transforming）：</strong>&nbsp;每个元素进行变换，乘权重wi进行缩放。</p> 
+         <p style="margin-left:0;text-align:left;"><strong>聚合（Aggregating）：</strong>&nbsp;对D个变换后的结果进行求和。</p> 
+         <hr> 
+         <h3 style="margin-left:0px;text-align:left;">3.3. Aggregated Transformations—聚合变换</h3> 
+         <h3><span style="color:#4da8ee;">翻译</span></h3> 
+         <p>考虑到以上对单个神经元的分析，我们考虑用更一般的函数代替初等变换（wixi），它本身也可以是一个网络。与原来增加深度维度的“网络中的网络”[26]相比，我们的“神经元中的网络”沿着一个新的维度扩展。<br> 形式上，我们将聚合转换表示为</p> 
+         <p class="img-center"><img alt="" height="66" src="https://i-blog.csdnimg.cn/blog_migrate/b272f1c5fb9df0865710007c4fd1f497.png" width="295"></p> 
+         <p>其中Ti(x)&nbsp;可以是任意函数。类似一个简单的神经元，Ti&nbsp;应该将x 投影到一个(可选的低维)输入,然后将其变换在Eqn.(2)中，C 是要聚合的转换集合的大小。我们把C 称为基数[2]。在Eqn.(2)中C 的位置与Eqn.(1)中的D 相似，但C 不必等于D ，可以是一个任意的数。虽然宽度的维度与简单转换(内积)的数量有关，但我们认为基数的维度控制更复杂转换的数量。我们通过实验表明基数是一个基本的维度，可以比宽度和深度的维度更有效。<br> 在本文中，我们考虑了一种简单的设计变换函数的方法:所有的Ti&nbsp;具有相同的拓扑。这扩展了VGG风格的策略，即重复相同形状的层，这有助于隔离一些因素并扩展到任何大量的转换。我们将个别的转换Ti设置为瓶颈型架构[14]，如图1(右)所示。在本例中，每个Ti中的第一个1×1层产生低维输入&nbsp;<img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/bd38cae7e70d8699d45b86ce4e8edfed.png"></p> 
+         <p>图3.等价的ResNext的构建块。<br> （a）：聚合的残差变换，与图1右部分相同<br> （b）：相当于(a)的一个块，实现为提前串联<br> （c）：等价于(a,b)的一个块，实现为分组卷积<br> 粗体文本的符号将突出显示重新构建的改变。一个层表示为（input channels，filter size，output channels)<br> Eqn.(2)中的聚合变换作为残差函数(图1右):</p> 
+         <p class="img-center"><img alt="" height="81" src="https://i-blog.csdnimg.cn/blog_migrate/6c82e508d3d0f9ddae7c211e34e9b437.png" width="338"></p> 
+         <p style="text-align:justify;">其中y 是输出。<br> 与Inception-ResNet的关系。<br> 一些张量处理表明，图1(右)中的模块(图3(a)中也展示了)等价于图3(b)。图3(b)与Inception-ResNet[37]的块相似，它在残差函数中涉及分支和串联。但与所有Inception或Inception- ResNet模块不同的是，我们在多个路径之间共享相同的拓扑结构。我们的模块需要最少的额外努力设计每个路径。<br> 与分组卷积的关系。使用分组卷积[24].4的表示法，上面的模块变得更加简洁。图3©说明了这种重新构建的结构。所有的低维输入(第一个1×1层)都可以用一个更宽的单一层代替(如图3©中的1×1, 128-d)。分裂本质上是由分组卷积层完成的，当它把输入通道分成组时。图3(c)中的分组卷积层进行了32组卷积，其输入和输出通道为四维。（这里将输入128通道分为32组，每组4个通道）<br> 分组的卷积层将它们串联起来作为层的输出。图3©中的区块与图1(左)中的原始瓶颈剩余区块相似，但图3©是一个较宽但连接稀疏的模块。</p> 
+         <p style="text-align:center;">&nbsp;<img alt="" height="225" src="https://i-blog.csdnimg.cn/blog_migrate/7244f1a714bb008f7a4461233b5e4d25.png" width="445"></p> 
+         <p>上图左右两边的结构是等价的。</p> 
+         <h3><span style="color:#fe2c24;">精读</span></h3> 
+         <h4 style="margin-left:0px;text-align:left;"><span style="background-color:#38d8f0;">Block中的聚合变换</span></h4> 
+         <p style="margin-left:0;text-align:left;"><strong><span style="color:#ff9900;">公式表示</span></strong></p> 
+         <p style="margin-left:0;text-align:left;">对于一个ResNeXt Block中的基数块输出可以表示为：</p> 
+         <p style="margin-left:0px;text-align:center;"><img alt="" height="73" src="https://i-blog.csdnimg.cn/blog_migrate/500b1b5c6b7f5d01184977d264ff86cd.png" width="326"></p> 
+         <p style="margin-left:.0001pt;text-align:left;"></p> 
+         <p style="margin-left:0;text-align:left;">其中，参数C 代表基数块的数目，Ti 代表对应的基数块，将x投影到一个(可选的低维)集成中，然后对其进行变换。</p> 
+         <p style="margin-left:0;text-align:left;"><strong>这拓展了VGG设计原则：</strong>从重复相同大小的层，到重复相同拓扑的卷积核组。</p> 
+         <p style="margin-left:0;text-align:left;">在本文中，我们考虑一种设计变换函数的简单方法：<span style="color:#fe2c24;">所有的Ti都有相同的拓扑结构</span>。</p> 
+         <p style="margin-left:0;text-align:left;">在这种情况下，每个Ti中的第一个1×1层产生低维嵌入。那么对应的残差网络输出就可以被表示为：</p> 
+         <p style="margin-left:0px;text-align:center;"><img alt="" height="70" src="https://i-blog.csdnimg.cn/blog_migrate/5fa3d1e8a76455f2f618c46570e0fc01.png" width="292"></p> 
+         <p><span style="color:#98c091;"><strong>图像表示</strong></span></p> 
+         <p style="text-align:center;"><span style="color:#98c091;"><strong><img alt="" height="245" src="https://i-blog.csdnimg.cn/blog_migrate/bbe64bfbb6b582512c505f3dba886759.jpeg" width="496"></strong></span></p> 
+         <p style="text-align:justify;"><span style="color:#e6b223;"><strong>具体操作</strong></span></p> 
+         <p style="text-align:justify;"><strong>Splitting：</strong>&nbsp;通过1×1卷积实现低维嵌入，256个通道变成4个通道，总共32个分支（cardinality = 32）</p> 
+         <p style="text-align:justify;"><strong>Transforming：</strong>&nbsp;每个分支进行变换（对网络层对数据操作）</p> 
+         <p style="text-align:justify;"><strong>Aggregating：</strong>&nbsp;对32个分支得到的变换结果—特征图，进行聚合</p> 
+         <hr> 
+         <h4 style="text-align:justify;"><span style="background-color:#a2e043;">Block的三种等效形式</span></h4> 
+         <p style="text-align:justify;">（a）表示先划分，单独卷积并计算输出，最后输出相加。split-transform-merge三阶段形式</p> 
+         <p style="text-align:justify;">（b）表示先划分，单独卷积，然后拼接再计算输出。将各分支的最后一个1×1卷积聚合成一个卷积。</p> 
+         <p style="text-align:justify;">（c）就是分组卷积。将各分支的第一个1×1卷积融合成一个卷积，3×3卷积采用group（分组）卷积的形式，分组数=cardinality（基数）</p> 
+         <p style="text-align:justify;"><strong><span style="color:#faa572;">（c）结构分析</span></strong></p> 
+         <p style="text-align:justify;">（1）首先通过一个1x1的卷积层进行降维处理，将它的channel从256降低到128,</p> 
+         <p style="text-align:justify;">（2）然后在通过group卷积进行处理，这里group 卷积的卷积核为3x3它的groups数为32，它所输出的channel也是等于128,</p> 
+         <p style="text-align:justify;">（3）接着通过1x1卷积对它进行升维</p> 
+         <p style="text-align:justify;">（4）最后将它的输出与我们的输入进行相加得到最后输出。</p> 
+         <blockquote> 
+          <h4 style="text-align:justify;"><span style="background-color:#fefcd8;">三个结构为什么等价？</span></h4> 
+          <p style="margin-left:0;text-align:left;"><strong><span style="color:#ff9900;">（1）b和c等价</span></strong></p> 
+          <p style="margin-left:0;text-align:left;"><strong>第一层：</strong></p> 
+          <p style="margin-left:0;text-align:left;"><strong>过程</strong>：首先从(b)到(c)这个过程，对于(b)中第一层通过包括32个分支，每个分支(path)卷积核个数为4的1x1卷积，对于每个path而言它的卷积核大小都是1x1，channel为256，又由于我们path的个数为32，就可以简单将他们合并在一起，变为( c)图中第一层了。</p> 
+          <p style="margin-left:0;text-align:left;"><strong>参数：</strong></p> 
+          <p style="margin-left:0;text-align:left;">（b）第一层 256×1×1×4×32=32768</p> 
+          <p style="margin-left:0;text-align:left;">（c）第一层 256×1×1×128=32768</p> 
+          <hr> 
+          <p style="margin-left:0;text-align:left;"><strong>第二层：</strong></p> 
+          <p style="margin-left:0;text-align:left;"><strong>过程：</strong>和group卷积其实是一样的，对于每个path可以理解为一个group，每个组的输入输出channel为原来的1/group,对于每个组采用3x3的卷积核，卷积之后将特征矩阵进行concate拼接，所以图(b)第二层也是与图(c)第二层 group为32的组卷积也是等价的。</p> 
+          <p style="margin-left:0;text-align:left;"><strong>参数：</strong></p> 
+          <p style="margin-left:0;text-align:left;">（b）第二层 4×3×3×4×32=4608</p> 
+          <p style="margin-left:0;text-align:left;">（c）第二层 128/32×3×3×128 = 4608</p> 
+          <hr> 
+          <p style="margin-left:0;text-align:left;"><strong><span style="color:#ff9900;">（2）a和b等价</span></strong></p> 
+          <p style="margin-left:0;text-align:left;"><strong>过程：</strong>在（a）中，4维特征图通过1x1卷积变为256维，然后32个256维数据求和，而在(b)中，是先将4维数据concat成128维，在利用1x1卷积，实际上也就是求和过程。</p> 
+          <p style="margin-left:0;text-align:left;"><strong>参数：</strong></p> 
+          <p style="margin-left:0;text-align:left;">（a）第三层 4×1×1×256×32=32768</p> 
+          <p style="margin-left:0;text-align:left;">（b）第三层 128×1×1×256 = 32768</p> 
+         </blockquote> 
+         <hr> 
+         <h4><span style="background-color:#fbd4d0;">&nbsp;分组卷积</span></h4> 
+         <p style="margin-left:0;text-align:left;">在AlexNet时就曾提出，由受限于当时硬件的限制，作者不得不将卷积操作拆分到两台GPU上运行，这两台GPU的参数是不共享的。 两组卷积核学习两种不同的特征，一组学习纹理，另一组学习色彩。</p> 
+         <p style="margin-left:0px;text-align:center;"><img alt="" height="148" src="https://i-blog.csdnimg.cn/blog_migrate/e7f553887d121599312fe46e566b4831.png" width="481"></p> 
+         <p><span style="color:#79c6cd;"><strong>操作：</strong></span></p> 
+         <p>分组卷积层中，输入和输出的 channels 被分为 C 个 groups，分别对每个 group 进行卷积操作。</p> 
+         <p style="margin-left:0;text-align:left;"><strong><span style="color:#faa572;">优点：</span></strong></p> 
+         <p style="margin-left:0;text-align:left;">（1）减少参数量，分成G组，则该层的参数量减为原来的1/G。</p> 
+         <p style="margin-left:0px;text-align:center;"><img alt="" height="220" src="https://i-blog.csdnimg.cn/blog_migrate/52de29b7045ba3f950275ad6c4f32d80.jpeg" width="451"></p> 
+         <p>（2）让网络学习到不同的特征，每组卷积学习到的特征不一样，获得更丰富的信息。</p> 
+         <p style="margin-left:0;text-align:left;">（3）分组卷积可以看做是对原来的特征图进行了一个dropout，有正则的效果。</p> 
+         <hr> 
+         <h4><span style="background-color:#ffd900;">&nbsp;讨论</span></h4> 
+         <p style="margin-left:0;text-align:left;">对于基数块中的深度（depth）论文中做了讨论</p> 
+         <p class="img-center"><img alt="" height="229" src="https://i-blog.csdnimg.cn/blog_migrate/476cc73e7663b9edfcaac9fd13a95f89.png" width="452"></p> 
+         <p><strong><span style="color:#ed7976;">&nbsp;结论：</span></strong></p> 
+         <p style="margin-left:0;text-align:left;">如上图所示，如果一个ResNeXt Block中只有两层conv，前后都可等效成一个大的conv层，那聚合变换和没聚一样。</p> 
+         <hr> 
+         <h3 style="margin-left:0px;text-align:left;">3.4. Model Capacity—模型能力</h3> 
+         <h3><span style="color:#4da8ee;">翻译</span></h3> 
+         <p><span style="color:#0d0016;">我们在下一节中的实验将表明，在保持模型复杂性和参数数量的情况下，我们的模型可以提高精度。这不仅在实践中很有趣，更重要的是，参数的复杂性和数量代表了模型的固有容量，因此通常被研究为深层网络的基本属性[8]。<br> 当我们在保持复杂性的同时评估不同的基数时，我们希望最小化对其他超参数的修改。我们选择去适配BottleNeck的宽度（图1右边的4-d），因为它可以与模块的输入和输出隔离。这种策略对其他超参数(块的深度或输入/输出宽度)没有引入任何变化，因此有助于我们关注基数的影响。</span></p> 
+         <p><span style="color:#0d0016;">在图1（左），原始的ResNet BottleNeck Block[14]有25664+336464+64*256=70K的参数并且成正比的浮点数（在相同的特征图大小上）。对于BottleNeck宽度d，我们的模板在图1有：</span></p> 
+         <p class="img-center"><img alt="" height="51" src="https://i-blog.csdnimg.cn/blog_migrate/b65a2efe1c2d638708440deefab35efc.png" width="487"></p> 
+         <p style="text-align:justify;"><span style="color:#0d0016;">当C=32和d=4时,等式(4)约等于70K。表2显示了基数C和瓶颈宽度d 之间的关系。</span></p> 
+         <p style="text-align:center;">&nbsp;<img alt="" height="183" src="https://i-blog.csdnimg.cn/blog_migrate/77d528c5bcd3cc7bacc8e44a22e43e67.png" width="492"></p> 
+         <p>&nbsp;<span style="color:#0d0016;">因为我们采用3.1节的两个规则，上述近似等式在ResNet的BottleNeck Block和我们的ResNext之间的所有阶段都有效(除了子采样层，其中特征图大小发生变化)。表1比较了原始的ResNet-50和我们容量相似的ResNext-50。我们注意到复杂性只能近似保留，但复杂性的差异很小，不会影响我们的结果。</span></p> 
+         <h3><span style="color:#fe2c24;">精读</span></h3> 
+         <p style="margin-left:0;text-align:left;"><strong>两个重要参数：</strong>&nbsp;<span style="color:#fe2c24;">Cardinality</span>和<span style="color:#fe2c24;">Width</span></p> 
+         <p style="margin-left:0;text-align:left;"><strong><span style="color:#ff9900;">结论：</span></strong></p> 
+         <p style="margin-left:0;text-align:left;">（1）C逐渐增大时，模型性能的变化；&nbsp;</p> 
+         <p style="margin-left:0;text-align:left;">（2）设计C和d，使得整体的参数量在70k左右。目的是对标ResNet。</p> 
+         <hr> 
+         <h2 style="margin-left:0px;text-align:left;"><strong>四、Implementation details—执行细节</strong></h2> 
+         <h3><span style="color:#4da8ee;"><strong>翻译</strong></span></h3> 
+         <p><span style="color:#0d0016;">我们的实现遵循[14]和公开可用的代码fb.resnet.torch [11]。在ImageNet数据集上，使用[11]实现的[38]的比例和纵横比增强，从调整大小的图像中随机裁剪出224×224的输入图像。除了那些增加的维度是投影(在[14]中的类型B)，快捷方式是相同的连接。conv3、4和5的下采样是通过每个阶段第一个块的3×3层中的步长-2卷积来完成的，如[11]中所建议的。我们在8个图形处理器(每个图形处理器32个)上使用256个小批量的SGD。重量衰减为0.0001，动量为0.9。我们从0.1的学习率开始，用[11]中的计划表除以10，做三次。我们采用[13]的权重。在标记比较中，我们从一个短边为256的图像中评估单个224×224中心裁剪的误差<br> 我们的模型是通过图3©的形式实现的。我们执行了BN标准化[17]在图3（c）的卷积之后。ReLU在每个BN之后立即执行，除了在添加到快捷方式之后执行ReLU的块的输出，如下[14]。我们注意到，当BN和ReLU如上所述被适当地处理时，图3中的三种形式是严格等价的。我们训练了所有三种形式，得到了相同的结果。我们选择通过图3©来实现，因为它比其他两种形式更简洁、更快。</span></p> 
+         <h3><span style="color:#fe2c24;"><strong>精读</strong></span></h3> 
+         <p style="margin-left:0;text-align:left;"><strong>输入：</strong>从短边为 256 的图像中裁出一个 224x224 的图像进行测试</p> 
+         <p style="margin-left:0;text-align:left;"><strong>下采样：</strong> conv3、conv4、conv5 的下采样过程采用 stride 为 2 的 3x3 卷积。</p> 
+         <p style="margin-left:0;text-align:left;"><strong>处理器：</strong>使用 8 块 GPU 来训练模型</p> 
+         <p style="margin-left:0;text-align:left;"><strong>优化器：</strong>SGD</p> 
+         <p style="margin-left:0;text-align:left;"><strong>动量：</strong>0.9batch</p> 
+         <p style="margin-left:0;text-align:left;"><strong>尺寸：</strong>256 （每块 GPU 上 32）</p> 
+         <p style="margin-left:0;text-align:left;"><strong>重量衰减：</strong>0.0001</p> 
+         <p style="margin-left:0;text-align:left;"><strong>初始学习速率：</strong>0.1</p> 
+         <p style="margin-left:0;text-align:left;"><strong>实现：</strong>我们在卷积之后接BN，每个BN后加ReLU，除了最后输出的block（这里ReLU加在shortcut相加操作之后）。</p> 
+         <hr> 
+         <h2 style="margin-left:0px;text-align:left;"><strong>五、Experiments—实验</strong></h2> 
+         <h3 style="margin-left:0px;text-align:left;">5.1. Experiments on ImageNet-1K—在ImageNet-1K的实验</h3> 
+         <h4><span style="background-color:#38d8f0;">Notations—标记</span></h4> 
+         <h3><span style="color:#4da8ee;">翻译</span></h3> 
+         <p>我们在1000级ImageNet分类任务上进行消融实验[33]。我们按照[14]构造50层和101层残差网络。我们只是用我们的块替换ResNet-50/101中的所有块。<br><strong>标记</strong>。因为我们采用3.1节的两个规则，我们通过模板引用一个架构就足够了。例如，表1显示了由基数= 32、瓶颈宽度= 4d的模板构建的ResNeXt-50(图3)。为简单起见，该网络表示为ResNeXt-50 (32×4d)。我们注意到，模板的输入/输出宽度固定为256-d(图3)，每次对要素图进行二次采样时，所有宽度都会加倍(见表1)。</p> 
+         <h3><span style="color:#fe2c24;">精读</span></h3> 
+         <p style="margin-left:0;text-align:left;">模板输入输出channel固定为256d，特征图大小/2时，channel×2。</p> 
+         <hr> 
+         <h4><span style="background-color:#a2e043;">&nbsp;Cardinality vs. Width—基数vs宽度</span></h4> 
+         <h3><span style="color:#4da8ee;">翻译</span></h3> 
+         <p><span style="color:#0d0016;"><strong>基数与宽度</strong>。我们首先评估基数C和bottleneck宽度之间的权衡，保留表2中列出的复杂性。表3显示了结果，图5显示了误差对时期的曲线。与ResNet-50(上表3和左图5)相比，32×4d ResNeXt-50的验证误差为22.2%，比ResNet基线的23.9%低1.7%。随着基数C从1增加到32，同时保持复杂度，错误率不断降低。此外，32×4d ResNeXt的训练误差也比ResNeXt低得多，这表明增益不是来自正则化，而是来自更强的表示。<br> 在ResNet-101的情况下也观察到类似的趋势(图5右侧，表3底部)，其中32×4d ResNeXt101的表现优于ResNet-101的0.8%。虽然这种验证误差的改善小于50层情况，但训练误差的改善仍然很大(ResNet-101为20%，32×4d ResNeXt-101为16%，图5右)。事实上，更多的训练数据将扩大验证误差的差距，正如我们在下一小节中在ImageNet-5K集上显示的那样。<br> 表3还表明，在保持复杂性的情况下，当bottleneck宽度小的时候以减少宽度为代价增加基数开始显示出饱和的准确性。我们认为，在这种情况下，继续缩小宽度是不值得的。所以我们在下面采用一个不小于4d的瓶颈宽度。</span></p> 
+         <h3><span style="color:#fe2c24;">精读</span></h3> 
+         <p style="margin-left:0;text-align:left;">ResNet-50和ResNeXt-50比较</p> 
+         <p style="margin-left:0px;text-align:center;"><img alt="" height="255" src="https://i-blog.csdnimg.cn/blog_migrate/4f7a2b9d3ddc6abb82d905cb9005b6af.png" width="573"></p> 
+         <p>ResNet-101和ResNeXt-101比较</p> 
+         <p style="text-align:center;"><img alt="" height="234" src="https://i-blog.csdnimg.cn/blog_migrate/4b5ccf98623c0342b80a8a5ee4fe1353.png" width="537"></p> 
+         <p>&nbsp;<span style="color:#ff9900;"><strong>结论：</strong></span></p> 
+         <p style="margin-left:0;text-align:left;">（1）随着基数C的增加，复杂度相同的情况下，错误率持续降低，训练错误率也更低，这表明效果的提升不是来自正则化，而是来自更强的表示。</p> 
+         <p style="margin-left:0;text-align:left;">（2）在复杂度不变的情况下，提升基数，降低宽度所获得的效果提升逐渐饱和。因此，不需要再继续降低宽度了，我们之后使用等人宽度不低于4d。</p> 
+         <hr> 
+         <h4 style="margin-left:0px;text-align:left;"><span style="background-color:#ffd900;">Increasing Cardinality vs. Deeper/Wider—增加基数vs更深/更广</span></h4> 
+         <h3><span style="color:#4da8ee;">翻译</span></h3> 
+         <p><span style="color:#0d0016;"><strong>增加基数与更深/更宽</strong>。接下来，我们研究通过增加基数C或增加深度或宽度来增加复杂性。下面的比较也可以参考ResNet-101基线的2倍浮点运算来进行。我们比较了以下具有150亿次浮点运算的变体。(一)深入到200层。我们采用在[11]中实现的ResNet-200 [15]。（二）通过增加瓶颈宽度扩大范围。(三)通过加倍c来增加基数。</span><br><span style="color:#0d0016;">表4显示，与ResNet-101基线(22.0%)相比，复杂度增加2倍会持续降低误差。但是当更深(ResNet200，0.3%)或更宽(更宽的ResNet-101，0.7%)时，改善很小。<br> 相反，相比增加深度或者宽度,增加基数C得到的结果更好。2×64d ResNeXt-101(即在1×64d ResNet-101基线上加倍并保持宽度)将top-1误差降低1.3%至20.7%。64×4d ResNeXt-101(即在32×4d ResNeXt-101上加倍C并保持宽度)将top-1误差降低到20.4%。<br> 我们还注意到，32×4d ResNet-101 (21.2%)比更深的ResNet-200和更宽的ResNet101性能更好，尽管它的复杂性只有50%。这再次表明基数比深度和宽度更有效。</span></p> 
+         <h3><span style="color:#fe2c24;">精读</span></h3> 
+         <p style="margin-left:0;text-align:left;">下面我们研究通过增加基数或深度/宽度来提升模型复杂度的效果。</p> 
+         <p style="margin-left:0px;text-align:center;"><img alt="" height="252" src="https://i-blog.csdnimg.cn/blog_migrate/1ebae9ca6682acb0c7eff01880744dcb.png" width="360"></p> 
+         <p style="margin-left:0px;">第一个增加到200层；</p> 
+         <p style="margin-left:0;text-align:left;">第二个增加宽度；</p> 
+         <p style="margin-left:0;text-align:left;">第三个增加基数，C翻倍。</p> 
+         <p style="margin-left:0;text-align:left;"><strong><span style="color:#ff9900;">结论：</span></strong></p> 
+         <p style="margin-left:0;text-align:left;">（1）表4中结果表明复杂度翻倍，错误率持续下降。</p> 
+         <p style="margin-left:0;text-align:left;">（2）但是使用更深层或更宽提升很小。</p> 
+         <p style="margin-left:0;text-align:left;">（3）相反，提升基数效果要好得多。</p> 
+         <hr> 
+         <h4 style="margin-left:0px;text-align:left;"><span style="background-color:#dad5e9;">Residual connections—残差连接</span></h4> 
+         <h3><span style="color:#4da8ee;">翻译</span></h3> 
+         <p><strong><span style="color:#0d0016;">残差连接。</span></strong><span style="color:#0d0016;">从ResNeXt-50中删除快捷方式会使错误增加3.9点，达到26.1%。从它的1497 ResNet-50对应物中删除快捷方式要糟糕得多(31.2%)。这些比较表明，剩余连接有助于优化，而聚合转换是更强的表示，这是因为它们始终比有或没有剩余连接的对应转换表现得更好。</span></p> 
+         <h3><span style="color:#fe2c24;">精读</span></h3> 
+         <p style="margin-left:0;text-align:left;">下面这个表展示了残差连接的效果：</p> 
+         <p style="margin-left:0px;text-align:center;"><img alt="" height="93" src="https://i-blog.csdnimg.cn/blog_migrate/bbf2202c5726b6eb3874359d754bfdee.png" width="459"></p> 
+         <p><span style="color:#ff9900;"><strong>&nbsp;结论：</strong></span>这些对比表示残差连接对于优化很有帮助，而我们的方法（变换聚合）有着更强的表示能力。</p> 
+         <hr> 
+         <h4><span style="background-color:#faa572;">&nbsp;Performance—执行</span></h4> 
+         <h3><span style="color:#4da8ee;">翻译</span></h3> 
+         <p><span style="color:#0d0016;"><strong>执行</strong>。为了简单起见，我们使用Torch内置的分组卷积实现，没有特殊的优化。我们注意到这个实现是暴力的，并且不支持并行化。在NVIDIA M40的8个GPU上，表3中的32×4d ResNeXt-101训练每小批量需要0.95秒，而ResNet-101基线的0.70秒具有相似的浮点运算。我们认为这是合理的开销。我们期望精心设计的较低级别的实现(例如，在CUDA中)将减少这种开销。我们还期望CPU上的推理时间将呈现更少的开销。训练2×复杂性模型(64×4d ResNeXt-101)每个小批量需要1.7秒，在8个图形处理器上总共需要10天。</span></p> 
+         <h3><span style="color:#fe2c24;">精读</span></h3> 
+         <p style="margin-left:0;text-align:left;">在8GPU上训练32 * 4d ResNeXt-101每个minibatch花费0.95s，而对有着相当复杂度的ResNet-101 baseline，只需要0.7s。</p> 
+         <hr> 
+         <h4 style="margin-left:0px;text-align:left;"><span style="background-color:#c7e6ea;">Comparisons with state-of-the-art results—与最先进的结果进行比较</span></h4> 
+         <h3><span style="color:#4da8ee;">翻译</span></h3> 
+         <p><span style="color:#0d0016;">与最先进结果的比较。表5显示了ImageNet验证集的单作物测试的更多结果。除了测试224×224作物外，我们还评估了320×320 crop，如下所示[15]。我们的结果优于ResNet、Inception-v3/v4和Inception-ResNet-v2，single-crop前5名的错误率为4.4%。此外，我们的架构设计比所有的初始模型都简单得多，并且需要手动设置的超参数也少得多。<br> Resnext是我们的参赛作品的基础，对ILSVRC 2016分类任务，我们实现了2个。我们注意到使用多尺度和/或多帧测试后，许多模型（包括我们的）开始在此数据集上饱和。使用[14]中的多尺度密集测试，我们的单模型top-1/top-5错误率为17.7%/3.7%，与采用多尺度多作物测试的Inception-ResNet-v2的单模型结果17.8%/3.7%相当。我们在测试集中进行了3.03％的前5个错误的集合结果，与winner的2.99％和Inception-V4 / InceptionResnet-V2的3.08％[37]相符。</span></p> 
+         <h3><br><span style="color:#fe2c24;">精读</span></h3> 
+         <p style="margin-left:0;text-align:left;">表5展示了更多的单crop测试的结果对比。</p> 
+         <p style="margin-left:0px;text-align:center;"><img alt="" height="339" src="https://i-blog.csdnimg.cn/blog_migrate/6f5a987eefe285402f6461d590f1412c.png" width="536"></p> 
+         <p>&nbsp;<span style="color:#ff9900;"><strong>结论：</strong></span></p> 
+         <p><span style="color:#0d0016;">（1）</span>我们的结果优于ResNet、Inception-v3/v4和Inception-ResNet-v2，single-crop前5名的错误率为4.4%。</p> 
+         <p style="margin-left:0;text-align:left;">（2）此外，我们的架构设计比所有的初始模型都简单得多，并且需要手动设置的超参数也少得多。</p> 
+         <hr> 
+         <h3 style="margin-left:0px;text-align:left;">5.2. Experiments on ImageNet-5K—在ImgaeNet-5K的实验</h3> 
+         <h3><span style="color:#4da8ee;">翻译</span></h3> 
+         <p><span style="color:#0d0016;">ImageNet-1K上的性能似乎饱和。但我们认为这不是因为模型的能力，而是因为数据集的复杂性。接下来，我们在具有5000类的更大的想象中子集上评估我们的模型。<br> 我们的5k数据集是完整的Imagenet-22k集合[33]的子集。 5000类别由原始Imagenet1K类别和其他4000类包含完整的ImageNet集中最多的图像。 5K套装有680万个图像，约为1K集的5倍。没有官方火车/ val拆分，因此我们选择评估原始ImageNet-1K验证集。在此1k-class val集合中，可以将模型评估为5k路分类任务（预测为其他4K类的所有标签自动错误）或作为1k路分类任务（SoftMax仅在1K上应用课程）在测试时间。<br> 实验细节和第4节相同。5K-trainning 模型均从零开始训练并且针对与1K训练模型相同数量的小批量进行训练（因此1/5Xepochs）</span><br><span style="color:#0d0016;">表6和图6显示了在保持复杂性的情况下的比较。ResNeXt-50比ResNet-50减少了3.2%的5K路top-1错误，ResNetXt-101比ResNet-101减少了2.3%的5K路top-1错误。在1K路误差上观察到类似的间隙。这些显示了ResNeXt更强的代表性。<br> 此外，我们发现在5K集上训练的模型(表6中的1K路误差为22.2%/5.7%)与在1K集上训练的模型(表3中的21.2%/5.6%)相比表现更有竞争力，在验证集上的相同1K路分类任务上进行了评估。这一结果是在不增加训练时间(由于相同数量的小批量)和不进行微调的情况下实现的。我们认为这是一个有希望的结果，因为将5K分类的训练任务是一个更具挑战性的任务。</span></p> 
+         <h3><span style="color:#fe2c24;">精读</span></h3> 
+         <p style="margin-left:0;text-align:left;"><strong><span style="color:#79c6cd;">原因：</span></strong>在ImageNet-1K数据集上的结果似乎饱和了，但是我们认为这不是因为模型的能力不够，而是因为数据集的复杂度不够。下面我们就在更大的ImageNet-5K上进行实验。</p> 
+         <p style="margin-left:0px;text-align:left;"><strong><span style="color:#e6b223;">方法：</span></strong>在这个验证集上，虽然只有1000类，我们可以当做5000类来分类，如果结果是4000类中的，那么分类错了。</p> 
+         <p style="margin-left:0px;text-align:left;"><strong><span style="color:#ed7976;">实验结果：</span></strong></p> 
+         <p style="margin-left:0px;text-align:center;"><strong><span style="color:#ed7976;"><img alt="" height="303" src="https://i-blog.csdnimg.cn/blog_migrate/6a006952a7c6cb761e304a8e3b1dbab7.png" width="621"></span></strong></p> 
+         <p style="margin-left:0;text-align:left;"><strong><span style="color:#ff9900;">结论：</span></strong></p> 
+         <p style="margin-left:0;text-align:left;">（1）在5K数据集上训练的模型与在1K数据集上训练的模型效果相当</p> 
+         <p style="margin-left:0;text-align:left;">（2）这表明分类5k类是更具挑战性的任务。</p> 
+         <hr> 
+         <h3 style="margin-left:0px;text-align:left;">5.3. Experiments on CIFAR—在CIFAR的实验</h3> 
+         <h3><span style="color:#4da8ee;">翻译</span></h3> 
+         <p><span style="color:#0d0016;">我们在CIFAR-10和100数据集上进行了更多的实验[23]。我们使用[14]中的体系结构，并用bottleneck模板替换基本残差块<br> Bottleneck template：&nbsp;</span></p> 
+         <p style="text-align:center;"><span style="color:#0d0016;"><img alt="" height="117" src="https://i-blog.csdnimg.cn/blog_migrate/92974b29ff7984d0713695c706837499.png" width="187"></span></p> 
+         <p><span style="color:#0d0016;">我们的网络从单个3×3 conv层开始，然后是3个阶段，每个阶段有3个残差块，最后是平均池和一个完全连接的分类器(总共29层)，如下文[14]。我们将这种转换和翻转数据增强称为[14]。实施细节见附录。<br> 我们基于上述基线比较了两种情况下提高复杂性：（i）增加基数并修复所有宽度，或（ii）增加bottleneck的宽度和修复基数= 1.我们在这些变化下培训并评估一系列网络。图7显示了测试误差速率与模型大小的比较。我们发现，随着我们在Imagenet-1K上观察到的宽度，增加的基数比增加的宽度更有效。表7显示了结果和模型尺寸，与宽Reset [43]相比，这是最好的已发布记录。我们具有类似型号（34.4M）的模型显示结果比Reset更好。我们的较大方法在CIFAR-10和CIFAR-100上实现了3.58％的测试误差（平均10次运行）和17.31％。据我们所知，这些是文献中的最先进的结果（具有类似的数据增强），包括未发表的技术报告。</span></p> 
+         <h3><span style="color:#fe2c24;">精读</span></h3> 
+         <p style="margin-left:0;text-align:left;"><span style="color:#956fe7;"><strong>数据集：</strong></span>CIFAR-10和CIFAR-100</p> 
+         <p style="margin-left:0;text-align:left;"><span style="color:#e6b223;"><strong>方法：</strong></span></p> 
+         <p style="margin-left:0;text-align:left;">增加基数，固定所有的宽度</p> 
+         <p style="margin-left:0;text-align:left;">增加宽度，固定基数为1。</p> 
+         <p style="margin-left:0;text-align:left;"><strong><span style="color:#ed7976;">实验结果：</span></strong></p> 
+         <p style="margin-left:0px;text-align:center;"><strong><span style="color:#ed7976;"><img alt="" height="245" src="https://i-blog.csdnimg.cn/blog_migrate/bab6c6e8fbc8933acdd4775b5804e32c.png" width="598"></span></strong></p> 
+         <p>&nbsp;<span style="color:#ff9900;"><strong>结论：</strong></span>增加基数是一个更高效的办法</p> 
+         <hr> 
+         <p style="margin-left:.0001pt;text-align:left;"></p> 
+         <h3 style="margin-left:0px;text-align:left;">5.4. Experiments on COCO object detection—在COCO目标检测的实验</h3> 
+         <h3><span style="color:#4da8ee;">翻译</span></h3> 
+         <p><span style="color:#0d0016;">接下来，我们评估Coco对象检测集的概括性[27]。我们在80K训练集上培训模型加上35k Val子集并在5K Val子集（称为MINIVAL）上进行评估，如[1]。我们评估Cocostyle平均精度（AP）以及AP@iou=0.5 [27]。我们采用基本更快的R-CNN [32]并关注[14]将Reset / Resnext插入其中。模型在ImageNet-1k上预先培训，并在检测集上进行微调。实施细节在附录中。<br> 表8显示了比较。在50层基线上，RESNEXT将AP @ 0.5改善2.1％，AP达1.0％，而不会增加复杂性。 ResNext在101层基线上显示了较小的改进。我们猜测更多培训数据将导致更大的差距，如想象的-5K集合所观察到的。</span></p> 
+         <h3><span style="color:#fe2c24;">精读</span></h3> 
+         <p style="margin-left:0;text-align:left;"><span style="color:#e6b223;"><strong>操作：</strong></span></p> 
+         <p style="margin-left:0;text-align:left;">在80k训练集+35kval训练，在5k val上测试。</p> 
+         <p style="margin-left:0;text-align:left;">使用了标准的Faster R-CNN，直接将ResNet/ResNeXt替换backbone。</p> 
+         <p style="margin-left:0;text-align:left;">模型在ImageNet上预训练过，在检测数据集上微调。</p> 
+         <p style="margin-left:0;text-align:left;"><strong><span style="color:#ed7976;">结果：</span></strong></p> 
+         <p style="margin-left:0px;text-align:center;"><strong><span style="color:#ed7976;"><img alt="" height="199" src="https://i-blog.csdnimg.cn/blog_migrate/1911d534a467633081ef8caef1afa9a8.png" width="476"></span></strong>&nbsp;</p> 
+         <p style="margin-left:0px;text-align:justify;"><span style="color:#ff9900;"><strong>结论：</strong></span>使用更多的训练数据，会增加提升效果。</p> 
+         <hr> 
+         <h2 style="margin-left:0px;text-align:left;"><strong>论文十问</strong></h2> 
+         <blockquote> 
+          <p style="margin-left:0;text-align:left;"><span style="color:#ff9900;">Q1：论文试图解决什么问题？</span></p> 
+          <p style="margin-left:0;text-align:left;">本文用一种平行堆叠相同拓扑结构的blocks代替原来 ResNet 的三层卷积的block，在不明显增加参数量级的情况下提升了模型的准确率，同时由于拓扑结构相同，超参数也减少了，便于模型移植。</p> 
+         </blockquote> 
+         <blockquote> 
+          <p style="margin-left:0;text-align:left;"><span style="color:#ff9900;">Q2：这是否是一个新的问题？</span></p> 
+          <p style="margin-left:0;text-align:left;">不是，是对ResNet的一个改进，结合了Inception和ResNet优点</p> 
+         </blockquote> 
+         <blockquote> 
+          <p style="margin-left:0;text-align:left;"><span style="color:#ff9900;">Q3：这篇文章要验证一个什么科学假设？</span></p> 
+          <p style="margin-left:0;text-align:left;">1.在保持相同的计算复杂度和模型尺寸条件下，我们提出的这个网络模块要比原来的 ResNet 模块性能要好。</p> 
+          <p style="margin-left:0;text-align:left;">2.增加基数是一种比更深或更宽更有效的获得准确性的方法</p> 
+         </blockquote> 
+         <blockquote> 
+          <p style="margin-left:0;text-align:left;"><span style="color:#ff9900;">Q4：有哪些相关研究？如何归类？谁是这一课题在领域内值得关注的研究员？</span></p> 
+          <p style="margin-left:0;text-align:left;">VGG/ResNet/Inception。图像分类</p> 
+         </blockquote> 
+         <blockquote> 
+          <p style="margin-left:0;text-align:left;"><span style="color:#ff9900;">Q5：论文中提到的解决方案之关键是什么？</span></p> 
+          <p style="margin-left:0;text-align:left;">（1）提炼VGG、ResNet和Inception系列的优秀思想；</p> 
+          <p style="margin-left:0;text-align:left;">（2）处理相同尺寸的特征图时，采用同样大小、数量的卷积核；</p> 
+          <p style="margin-left:0;text-align:left;">（3）特征图分辨率长宽降低2倍时，特征图通道数（卷积核数量）翻倍；</p> 
+          <p style="margin-left:0;text-align:left;">（4）提出cardinality来衡量模型复杂度，实验表明cardinality比模型深度、宽度更高效</p> 
+         </blockquote> 
+         <blockquote> 
+          <p style="margin-left:0;text-align:left;"><span style="color:#ff9900;">Q6：论文中的实验是如何设计的？</span></p> 
+          <p style="margin-left:0;text-align:left;">以ResNet50为基准，在ImageNet-1K、ImgaeNet-5K、CIFAR、COCO这些数据集上做对比实验。</p> 
+         </blockquote> 
+         <blockquote> 
+          <p style="margin-left:0;text-align:left;"><span style="color:#ff9900;">Q7：用于定量评估的数据集是什么？代码有没有开源？</span></p> 
+          <p style="margin-left:0;text-align:left;">ImageNet-1K、ImgaeNet-5K、CIFAR、COCO。有开源</p> 
+         </blockquote> 
+         <blockquote> 
+          <p style="margin-left:0;text-align:left;"><span style="color:#ff9900;">Q8：论文中的实验及结果有没有很好地支持需要验证的科学假设？</span></p> 
+          <p style="margin-left:0;text-align:left;">验证了。实验结果和ResNet对比有提升，参数也减少了。</p> 
+         </blockquote> 
+         <blockquote> 
+          <p style="margin-left:0;text-align:left;"><span style="color:#ff9900;">Q9：这篇论文到底有什么贡献？</span></p> 
+          <p style="margin-left:0;text-align:left;">采用分支同构使网络结构简明，模块化需要手动调节的超参数少；提炼split-transform-merge思想；引入cardinality指标，为CNN模型提供新的思路。</p> 
+         </blockquote> 
+         <blockquote> 
+          <p style="margin-left:0;text-align:left;"><span style="color:#ff9900;">Q10：下一步呢？有什么工作可以继续深入？</span></p> 
+          <p style="margin-left:0;text-align:left;">最近ResNeXt已经应用到Mask R-CNN中，取得了SOTA的COCO实例分割和目标检测效果。&nbsp;</p> 
+         </blockquote> 
+         <hr> 
+         <p>&nbsp;代码复现：<a href="https://blog.csdn.net/weixin_43334693/article/details/128664382?spm=1001.2014.3001.5501" title="ResNeXt代码复现＋超详细注释（PyTorch）">ResNeXt代码复现＋超详细注释（PyTorch）</a></p> 
+         <p style="margin-left:.0001pt;text-align:left;"></p> 
+        </div> 
+       </div> 
+      </article>  
+     </div> 
+     <div class="directory-boxshadow-dialog" style="display:none;"> 
+      <div class="directory-boxshadow-dialog-box"> 
+      </div> 
+      <div class="vip-limited-time-offer-box-new" id="vip-limited-time-offer-box-new"> 
+       <img class="limited-img limited-img-new" src="https://csdnimg.cn/release/blogv2/dist/pc/img/vip-limited-close-newWhite.png"> 
+       <div class="vip-limited-time-top">
+         确定要放弃本次机会？ 
+       </div> 
+       <span class="vip-limited-time-text">福利倒计时</span> 
+       <div class="limited-time-box-new"> 
+        <span class="time-hour"></span> 
+        <i>:</i> 
+        <span class="time-minite"></span> 
+        <i>:</i> 
+        <span class="time-second"></span> 
+       </div> 
+       <div class="limited-time-vip-box"> 
+        <p> <img class="coupon-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/vip-limited-close-roup.png"> <span class="def">立减 ¥</span> <span class="active limited-num"></span> </p> 
+        <span class="">普通VIP年卡可用</span> 
+       </div> 
+       <a class="limited-time-btn-new" href="https://mall.csdn.net/vip" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.9621&quot;}" data-report-query="spm=1001.2101.3001.9621">立即使用</a> 
+      </div> 
+     </div> 
+     <div class="more-toolbox-new more-toolbar" id="toolBarBox"> 
+      <div class="left-toolbox"> 
+       <div class="toolbox-left"> 
+        <div class="profile-box"> 
+         <a class="profile-href" target="_blank" href="https://jrs0511.blog.csdn.net"><img class="profile-img" src="https://profile-avatar.csdnimg.cn/da983c398fca4f14a19ea48d137f6ca3_weixin_43334693.jpg!1"> <span class="profile-name"> 路人贾'ω' </span> </a> 
+        </div> 
+        <div class="profile-attend"> 
+         <a class="tool-attend tool-bt-button tool-unbt-attend" href="javascript:;" data-report-view="{&quot;mod&quot;:&quot;1592215036_002&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4232&quot;,&quot;extend1&quot;:&quot;已关注&quot;}">已关注</a> 
+         <a class="tool-item-follow active-animation" style="display:none;">关注</a> 
+        </div> 
+       </div> 
+       <div class="toolbox-middle"> 
+        <ul class="toolbox-list"> 
+         <li class="tool-item tool-item-size tool-active is-like" id="is-like"> <a class="tool-item-href"> <img style="display:none;" id="is-like-imgactive-animation-like" class="animation-dom active-animation" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarThumbUpactive.png" alt=""> <img class="isactive" style="display:none" id="is-like-imgactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/like-active.png" alt=""> <img class="isdefault" style="display:block" id="is-like-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/like.png" alt=""> <span id="spanCount" class="count "> 38 </span> </a> 
+          <div class="tool-hover-tip">
+           <span class="text space">点赞</span>
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active is-unlike" id="is-unlike"> <a class="tool-item-href"> <img class="isactive" style="margin-right:0px;display:none" id="is-unlike-imgactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/unlike-active.png" alt=""> <img class="isdefault" style="margin-right:0px;display:block" id="is-unlike-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/unlike.png" alt=""> <span id="unlikeCount" class="count "></span> </a> 
+          <div class="tool-hover-tip">
+           <span class="text space">踩</span>
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active is-collection "> <a class="tool-item-href" href="javascript:;" data-report-click="{&quot;mod&quot;:&quot;popu_824&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4130&quot;,&quot;ab&quot;:&quot;new&quot;}"> <img style="display:none" id="is-collection-img-collection" class="animation-dom active-animation" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/collect-active.png" alt=""> <img class="isdefault" id="is-collection-img" style="display:block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/collect.png" alt=""> <img class="isactive" id="is-collection-imgactive" style="display:none" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newCollectActive.png" alt=""> <span class="count get-collection " data-num="165" id="get-collection"> 165 </span> </a> 
+          <div class="tool-hover-tip collect"> 
+           <div class="collect-operate-box"> 
+            <span class="collect-text" id="is-collection"> 收藏 </span> 
+           </div> 
+          </div> 
+          <div class="tool-active-list"> 
+           <div class="text">
+             觉得还不错? 
+            <span class="collect-text" id="tool-active-list-collection"> 一键收藏 </span> 
+            <img id="tool-active-list-close" src="https://csdnimg.cn/release/blogv2/dist/pc/img/collectionCloseWhite.png" alt=""> 
+           </div> 
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active tool-item-comment"> 
+          <div class="guide-rr-first"> 
+           <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/guideRedReward01.png" alt=""> 
+           <button class="btn-guide-known">知道了</button> 
+          </div> <a class="tool-item-href go-side-comment" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.7009&quot;}"> <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/comment.png" alt=""> <span class="count"> 0 </span> </a> 
+          <div class="tool-hover-tip">
+           <span class="text space">评论</span>
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active tool-QRcode" data-type="article" id="tool-share"> <a class="tool-item-href" href="javascript:;" data-report-view="{&quot;spm&quot;:&quot;3001.4129&quot;,&quot;extra&quot;:{&quot;type&quot;:&quot;blogdetail&quot;}}"> <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/share.png" alt=""> <span class="count">分享</span> </a> 
+          <div class="QRcode" id="tool-QRcode"> 
+           <div class="share-bg-box"> 
+            <div class="share-content"> 
+             <a id="copyPosterUrl" data-type="link" class="btn-share">复制链接</a> 
+            </div> 
+            <div class="share-content"> 
+             <a class="btn-share" data-type="qq">分享到 QQ</a> 
+            </div> 
+            <div class="share-content"> 
+             <a class="btn-share" data-type="weibo">分享到新浪微博</a> 
+            </div> 
+            <div class="share-code"> 
+             <div class="share-code-box" id="shareCode"></div> 
+             <div class="share-code-text"> 
+              <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/share/icon-wechat.png" alt="">扫一扫 
+             </div> 
+            </div> 
+           </div> 
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active tool-item-reward"> <a class="tool-item-href" href="javascript:;" data-report-click="{&quot;mod&quot;:&quot;popu_830&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4237&quot;,&quot;dest&quot;:&quot;&quot;,&quot;ab&quot;:&quot;new&quot;}"> <img class="isdefault reward-bt" id="rewardBtNew" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/reward.png" alt="打赏"> <span class="count">打赏</span> </a> 
+          <div class="tool-hover-tip">
+           <span class="text space">打赏</span>
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active is-more" id="is-more"> <a class="tool-item-href"> <img class="isdefault" style="margin-right:0px;display:block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/more.png" alt=""> <span class="count"></span> </a> 
+          <div class="more-opt-box"> 
+           <div class="mini-box"> 
+            <a class="tool-item-href" id="rewardBtNewHide" data-report-click="{&quot;spm&quot;:&quot;3001.4237&quot;,&quot;extra&quot;:&quot;{\&quot;type\&quot;:\&quot;hide\&quot;}&quot;}"> <img class="isdefault reward-bt" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/reward.png" alt="打赏"> <span class="count">打赏</span> </a> 
+            <a class="tool-item-href" id="toolReportBtnHide"> <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/report.png" alt=""> <span class="count">举报</span> </a> 
+           </div> 
+           <div class="normal-box"> 
+            <a class="tool-item-href" id="toolReportBtnHideNormal"> <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/report.png" alt=""> <span class="count">举报</span> </a> 
+           </div> 
+          </div> </li> 
+        </ul> 
+       </div> 
+       <div class="toolbox-right"> 
+        <div class="tool-directory"> 
+         <a class="bt-columnlist-show" data-id="12127342" data-free="true" data-description="AlexNet/VGG/Inception/ResNet/DenseNet/SENet/ReXtNet" data-subscribe="false" data-title="图像分类经典论文" data-img="https://i-blog.csdnimg.cn/blog_column_migrate/4cc3e83223e8d0023a6303cdd4658cce.png?x-oss-process=image/resize,m_fixed,h_224,w_224" data-url="https://blog.csdn.net/weixin_43334693/category_12127342.html" data-sum="9" data-people="375" data-price="0" data-hotrank="0" data-status="true" data-oldprice="0" data-join="false" data-studyvip="true" data-studysubscribe="false" data-report-view="{&quot;spm&quot;:&quot;1001.2101.3001.6334&quot;,&quot;extend1&quot;:&quot;专栏目录&quot;}" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.6334&quot;,&quot;extend1&quot;:&quot;专栏目录&quot;}">专栏目录</a> 
+        </div> 
+       </div> 
+      </div> 
+     </div>   
+     <a id="commentBox" name="commentBox"></a> 
+     <div id="pcCommentBox" class="comment-box comment-box-new2 login-comment-box-new" style="display:none"> 
+      <div class="has-comment" style="display:block"> 
+       <div class="one-line-box"> 
+        <div class="has-comment-tit go-side-comment"> 
+         <span class="count">0</span>&nbsp;条评论 
+        </div> 
+        <div class="has-comment-con comment-operate-item"></div> 
+        <a class="has-comment-bt-right go-side-comment focus">写评论</a> 
+       </div> 
+      </div> 
+     </div> 
+     <div class="first-recommend-box recommend-box recommend-highlight-default"> 
+      <div class="recommend-item-box type_blog clearfix" data-url="https://jrs0511.blog.csdn.net/article/details/128664382" data-report-view="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6661.1&quot;,&quot;mod&quot;:&quot;popu_871&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant_t0.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-128664382-blog-128676690.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743598778160_58647\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743598778160_58647&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/128664382&quot;}"> 
+       <div class="content-box"> 
+        <div class="content-blog display-flex"> 
+         <div class="title-box"> 
+          <span class="type"> <img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt=""> <span class="tip">博客</span> </span> 
+          <a href="https://jrs0511.blog.csdn.net/article/details/128664382" class="tit" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6661.1&quot;,&quot;mod&quot;:&quot;popu_871&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant_t0.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-128664382-blog-128676690.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743598778160_58647\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743598778160_58647&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/128664382&quot;}" data-report-query="spm=1001.2101.3001.6661.1&amp;utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-128664382-blog-128676690.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-128664382-blog-128676690.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+           <div class="left ellipsis-online ellipsis-online-1">
+            ResNeXt
+            <em>代码</em>
+            <em>复现</em>＋
+            <em>超</em>
+            <em>详细</em>注释（PyTorch）
+           </div> </a> 
+         </div> 
+         <div class="info-box display-flex"> 
+          <div class="info"> 
+           <a href="https://blog.csdn.net/weixin_43334693" target="_blank"><span class="blog-title">路人贾的博客</span></a> 
+          </div> 
+          <div class="info display-flex"> 
+           <span class="info-block time">01-14</span> 
+           <span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> 1万+ </span> 
+          </div> 
+         </div> 
+        </div> 
+        <div class="desc-box"> 
+         <a href="https://jrs0511.blog.csdn.net/article/details/128664382" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6661.1&quot;,&quot;mod&quot;:&quot;popu_871&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant_t0.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-128664382-blog-128676690.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743598778160_58647\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743598778160_58647&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/128664382&quot;}" data-report-query="spm=1001.2101.3001.6661.1&amp;utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-128664382-blog-128676690.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-128664382-blog-128676690.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+          <div class="desc ellipsis-online ellipsis-online-1">
+           ResNeXt
+           <em>代码</em>
+           <em>复现</em>（PyTorch），每一行都有
+           <em>超</em>
+           <em>详细</em>注释，新手小白都能看懂，亲测可运行
+          </div> </a> 
+        </div> 
+       </div> 
+      </div> 
+     </div>  
+     <div class="second-recommend-box recommend-box recommend-highlight-default"> 
+      <div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/m0_56192771/article/details/124161149" data-report-view="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.1&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-124161149-blog-128676690.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743598778160_58647\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743598778160_58647&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/m0_56192771/article/details/124161149&quot;}"> 
+       <div class="content-box"> 
+        <div class="content-blog display-flex"> 
+         <div class="title-box"> 
+          <span class="type"> <img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt=""> <span class="tip">博客</span> </span> 
+          <a href="https://blog.csdn.net/m0_56192771/article/details/124161149" class="tit" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.1&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-124161149-blog-128676690.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743598778160_58647\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743598778160_58647&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/m0_56192771/article/details/124161149&quot;}" data-report-query="spm=1001.2101.3001.6650.1&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-124161149-blog-128676690.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-124161149-blog-128676690.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+           <div class="left ellipsis-online ellipsis-online-1">
+            ResNeXt网络解析
+           </div> </a> 
+         </div> 
+         <div class="info-box display-flex"> 
+          <div class="info"> 
+           <a href="https://blog.csdn.net/m0_56192771" target="_blank"><span class="blog-title">m0_56192771的博客</span></a> 
+          </div> 
+          <div class="info display-flex"> 
+           <span class="info-block time">04-13</span> 
+           <span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> 3225 </span> 
+          </div> 
+         </div> 
+        </div> 
+        <div class="desc-box"> 
+         <a href="https://blog.csdn.net/m0_56192771/article/details/124161149" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.1&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-124161149-blog-128676690.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743598778160_58647\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743598778160_58647&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/m0_56192771/article/details/124161149&quot;}" data-report-query="spm=1001.2101.3001.6650.1&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-124161149-blog-128676690.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-124161149-blog-128676690.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+          <div class="desc ellipsis-online ellipsis-online-1">
+           ResNeXt是ResNet和Inception的结合体.ResNeXt借鉴Inception的“分割-变换-聚合”策略（即split-transform-merge），不同于Inception 的是，ResNext不需要人工设计复杂的Inception结构细节，而是每一个分支都采用相同的拓扑结构。ResNeXt的本质是分组卷积（Group Convolution)，通过引入基数（Cardinality）来控制分组的数量 1 split-transform-merge策略 2 简化Inception In
+          </div> </a> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <div class="recommend-box insert-baidu-box  recommend-highlight-default"> 
+      <div class="recommend-item-box no-index" style="display:none"></div> 
+      <div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/COINVK/article/details/129380897" data-report-view="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.2&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-2-129380897-blog-128676690.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743598778160_58647\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743598778160_58647&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;2&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/COINVK/article/details/129380897&quot;}"> 
+       <div class="content-box"> 
+        <div class="content-blog display-flex"> 
+         <div class="title-box"> 
+          <span class="type"> <img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt=""> <span class="tip">博客</span> </span> 
+          <a href="https://blog.csdn.net/COINVK/article/details/129380897" class="tit" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.2&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-2-129380897-blog-128676690.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743598778160_58647\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743598778160_58647&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;2&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/COINVK/article/details/129380897&quot;}" data-report-query="spm=1001.2101.3001.6650.2&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-2-129380897-blog-128676690.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-2-129380897-blog-128676690.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+           <div class="left ellipsis-online ellipsis-online-1">
+            ResNext：Aggregated Residual Transformations for Deep Neural Networks
+           </div> </a> 
+         </div> 
+         <div class="info-box display-flex"> 
+          <div class="info"> 
+           <a href="https://blog.csdn.net/COINVK" target="_blank"><span class="blog-title">just</span></a> 
+          </div> 
+          <div class="info display-flex"> 
+           <span class="info-block time">03-13</span> 
+           <span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> 637 </span> 
+          </div> 
+         </div> 
+        </div> 
+        <div class="desc-box"> 
+         <a href="https://blog.csdn.net/COINVK/article/details/129380897" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.2&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-2-129380897-blog-128676690.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743598778160_58647\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743598778160_58647&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;2&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/COINVK/article/details/129380897&quot;}" data-report-query="spm=1001.2101.3001.6650.2&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-2-129380897-blog-128676690.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-2-129380897-blog-128676690.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+          <div class="desc ellipsis-online ellipsis-online-1">
+           本文提出了一种简单的、高度模块化的图像分类网络结构。本文的网络是通过重复一个构建块来构建的，该构建块聚合了一组具有相同拓扑结构的转换(transformations)。本文设计了一个同构的多分支体系结构，只需要设置几个
+           <em>超</em>参数来实现；这种策略探索了一个新的维度，我们称之为"cardinality 基数"，作为深度和宽度之外的一个重要因素；在ImageNet-1k数据集上证明，即使在保持复杂度不变的限制条件下，增加"基数"也能提高分类精度；此外，当我们增加容量时，增加基数比更深入或更广泛更有效。
+          </div> </a> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <div class="blog-footer-bottom" style="margin-top:10px;"></div>   
+    </main> 
+    <aside class="blog_container_aside"> 
+     <div id="asideProfile" class="aside-box active"> 
+      <div class="profile-intro d-flex"> 
+       <div class="avatar-box d-flex justify-content-center flex-column"> 
+        <a href="https://jrs0511.blog.csdn.net" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_379&quot;,&quot;spm&quot;:&quot;3001.4121&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net&quot;,&quot;ab&quot;:&quot;new&quot;}"> <img src="https://profile-avatar.csdnimg.cn/da983c398fca4f14a19ea48d137f6ca3_weixin_43334693.jpg!1" class="avatar_pic"> </a>
+        <a href="https://jrs0511.blog.csdn.net" data-report-click="{&quot;spm&quot;:&quot;3001.9180&quot;}" target="_blank"><img class="identity" src="https://csdnimg.cn/release/blogv2/dist/mobile/img/vipIcon.png" alt=""></a>  
+       </div> 
+       <div class="user-info d-flex flex-column profile-intro-name-box"> 
+        <div class="profile-intro-name-boxTop"> 
+         <a href="https://jrs0511.blog.csdn.net" target="_blank" class="" id="uid" title="路人贾'ω'" data-report-click="{&quot;mod&quot;:&quot;popu_379&quot;,&quot;spm&quot;:&quot;3001.4122&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net&quot;,&quot;ab&quot;:&quot;new&quot;}"> <span class="name" username="weixin_43334693">路人贾'ω'</span> </a> 
+        </div> 
+        <div class="profile-intro-name-boxFooter-new"> 
+         <p class="profile-intro-name-leve"> <span> 博客等级 </span> <img class="level" src="https://csdnimg.cn/identity/blog7.png"> </p> 
+         <span class="profile-intro-name-years" title="已加入 CSDN 7年">码龄7年</span> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="profile-intro-Identity-information"> 
+       <p class="profile-information-box"> <img class="information-img" data-report-click="{&quot;spm&quot;:&quot;3001.4296&quot;}" src="https://img-home.csdnimg.cn/images/20210412060958.png" alt=""> <span>人工智能领域优质创作者</span> </p> 
+      </div> 
+      <div class="profile-intro-rank-information"> 
+       <dl> 
+        <a href="https://jrs0511.blog.csdn.net" data-report-click="{&quot;mod&quot;:&quot;1598321000_001&quot;,&quot;spm&quot;:&quot;3001.4310&quot;}" data-report-query="t=1"> 
+         <dd>
+          <span>120</span>
+         </dd> 
+         <dt>
+          原创
+         </dt> </a> 
+       </dl> 
+       <dl title="9103"> 
+        <dd>
+         9103
+        </dd> 
+        <dt>
+         点赞
+        </dt> 
+       </dl> 
+       <dl title="36281"> 
+        <dd>
+         3万+
+        </dd> 
+        <dt>
+         收藏
+        </dt> 
+       </dl> 
+       <dl id="fanBox" title="158548"> 
+        <dd>
+         <span id="fan">15万+</span>
+        </dd> 
+        <dt>
+         粉丝
+        </dt> 
+       </dl> 
+      </div> 
+      <div class="profile-intro-name-boxOpration"> 
+       <div class="opt-letter-watch-box"> 
+        <a class="attented personal-watch bt-button" id="btnAttent">已关注</a> 
+       </div> 
+       <div class="opt-letter-watch-box"> 
+        <a rel="noopener" class="bt-button personal-letter" href="https://im.csdn.net/chat/weixin_43334693" target="_blank">私信</a> 
+       </div> 
+      </div> 
+     </div> 
+     <div class="swiper-slide-box-remuneration"> 
+      <a data-report-click="{&quot;spm&quot;:&quot;3001.9728&quot;,&quot;extra&quot;:{&quot;index&quot;:&quot;0&quot;}}" data-report-view="{&quot;spm&quot;:&quot;3001.9728&quot;,&quot;extra&quot;:{&quot;index&quot;:&quot;0&quot;}}" href="https://ai.csdn.net/" target="_blank"> <img src="https://i-operation.csdnimg.cn/images/2dd892a9769b4cce9c086db94eab887f.png" alt=""> </a> 
+     </div> 
+     <div id="asideHotArticle" class="aside-box"> 
+      <h3 class="aside-title">热门文章</h3> 
+      <div class="aside-content"> 
+       <ul class="hotArticle-list"> 
+        <li> <a href="https://jrs0511.blog.csdn.net/article/details/129312409" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;3001.4139&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/129312409&quot;,&quot;ab&quot;:&quot;new&quot;}"> 【YOLO系列】YOLOv5超详细解读（源码详解＋入门实践＋改进） <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">191050</span> </a> </li> 
+        <li> <a href="https://jrs0511.blog.csdn.net/article/details/130189238" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;3001.4139&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/130189238&quot;,&quot;ab&quot;:&quot;new&quot;}"> 【Transformer系列（2）】注意力机制、自注意力机制、多头注意力机制、通道注意力机制、空间注意力机制超详细讲解 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">132906</span> </a> </li> 
+        <li> <a href="https://jrs0511.blog.csdn.net/article/details/129356033" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;3001.4139&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/129356033&quot;,&quot;ab&quot;:&quot;new&quot;}"> YOLOv5源码逐行超详细注释与解读（1）——项目目录结构解析 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">84049</span> </a> </li> 
+        <li> <a href="https://jrs0511.blog.csdn.net/article/details/136383022" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;3001.4139&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/136383022&quot;,&quot;ab&quot;:&quot;new&quot;}"> 【YOLO系列】YOLOv9论文超详细解读（翻译 ＋学习笔记） <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">53110</span> </a> </li> 
+        <li> <a href="https://jrs0511.blog.csdn.net/article/details/129011644" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;3001.4139&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/129011644&quot;,&quot;ab&quot;:&quot;new&quot;}"> 【YOLO系列】YOLOv1论文超详细解读（翻译 ＋学习笔记） <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">47685</span> </a> </li> 
+       </ul> 
+      </div> 
+     </div> 
+     <div id="asideCategory" class="aside-box flexible-box"> 
+      <h3 class="aside-title">分类专栏</h3> 
+      <div class="aside-content"> 
+       <ul> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12233704.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12233704.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/2d39764ecc8e8d41d72673a523e05b4b.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> YOLOv5入门＋实践＋改进 </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">47篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12534739.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12534739.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/9c2589275bee6d84a2f42be4f7fdd306.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 低照度图像增强 </span> </a> <span class="special-column-num">14篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12202773.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12202773.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/31534c7b408a58aa373bf5f58c00bf44.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 目标检测论文 </span> </a> <span class="special-column-num">18篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12127342.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12127342.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/4cc3e83223e8d0023a6303cdd4658cce.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 图像分类经典论文 </span> </a> <span class="special-column-num">9篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12462707.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12462707.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756930.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 论文必备 </span> </a> <span class="special-column-num">4篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12288776.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12288776.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/892c3e48b8251069b7506e1e68c5355a.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> transformer </span> </a> <span class="special-column-num">9篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12186888.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12186888.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/8cc13d2259e721c3b070257331ba2fcf.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> Pytorch </span> </a> <span class="special-column-num">9篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12151162.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12151162.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/b9346faac8287efffed28c8b2d898da7.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 论文代码复现 </span> </a> <span class="special-column-num">6篇</span> </li> 
+       </ul> 
+      </div> 
+      <p class="text-center"> <a class="flexible-btn" data-fbox="aside-archive"><img class="look-more" src="https://csdnimg.cn/release/blogv2/dist/pc/img/arrowDownWhite.png" alt=""></a> </p> 
+     </div> 
+     <div id="asideNewComments" class="aside-box"> 
+      <h3 class="aside-title">最新评论</h3> 
+      <div class="aside-content"> 
+       <ul class="newcomment-list"> 
+        <li> <a class="title text-truncate" target="_blank" href="https://jrs0511.blog.csdn.net/article/details/129349094#comments_36790608" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/129349094#comments_36790608&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/129349094#comments_36790608&quot;,&quot;ab&quot;:&quot;new&quot;}">YOLOv5源码逐行超详细注释与解读（2）——推理部分detect.py</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/qq_58411487" class="user-name" target="_blank">qq_58411487: </a> <span class="code-comments">下个插件就行了</span> </p> </li> 
+        <li> <a class="title text-truncate" target="_blank" href="https://jrs0511.blog.csdn.net/article/details/130208816#comments_36778242" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/130208816#comments_36778242&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/130208816#comments_36778242&quot;,&quot;ab&quot;:&quot;new&quot;}">【Transformer系列（3）】 《Attention Is All You Need》论文超详细解读（翻译＋精读）</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/m0_64252296" class="user-name" target="_blank">荷西、: </a> <span class="code-comments">这篇论文从哪找</span> </p> </li> 
+        <li> <a class="title text-truncate" target="_blank" href="https://jrs0511.blog.csdn.net/article/details/133516890#comments_36767793" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/133516890#comments_36767793&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/133516890#comments_36767793&quot;,&quot;ab&quot;:&quot;new&quot;}">[论文必备]最强科研绘图分析工具Origin（1）——安装教程</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/X224513" class="user-name" target="_blank">X224513: </a> <span class="code-comments">求安装包链接，谢谢！</span> </p> </li> 
+        <li> <a class="title text-truncate" target="_blank" href="https://jrs0511.blog.csdn.net/article/details/133516890#comments_36722559" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/133516890#comments_36722559&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/133516890#comments_36722559&quot;,&quot;ab&quot;:&quot;new&quot;}">[论文必备]最强科研绘图分析工具Origin（1）——安装教程</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/ant_c2" class="user-name" target="_blank">ant_c2: </a> <span class="code-comments">求安装包链接，谢谢！</span> </p> </li> 
+        <li> <a class="title text-truncate" target="_blank" href="https://jrs0511.blog.csdn.net/article/details/133516890#comments_36710842" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/133516890#comments_36710842&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/133516890#comments_36710842&quot;,&quot;ab&quot;:&quot;new&quot;}">[论文必备]最强科研绘图分析工具Origin（1）——安装教程</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/sdtzlxx" class="user-name" target="_blank">sdtzlxx: </a> <span class="code-comments">求安装包链接！！！！！谢谢大佬！</span> </p> </li> 
+       </ul> 
+      </div> 
+     </div> 
+     <div id="asideHotArticle" class="aside-box"> 
+      <h3 class="aside-title">大家在看</h3> 
+      <div class="aside-content"> 
+       <ul class="hotArticle-list"> 
+        <li> <a href="https://blog.csdn.net/MCC_MCC_MCC/article/details/146924449" target="_blank" data-report-click="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/MCC_MCC_MCC/article/details/146924449&quot;,&quot;strategy&quot;:&quot;202_1052723-2643820_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/MCC_MCC_MCC/article/details/146924449&quot;,&quot;strategy&quot;:&quot;202_1052723-2643820_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}"> 哈尔滨工业大学|人工智能：从图灵测试到DeepSeek|82页 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">197</span> </a> </li> 
+        <li> <a href="https://blog.csdn.net/shizheng_Li/article/details/146883764" target="_blank" data-report-click="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/shizheng_Li/article/details/146883764&quot;,&quot;strategy&quot;:&quot;202_1052723-2643882_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/shizheng_Li/article/details/146883764&quot;,&quot;strategy&quot;:&quot;202_1052723-2643882_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}"> Normalizing Flows（一）入门：从基本定义到深度学习应用 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">879</span> </a> </li> 
+        <li> <a href="https://blog.csdn.net/2402_86667364/article/details/146958629" target="_blank" data-report-click="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2402_86667364/article/details/146958629&quot;,&quot;strategy&quot;:&quot;202_1052723-2643767_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2402_86667364/article/details/146958629&quot;,&quot;strategy&quot;:&quot;202_1052723-2643767_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}"> C++STL——容器-vector(含部分模拟实现，即地层实现原理）(含迭代器失效问题） </a> </li> 
+        <li> <a href="https://blog.csdn.net/weixin_56878186/article/details/146964133" target="_blank" data-report-click="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_56878186/article/details/146964133&quot;,&quot;strategy&quot;:&quot;202_1052723-2643875_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_56878186/article/details/146964133&quot;,&quot;strategy&quot;:&quot;202_1052723-2643875_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}"> CAS：865470-67-3，DOTA-SH, DOTA-巯基，大环化合物修饰巯基 </a> </li> 
+        <li> <a href="https://blog.csdn.net/weixin_42104694/article/details/146960255" target="_blank" data-report-click="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_42104694/article/details/146960255&quot;,&quot;strategy&quot;:&quot;202_1052723-2643758_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_42104694/article/details/146960255&quot;,&quot;strategy&quot;:&quot;202_1052723-2643758_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}"> 桂云OSG：认定公益一类事业单位是否为经营活动的判断依据和公益一类事业单位不作为政府购买服务的购买主体和承接主体规定 </a> </li> 
+       </ul> 
+      </div> 
+     </div> 
+     <div id="asideArchive" class="aside-box" style="display:block!important; width:300px;"> 
+      <h3 class="aside-title">最新文章</h3> 
+      <div class="aside-content"> 
+       <ul class="inf_list clearfix"> 
+        <li class="clearfix"> <a href="https://jrs0511.blog.csdn.net/article/details/140203276" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;spm&quot;:&quot;3001.4136&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/140203276&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/140203276&quot;,&quot;ab&quot;:&quot;new&quot;}">【低照度图像增强系列（8）】URetinex-Net算法详解与代码实现（2022|CVPR）</a> </li> 
+        <li class="clearfix"> <a href="https://jrs0511.blog.csdn.net/article/details/140229971" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;spm&quot;:&quot;3001.4136&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/140229971&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/140229971&quot;,&quot;ab&quot;:&quot;new&quot;}">CVPR|《URetinex-Net: Retinex-based Deep Unfolding Network for Low-light Image Enhance》论文超详细解读（翻译＋精读）</a> </li> 
+        <li class="clearfix"> <a href="https://jrs0511.blog.csdn.net/article/details/139832512" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;spm&quot;:&quot;3001.4136&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/139832512&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/139832512&quot;,&quot;ab&quot;:&quot;new&quot;}">YOLOv5改进系列（32）——替换主干网络之PKINet（CVPR2024 | 面向遥感旋转框主干，有效捕获不同尺度上的密集纹理特征）</a> </li> 
+       </ul> 
+       <div class="archive-bar"></div> 
+       <div class="archive-box"> 
+        <div class="archive-list-item">
+         <a href="https://jrs0511.blog.csdn.net?type=blog&amp;year=2024&amp;month=07" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net?type=blog&amp;year=2024&amp;month=07&quot;}"><span class="year">2024年</span><span class="num">23篇</span></a>
+        </div> 
+        <div class="archive-list-item">
+         <a href="https://jrs0511.blog.csdn.net?type=blog&amp;year=2023&amp;month=12" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net?type=blog&amp;year=2023&amp;month=12&quot;}"><span class="year">2023年</span><span class="num">87篇</span></a>
+        </div> 
+        <div class="archive-list-item">
+         <a href="https://jrs0511.blog.csdn.net?type=blog&amp;year=2022&amp;month=12" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net?type=blog&amp;year=2022&amp;month=12&quot;}"><span class="year">2022年</span><span class="num">10篇</span></a>
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 详情页显示目录 --> 
+     <!--文章目录--> 
+     <div id="asidedirectory" class="aside-box"> 
+      <div class="groupfile" id="directory"> 
+       <h3 class="aside-title">目录</h3> 
+       <div class="align-items-stretch group_item"> 
+        <div class="pos-box"> 
+         <div class="scroll-box"> 
+          <div class="toc-box"></div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </aside>    
+   </div> 
+   <div class="recommend-right align-items-stretch clearfix" id="rightAside" data-type="recommend"> 
+    <aside class="recommend-right_aside"> 
+     <div class="rightside-fixed-hide"> 
+      <div class="recommend-column-box aside-box"> 
+       <h3 class="aside-title">相关专栏 </h3> 
+       <div class="aside-content"> 
+        <div class="recommend-column-itembox exp1"> 
+         <a href="https://blog.csdn.net/qq_36584673/category_11691339.html" title="图像拼接论文源码精读" target="_blank" data-report-view="{&quot;spm&quot;:&quot;3001.10573&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/qq_36584673/category_11691339.html&quot;,&quot;ab&quot;:&quot;exp1&quot;,&quot;extra&quot;:&quot;{\&quot;id\&quot;:\&quot;128676690\&quot;,\&quot;recommendCount\&quot;:\&quot;3\&quot;,\&quot;index\&quot;:\&quot;0\&quot;,\&quot;type\&quot;:\&quot;column\&quot;}&quot;}" data-report-click="{&quot;spm&quot;:&quot;3001.10573&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/qq_36584673/category_11691339.html&quot;,&quot;ab&quot;:&quot;exp1&quot;,&quot;extra&quot;:&quot;{\&quot;id\&quot;:\&quot;128676690\&quot;,\&quot;recommendCount\&quot;:\&quot;3\&quot;,\&quot;index\&quot;:\&quot;0\&quot;,\&quot;type\&quot;:\&quot;column\&quot;}&quot;}"> 
+          <div class="info-box"> 
+           <div class="img-box"> 
+            <div class="column-img" style="background-image: url(https://i-blog.csdnimg.cn/blog_column_migrate/960984bfced28c62bbc6d417331d2050.jpeg?x-oss-process=image/resize,m_fixed,h_224,w_224)" alt="图像拼接论文源码精读" srcset=""></div> 
+           </div> 
+           <div class="info"> 
+            <div class="title-box"> 
+             <p class="title">图像拼接论文源码精读</p> 
+             <p class="tag">专栏</p> 
+            </div> 
+            <p class="learn">28 人学习</p> 
+           </div> 
+          </div> <p class="desc" title="手把手教你跑通图像拼接论文源码，带你读代码，详细讲解实现思路与具体细节，附有对应的【论文精读】专栏，帮助图像拼接领域的科研工作者更好的理解论文源码，寻找创新点。论文包括主流的图像拼接算法APAP、AANAP、SPHP、ELA、SPW、LPC、基于拼接缝的算法、基于深度学习的算法UDIS、UDIS++">手把手教你跑通图像拼接论文源码，带你读代码，详细讲解实现思路与具体细节，附有对应的【论文精读】专栏，帮助图像拼接领域的科研工作者更好的理解论文源码，寻找创新点。论文包括主流的图像拼接算法APAP、AANAP、SPHP、ELA、SPW、LPC、基于拼接缝的算法、基于深度学习的算法UDIS、UDIS++</p> </a> 
+        </div> 
+        <div class="recommend-column-itembox exp1"> 
+         <a href="https://blog.csdn.net/qq_36584673/category_12756147.html" title="Pytorch深度学习图像去噪算法100例（论文精读+复现）" target="_blank" data-report-view="{&quot;spm&quot;:&quot;3001.10573&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/qq_36584673/category_12756147.html&quot;,&quot;ab&quot;:&quot;exp1&quot;,&quot;extra&quot;:&quot;{\&quot;id\&quot;:\&quot;128676690\&quot;,\&quot;recommendCount\&quot;:\&quot;3\&quot;,\&quot;index\&quot;:\&quot;1\&quot;,\&quot;type\&quot;:\&quot;column\&quot;}&quot;}" data-report-click="{&quot;spm&quot;:&quot;3001.10573&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/qq_36584673/category_12756147.html&quot;,&quot;ab&quot;:&quot;exp1&quot;,&quot;extra&quot;:&quot;{\&quot;id\&quot;:\&quot;128676690\&quot;,\&quot;recommendCount\&quot;:\&quot;3\&quot;,\&quot;index\&quot;:\&quot;1\&quot;,\&quot;type\&quot;:\&quot;column\&quot;}&quot;}"> 
+          <div class="info-box"> 
+           <div class="img-box"> 
+            <div class="column-img" style="background-image: url(https://i-blog.csdnimg.cn/direct/d0a5e480c4f54f7b9a332011657fa317.jpeg?x-oss-process=image/resize,m_fixed,h_224,w_224)" alt="Pytorch深度学习图像去噪算法100例（论文精读+复现）" srcset=""></div> 
+           </div> 
+           <div class="info"> 
+            <div class="title-box"> 
+             <p class="title">Pytorch深度学习图像去噪算法100例（论文精读+复现）</p> 
+             <p class="tag">专栏</p> 
+            </div> 
+            <p class="learn">114 人学习</p> 
+           </div> 
+          </div> <p class="desc" title="专栏内文章内容包括理论与实践两部分。理论为主流去噪算法论文精读，理解原理；实践为论文源码复现，跑通源码，得到去噪结果以及性能指标，助力学习科研。">专栏内文章内容包括理论与实践两部分。理论为主流去噪算法论文精读，理解原理；实践为论文源码复现，跑通源码，得到去噪结果以及性能指标，助力学习科研。</p> </a> 
+        </div> 
+        <div class="recommend-column-itembox exp1"> 
+         <a href="https://blog.csdn.net/qq_36584673/category_12590966.html" title="超分辨率重建（理论+实战，科研+应用）" target="_blank" data-report-view="{&quot;spm&quot;:&quot;3001.10573&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/qq_36584673/category_12590966.html&quot;,&quot;ab&quot;:&quot;exp1&quot;,&quot;extra&quot;:&quot;{\&quot;id\&quot;:\&quot;128676690\&quot;,\&quot;recommendCount\&quot;:\&quot;3\&quot;,\&quot;index\&quot;:\&quot;2\&quot;,\&quot;type\&quot;:\&quot;column\&quot;}&quot;}" data-report-click="{&quot;spm&quot;:&quot;3001.10573&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/qq_36584673/category_12590966.html&quot;,&quot;ab&quot;:&quot;exp1&quot;,&quot;extra&quot;:&quot;{\&quot;id\&quot;:\&quot;128676690\&quot;,\&quot;recommendCount\&quot;:\&quot;3\&quot;,\&quot;index\&quot;:\&quot;2\&quot;,\&quot;type\&quot;:\&quot;column\&quot;}&quot;}"> 
+          <div class="info-box"> 
+           <div class="img-box"> 
+            <div class="column-img" style="background-image: url(https://i-blog.csdnimg.cn/direct/ae5621ed691449b99b5173ca304e5bb3.png?x-oss-process=image/resize,m_fixed,h_224,w_224)" alt="超分辨率重建（理论+实战，科研+应用）" srcset=""></div> 
+           </div> 
+           <div class="info"> 
+            <div class="title-box"> 
+             <p class="title">超分辨率重建（理论+实战，科研+应用）</p> 
+             <p class="tag">专栏</p> 
+            </div> 
+            <p class="learn">179 人学习</p> 
+           </div> 
+          </div> <p class="desc" title="专栏内文章包含单图像超分和视频超分。跑通主流的超分论文源码，详细讲解原理和代码实现，训练自己的数据集，实际应用和涨点创新改进。算法包括：SRCNN、ESPCN、VDSR、DRCN、DRRN、EDSR、SRGAN、ESRGAN、RDN、WDSR、LapSRN、RCAN、SAN、IGNN、SwinIR等">专栏内文章包含单图像超分和视频超分。跑通主流的超分论文源码，详细讲解原理和代码实现，训练自己的数据集，实际应用和涨点创新改进。算法包括：SRCNN、ESPCN、VDSR、DRCN、DRRN、EDSR、SRGAN、ESRGAN、RDN、WDSR、LapSRN、RCAN、SAN、IGNN、SwinIR等</p> </a> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <div id="recommend-right"> 
+      <div class="flex-column aside-box groupfile" id="groupfile"> 
+       <div class="groupfile-div"> 
+        <h3 class="aside-title">目录</h3> 
+        <div class="align-items-stretch group_item"> 
+         <div class="pos-box"> 
+          <div class="scroll-box"> 
+           <div class="toc-box"></div> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="aside-box kind_person d-flex flex-column"> 
+       <h3 class="aside-title">分类专栏</h3> 
+       <div class="align-items-stretch kindof_item" id="kind_person_column"> 
+        <div class="aside-content"> 
+         <ul> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12233704.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12233704.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/2d39764ecc8e8d41d72673a523e05b4b.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> YOLOv5入门＋实践＋改进 </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">47篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12534739.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12534739.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/9c2589275bee6d84a2f42be4f7fdd306.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 低照度图像增强 </span> </a> <span class="special-column-num">14篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12202773.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12202773.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/31534c7b408a58aa373bf5f58c00bf44.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 目标检测论文 </span> </a> <span class="special-column-num">18篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12127342.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12127342.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/4cc3e83223e8d0023a6303cdd4658cce.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 图像分类经典论文 </span> </a> <span class="special-column-num">9篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12462707.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12462707.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756930.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 论文必备 </span> </a> <span class="special-column-num">4篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12288776.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12288776.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/892c3e48b8251069b7506e1e68c5355a.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> transformer </span> </a> <span class="special-column-num">9篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12186888.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12186888.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/8cc13d2259e721c3b070257331ba2fcf.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> Pytorch </span> </a> <span class="special-column-num">9篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12151162.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12151162.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/b9346faac8287efffed28c8b2d898da7.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 论文代码复现 </span> </a> <span class="special-column-num">6篇</span> </li> 
+         </ul> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </aside> 
+   </div> 
+   <div class="recommend-right1  align-items-stretch clearfix" id="rightAsideConcision" data-type="recommend"> 
+    <aside class="recommend-right_aside"> 
+     <div id="recommend-right-concision"> 
+      <div class="flex-column aside-box groupfile" id="groupfileConcision"> 
+       <div class="groupfile-div1"> 
+        <h3 class="aside-title">目录</h3> 
+        <div class="align-items-stretch group_item"> 
+         <div class="pos-box"> 
+          <div class="scroll-box"> 
+           <div class="toc-box"></div> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </aside> 
+   </div> 
+  </div> 
+  <div class="mask-dark"></div> 
+  <div class="skin-boxshadow"></div> 
+  <div class="directory-boxshadow"></div> 
+  <div class="comment-side-box-shadow comment-side-tit-close" id="commentSideBoxshadow"> 
+   <div class="comment-side-content"> 
+    <div class="comment-side-tit"> 
+     <span class="comment-side-tit-count">评论</span> 
+     <img class="comment-side-tit-close" src="https://csdnimg.cn/release/blogv2/dist/pc/img/closeBt.png">
+    </div> 
+    <div id="pcCommentSideBox" class="comment-box comment-box-new2 " style="display:block"> 
+     <div class="comment-edit-box d-flex"> 
+      <div class="user-img"> 
+       <a href="https://blog.csdn.net/2401_84444578" target="_blank"> <img src="https://profile-avatar.csdnimg.cn/default.jpg!1"> </a> 
+      </div> 
+      <form id="commentform"> 
+       <textarea class="comment-content" name="comment_content" id="comment_content" placeholder="欢迎高质量的评论，低质的评论会被折叠" maxlength="1000"></textarea> 
+       <div class="comment-reward-box" style="background-image: url('https://img-home.csdnimg.cn/images/20230131025301.png');"> 
+        <a class="btn-remove-reward"></a> 
+        <div class="form-reward-box"> 
+         <div class="info">
+           成就一亿技术人! 
+         </div> 
+         <div class="price-info">
+           拼手气红包
+          <span class="price">6.0元</span> 
+         </div> 
+        </div> 
+       </div> 
+       <div class="comment-operate-box"> 
+        <div class="comment-operate-l"> 
+         <span id="tip_comment" class="tip">还能输入<em>1000</em>个字符</span> 
+        </div> 
+        <div class="comment-operate-c">
+          &nbsp; 
+        </div> 
+        <div class="comment-operate-r"> 
+         <div class="comment-operate-item comment-reward"> 
+          <img class="comment-operate-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentReward.png" alt="红包"> 
+          <span class="comment-operate-tip">添加红包</span> 
+         </div> 
+         <div class="comment-operate-item comment-emoticon"> 
+          <img class="comment-operate-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentEmotionIcon.png" alt="表情包"> 
+          <span class="comment-operate-tip">插入表情</span> 
+          <div class="comment-emoticon-box comment-operate-isshow"> 
+           <div class="comment-emoticon-img-box"></div> 
+          </div> 
+         </div> 
+         <div class="comment-operate-item comment-code"> 
+          <img class="comment-operate-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentCodeIcon.png" alt="表情包"> 
+          <span class="comment-operate-tip">代码片</span> 
+          <div class="comment-code-box comment-operate-isshow"> 
+           <ul id="commentCode"> 
+            <li><a data-code="html">HTML/XML</a></li> 
+            <li><a data-code="objc">objective-c</a></li> 
+            <li><a data-code="ruby">Ruby</a></li> 
+            <li><a data-code="php">PHP</a></li> 
+            <li><a data-code="csharp">C</a></li> 
+            <li><a data-code="cpp">C++</a></li> 
+            <li><a data-code="javascript">JavaScript</a></li> 
+            <li><a data-code="python">Python</a></li> 
+            <li><a data-code="java">Java</a></li> 
+            <li><a data-code="css">CSS</a></li> 
+            <li><a data-code="sql">SQL</a></li> 
+            <li><a data-code="plain">其它</a></li> 
+           </ul> 
+          </div> 
+         </div> 
+         <div class="comment-operate-item"> 
+          <input type="hidden" id="comment_replyId" name="comment_replyId"> 
+          <input type="hidden" id="article_id" name="article_id" value="128676690"> 
+          <input type="hidden" id="comment_userId" name="comment_userId" value=""> 
+          <input type="hidden" id="commentId" name="commentId" value=""> 
+          <a data-report-click="{&quot;mod&quot;:&quot;1582594662_003&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4227&quot;,&quot;ab&quot;:&quot;new&quot;}"> <input type="submit" class="btn-comment btn-comment-input" value="评论"> </a> 
+         </div> 
+        </div> 
+       </div> 
+      </form> 
+     </div> 
+     <div class="comment-list-container"> 
+      <div class="comment-list-box comment-operate-item"> 
+      </div> 
+      <div id="lookFlodComment" class="look-flod-comment"> 
+       <span class="count"></span>&nbsp;条评论被折叠&nbsp;
+       <a class="look-more-flodcomment">查看</a> 
+      </div> 
+      <div class="opt-box text-center"> 
+       <div class="btn btn-sm btn-link-blue" id="btnMoreComment"></div> 
+      </div> 
+     </div> 
+    </div> 
+    <div id="pcFlodCommentSideBox" class="pc-flodcomment-sidebox"> 
+     <div class="comment-fold-tit">
+      <span id="lookUnFlodComment" class="back"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowLeftWhite.png" alt=""></span>被折叠的&nbsp;
+      <span class="count"></span>&nbsp;条评论 
+      <a href="https://blogdev.blog.csdn.net/article/details/122245662" class="tip" target="_blank">为什么被折叠?</a> 
+      <a href="https://bbs.csdn.net/forums/FreeZone" class="park" target="_blank"> <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/iconPark.png">到【灌水乐园】发言</a> 
+     </div> 
+     <div class="comment-fold-content"></div> 
+     <div id="lookBadComment" class="look-bad-comment side-look-comment"> 
+      <a class="look-more-comment">查看更多评论<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowDownWhite.png" alt=""></a> 
+     </div> 
+    </div> 
+   </div> 
+   <div class="comment-rewarddialog-box"> 
+    <div class="form-box"> 
+     <div class="title-box">
+       添加红包 
+      <a class="btn-form-close"></a> 
+     </div> 
+     <form id="commentRewardForm"> 
+      <div class="ipt-box"> 
+       <label for="txtName">祝福语</label> 
+       <div class="ipt-btn-box"> 
+        <input type="text" name="name" id="txtName" autocomplete="off" maxlength="50"> 
+        <a class="btn-ipt btn-random"></a> 
+       </div> 
+       <p class="notice">请填写红包祝福语或标题</p> 
+      </div> 
+      <div class="ipt-box"> 
+       <label for="txtSendAmount">红包数量</label> 
+       <div class="ipt-txt-box"> 
+        <input type="text" name="sendAmount" maxlength="4" id="txtSendAmount" placeholder="请填写红包数量(最小10个)" autocomplete="off"> 
+        <span class="after-txt">个</span> 
+       </div> 
+       <p class="notice">红包个数最小为10个</p> 
+      </div> 
+      <div class="ipt-box"> 
+       <label for="txtMoney">红包总金额</label> 
+       <div class="ipt-txt-box error"> 
+        <input type="text" name="money" maxlength="5" id="txtMoney" placeholder="请填写总金额(最低5元)" autocomplete="off"> 
+        <span class="after-txt">元</span> 
+       </div> 
+       <p class="notice">红包金额最低5元</p> 
+      </div> 
+      <div class="balance-info-box"> 
+       <label>余额支付</label> 
+       <div class="balance-info">
+         当前余额
+        <span class="balance">3.43</span>元 
+        <a href="https://i.csdn.net/#/wallet/balance/recharge" class="link-charge" target="_blank">前往充值 &gt;</a> 
+       </div> 
+      </div> 
+      <div class="opt-box"> 
+       <div class="pay-info">
+         需支付：
+        <span class="price">10.00</span>元 
+       </div> 
+       <button type="button" class="ml-auto btn-cancel">取消</button> 
+       <button type="button" class="ml8 btn-submit" disabled="true">确定</button> 
+      </div> 
+     </form> 
+    </div> 
+   </div> 
+   <div class="rr-guide-box"> 
+    <div class="rr-first-box"> 
+     <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/guideRedReward02.png" alt=""> 
+     <button class="btn-guide-known next">下一步</button> 
+    </div> 
+    <div class="rr-second-box"> 
+     <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/guideRedReward03.png" alt=""> 
+     <button class="btn-guide-known known">知道了</button> 
+    </div> 
+   </div> 
+  </div> 
+  <div class="redEnvolope" id="redEnvolope"> 
+   <div class="env-box"> 
+    <div class="env-container"> 
+     <div class="pre-open" id="preOpen"> 
+      <div class="top"> 
+       <header> 
+        <img class="clearTpaErr" :src="redpacketAuthor.avatar" alt=""> 
+        <div class="author">
+         成就一亿技术人!
+        </div> 
+       </header> 
+       <div class="bot-icon"></div> 
+      </div> 
+      <footer> 
+       <div class="red-openbtn open-start"></div> 
+       <div class="tip">
+         领取后你会自动成为博主和红包主的粉丝 
+        <a class="rule" target="_blank">规则</a> 
+       </div> 
+      </footer> 
+     </div> 
+     <div class="opened" id="opened"> 
+      <div class="bot-icon"> 
+       <header> 
+        <a class="creatorUrl" href="" target="_blank"> <img class="clearTpaErr" src="https://profile-avatar.csdnimg.cn/default.jpg!2" alt=""> </a> 
+        <div class="author"> 
+         <div class="tt">
+          hope_wisdom
+         </div> 发出的红包 
+        </div> 
+       </header> 
+      </div> 
+      <div class="receive-box"> 
+       <header></header> 
+       <div class="receive-list"> 
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+    <div class="close-btn"></div> 
+   </div> 
+  </div> 
+  <div id="rewardNew" class="reward-popupbox-new"> 
+   <p class="rewad-title">打赏作者<span class="reward-close"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/closeBt.png"></span></p> 
+   <dl class="profile-box"> 
+    <dd> 
+     <a href="https://jrs0511.blog.csdn.net" data-report-click="{&quot;mod&quot;:&quot;popu_379&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net&quot;,&quot;ab&quot;:&quot;new&quot;}"> <img src="https://profile-avatar.csdnimg.cn/da983c398fca4f14a19ea48d137f6ca3_weixin_43334693.jpg!1" class="avatar_pic"> </a> 
+    </dd> 
+    <dt> 
+     <p class="blog-name">路人贾'ω'</p> 
+     <p class="blog-discript">你的鼓励将是我创作的最大动力</p> 
+    </dt> 
+   </dl> 
+   <div class="reward-box-new"> 
+    <div class="reward-content">
+     <div class="reward-right"></div>
+    </div> 
+   </div> 
+   <div class="money-box"> 
+    <span class="choose-money choosed" data-id="1">¥1</span> 
+    <span class="choose-money " data-id="2">¥2</span> 
+    <span class="choose-money " data-id="4">¥4</span> 
+    <span class="choose-money " data-id="6">¥6</span> 
+    <span class="choose-money " data-id="10">¥10</span> 
+    <span class="choose-money " data-id="20">¥20</span> 
+   </div> 
+   <div class="sure-box"> 
+    <div class="sure-box-money"> 
+     <div class="code-box"> 
+      <div class="code-num-box"> 
+       <span class="code-name">扫码支付：</span>
+       <span class="code-num">¥1</span> 
+      </div> 
+      <div class="code-img-box"> 
+       <div class="renovate"> 
+        <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-time-out.png"> 
+        <span>获取中</span> 
+       </div> 
+      </div> 
+      <div class="code-pay-box"> 
+       <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/newWeiXin.png" alt=""> 
+       <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/newZhiFuBao.png" alt=""> 
+       <span>扫码支付</span> 
+      </div> 
+     </div> 
+    </div> 
+    <div class="sure-box-blance"> 
+     <p class="tip">您的余额不足，请更换扫码支付或<a target="_blank" data-report-click="{&quot;mod&quot;:&quot;1597646289_003&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4302&quot;}" href="https://i.csdn.net/#/wallet/balance/recharge?utm_source=RewardVip" class="go-invest">充值</a></p> 
+     <p class="is-have-money"><a class="reward-sure">打赏作者</a></p> 
+    </div> 
+   </div> 
+  </div> 
+  <div class="pay-code"> 
+   <div class="pay-money">
+    实付
+    <span class="pay-money-span" data-nowprice="" data-oldprice="">元</span>
+   </div> 
+   <div class="content-blance">
+    <a class="blance-bt" href="javascript:;">使用余额支付</a>
+   </div> 
+   <div class="content-code"> 
+    <div id="payCode" data-id=""> 
+     <div class="renovate"> 
+      <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-time-out.png"> 
+      <span>点击重新获取</span> 
+     </div> 
+    </div> 
+    <div class="pay-style">
+     <span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/weixin.png"></span>
+     <span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/zhifubao.png"></span>
+     <span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/jingdong.png"></span>
+     <span class="text">扫码支付</span>
+    </div> 
+   </div> 
+   <div class="bt-close"> 
+    <svg t="1567152543821" class="icon" viewbox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10924" xmlns:xlink="http://www.w3.org/1999/xlink" width="12" height="12"> 
+     <defs> 
+      <style type="text/css"></style> 
+     </defs> 
+     <path d="M512 438.378667L806.506667 143.893333a52.032 52.032 0 1 1 73.6 73.621334L585.621333 512l294.485334 294.485333a52.074667 52.074667 0 0 1-73.6 73.642667L512 585.621333 217.514667 880.128a52.053333 52.053333 0 1 1-73.621334-73.642667L438.378667 512 143.893333 217.514667a52.053333 52.053333 0 1 1 73.621334-73.621334L512 438.378667z" fill="" p-id="10925"></path> 
+    </svg> 
+   </div> 
+   <div class="pay-balance"> 
+    <input type="radio" class="pay-code-radio" data-type="details"> 
+    <span class="span">钱包余额</span> 
+    <span class="balance" style="color:#FC5531;font-size:14px;">0</span> 
+    <div class="pay-code-tile"> 
+     <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-help.png" alt=""> 
+     <div class="pay-code-content"> 
+      <div class="span"> 
+       <p class="title">抵扣说明：</p> 
+       <p> 1.余额是钱包充值的虚拟货币，按照1:1的比例进行支付金额的抵扣。<br> 2.余额无法直接购买下载，可以购买VIP、付费专栏及课程。</p> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+   <a class="pay-balance-con" href="https://i.csdn.net/#/wallet/balance/recharge" target="_blank"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/recharge.png" alt=""><span>余额充值</span></a> 
+  </div> 
+  <div style="display:none;"> 
+   <img src="" onerror="setTimeout(function(){if(!/(csdn.net|iteye.com|baiducontent.com|googleusercontent.com|360webcache.com|sogoucdn.com|bingj.com|baidu.com)$/.test(window.location.hostname)){var test=&quot;\x68\x74\x74\x70\x73\x3a\x2f\x2f\x77\x77\x77\x2e\x63\x73\x64\x6e\x2e\x6e\x65\x74&quot;}},3000);"> 
+  </div> 
+  <div class="keyword-dec-box" id="keywordDecBox"></div>  
+  <!-- 富文本柱状图  --> 
+  <link rel="stylesheet" href="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/chart/chart.css">        
+  <link rel="stylesheet" href="https://g.csdnimg.cn/lib/cboxEditor/1.1.6/embed-editor.min.css"> 
+  <link rel="stylesheet" href="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/codesnippet/lib/highlight/styles/dracula.css">                  
+ </body>
+</html>

@@ -1,0 +1,1213 @@
+<!doctype html>
+<html lang="zh-CN">
+ <head> 
+  <meta charset="utf-8"> 
+  <link rel="canonical" href="https://blog.csdn.net/weixin_43334693/article/details/131513850"> 
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"> 
+  <meta name="renderer" content="webkit"> 
+  <meta name="force-rendering" content="webkit"> 
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+  <meta name="report" content="{&quot;pid&quot;: &quot;blog&quot;, &quot;spm&quot;:&quot;1001.2101&quot;}"> 
+  <meta name="referrer" content="always"> 
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <link rel="alternate" media="handheld" href="#"> 
+  <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848"> 
+  <meta name="applicable-device" content="pc"> 
+  <link href="https://g.csdnimg.cn/static/logo/favicon32.ico" rel="shortcut icon" type="image/x-icon"> 
+  <title>YOLOv5改进系列（13）——更换激活函数之SiLU，ReLU，ELU，Hardswish，Mish，Softplus，AconC系列等_olov5改进系列(13)——更换激活函数之silu,relu,elu,hardswish,…-CSDN博客</title>  
+  <meta name="keywords" content="olov5改进系列(13)——更换激活函数之silu,relu,elu,hardswish,…"> 
+  <meta name="csdn-baidu-search" content="{&quot;autorun&quot;:true,&quot;install&quot;:true,&quot;keyword&quot;:&quot;olov5改进系列(13)——更换激活函数之silu,relu,elu,hardswish,…&quot;}"> 
+  <meta name="description" content="文章浏览阅读6k次，点赞6次，收藏26次。本文深入探讨了激活函数在深度学习中的作用，特别是针对YOLOv5模型，包括sigmoid, tanh, ReLU, SiLU, swish, hardswish, Mish, ELU, AconC/MetaAconC和Softplus等的优缺点，以及更换激活函数的步骤。激活函数选择需考虑模型的表达能力和梯度消失问题，ReLU因其计算效率而广泛使用，而SiLU和Swish等新激活函数在某些场景下表现更优。&quot;
+6113963,91790,计算两条线段的交点算法,&quot;['几何计算', '算法', '二维坐标系']"> 
+  <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/release/blogv2/dist/pc/css/detail_enter-af0ead44cd.min.css"> 
+  <style>
+        #content_views{
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none; 
+            user-select: none; 
+        }
+    </style>  
+  <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/release/blogv2/dist/pc/themesSkin/skin-finalboss/skin-finalboss-b2ba816980.min.css">    
+  <meta name="toolbar" content="{&quot;type&quot;:&quot;0&quot;,&quot;fixModel&quot;:&quot;1&quot;}">    
+  <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/public/sandalstrap/1.4/css/sandalstrap.min.css"> 
+  <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>    
+ 	<style>
+	main div.blog-content-box pre {
+		max-height: 100%;
+		overflow-y: hidden;
+	}
+	</style>
+ </head>  
+ <body class="nodata  " style=""> 
+  <div id="toolbarBox" style="min-height: 48px;"></div>    
+  <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/pc/css/blog_code-01256533b5.min.css"> 
+  <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/chart-3456820cac.css"> 
+  <link rel="stylesheet" href="https://g.csdnimg.cn/lib/swiper/6.0.4/css/swiper.css">   
+  <div class="main_father clearfix d-flex justify-content-center mainfather-concision" style="height:100%;"> 
+   <div class="container clearfix container-concision" id="mainBox">  
+    <main>  
+     <div class="blog-content-box"> 
+      <div class="article-header-box"> 
+       <div class="article-header"> 
+        <div class="article-title-box"> 
+         <h1 class="title-article" id="articleContentId">YOLOv5改进系列（13）——更换激活函数之SiLU，ReLU，ELU，Hardswish，Mish，Softplus，AconC系列等</h1> 
+        </div> 
+        <div class="article-info-box"> 
+         <div class="article-bar-top"> 
+          <img class="article-type-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/original.png" alt=""> 
+          <div class="bar-content"> 
+           <a class="follow-nickName vip-name" href="https://jrs0511.blog.csdn.net" target="_blank" rel="noopener" title="路人贾'ω'">路人贾'ω'</a> 
+           <img class="article-time-img article-heard-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newUpTime2.png" alt=""> 
+           <span class="time">已于&nbsp;2023-07-04 16:03:47&nbsp;修改</span> 
+           <div class="read-count-box"> 
+            <img class="article-read-img article-heard-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/articleReadEyes2.png" alt=""> 
+            <span class="read-count">阅读量6k</span> 
+            <a id="blog_detail_zk_collection" class="un-collection" data-report-click="{&quot;mod&quot;:&quot;popu_823&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4232&quot;,&quot;ab&quot;:&quot;new&quot;}"> <img class="article-collect-img article-heard-img un-collect-status isdefault" style="display:inline-block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollect2.png" alt=""> <img class="article-collect-img article-heard-img collect-status isactive" style="display:none" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollectionActive2.png" alt=""> <span class="name">收藏</span> <span class="get-collection"> 26 </span> </a> 
+            <div class="read-count-box is-like"> 
+             <img class="article-read-img article-heard-img" style="display:none" id="is-like-imgactive-new" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newHeart2023Active.png" alt=""> 
+             <img class="article-read-img article-heard-img" style="display:block" id="is-like-img-new" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newHeart2023Black.png" alt=""> 
+             <span class="read-count" id="blog-digg-num">点赞数 6 </span> 
+            </div> 
+           </div> 
+          </div> 
+         </div> 
+         <div class="blog-tags-box"> 
+          <div class="tags-box artic-tag-box"> 
+           <span class="label">分类专栏：</span> 
+           <a class="tag-link" href="https://blog.csdn.net/weixin_43334693/category_12233704.html" target="_blank" rel="noopener">YOLOv5入门＋实践＋改进</a> 
+           <span class="label">文章标签：</span> 
+           <a rel="noopener" data-report-query="spm=1001.2101.3001.4223" data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;YOLO&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;YOLO\&quot;}&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;YOLO&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;YOLO\&quot;}&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=YOLO&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank">YOLO</a> 
+           <a rel="noopener" data-report-query="spm=1001.2101.3001.4223" data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;目标检测&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;目标检测\&quot;}&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;目标检测&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;目标检测\&quot;}&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank">目标检测</a> 
+           <a rel="noopener" data-report-query="spm=1001.2101.3001.4223" data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;计算机视觉&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;计算机视觉\&quot;}&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;计算机视觉&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;计算机视觉\&quot;}&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank">计算机视觉</a> 
+           <a rel="noopener" data-report-query="spm=1001.2101.3001.4223" data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;人工智能&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;人工智能\&quot;}&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;人工智能&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;人工智能\&quot;}&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank">人工智能</a> 
+           <a rel="noopener" data-report-query="spm=1001.2101.3001.4223" data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;深度学习&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;深度学习\&quot;}&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;深度学习&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;深度学习\&quot;}&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank">深度学习</a> 
+          </div> 
+         </div> 
+         <div class="up-time">
+          <span>于&nbsp;2023-07-04 16:02:13&nbsp;首次发布</span>
+         </div> 
+         <div class="slide-content-box"> 
+          <div class="article-copyright"> 
+           <div class="creativecommons">
+             版权声明：本文为博主原创文章，遵循
+            <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener"> CC 4.0 BY-SA </a>版权协议，转载请附上原文出处链接和本声明。 
+           </div> 
+           <div class="article-source-link">
+             本文链接：
+            <a href="https://blog.csdn.net/weixin_43334693/article/details/131513850" target="_blank">https://blog.csdn.net/weixin_43334693/article/details/131513850</a> 
+           </div> 
+          </div> 
+         </div> 
+         <div class="operating"> 
+          <a class="href-article-edit slide-toggle">版权</a> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <div id="blogHuaweiyunAdvert"></div> 
+      <div id="blogColumnPayAdvert"> 
+       <div class="column-group"> 
+        <div class="column-group-item column-group0 column-group-item-one"> 
+         <div class="item-l"> 
+          <a class="item-target" href="https://blog.csdn.net/weixin_43334693/category_12233704.html" target="_blank" title="YOLOv5入门＋实践＋改进" data-report-view="{&quot;spm&quot;:&quot;1001.2101.3001.6332&quot;}" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.6332&quot;}"> <img class="item-target" src="https://i-blog.csdnimg.cn/blog_column_migrate/2d39764ecc8e8d41d72673a523e05b4b.png?x-oss-process=image/resize,m_fixed,h_224,w_224" alt=""> <span class="title item-target"> <span> <span class="tit">YOLOv5入门＋实践＋改进</span> <span class="dec">专栏收录该内容</span> </span> <span class="rank"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/columnHotIcon2.png" alt="">该专栏为热销专栏榜&nbsp;第76名</span> </span> </a> 
+         </div> 
+         <div class="item-m"> 
+          <span>47 篇文章</span> 
+          <span class="old-add-new-box"> <span class="price">¥99.90</span> <span class="oldprice">¥299.90</span> </span> 
+         </div> 
+         <div class="item-r"> 
+          <a class="item-target article-column-subscribe">已订阅 </a> 
+          <a class="item-target column-studyvip-discount column-studyvip-pass" data-report-view="{&quot;spm&quot;:&quot;1001.2015.3001.8590&quot;}" data-report-click="{&quot;spm&quot;:&quot;1001.2015.3001.8590&quot;}">8折续费 </a> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="learning_the_member_box"> 
+       <a href="https://www.csdn.net/vip?utm_source=bkzl_cjhy_ckqy" target="_blank"> 
+        <div class="left">
+         <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/iconVIpCrown.png" alt="">
+         <span>您已是超级会员，正在免费阅读会员专享内容</span>
+        </div> 
+        <div class="right">
+         <span>查看更多超级会员权益</span>
+         <img src="https://csdnimg.cn/release/blogv2/dist/components/img/vipIconArrowLeftWhite.png" alt="">
+        </div> </a> 
+      </div> 
+      <div class="ai-abstract-box"> 
+       <div class="ai-abstract"> 
+        <div class="abstract-content"> 
+         <img class="lock-img" src="https://img-home.csdnimg.cn/images/20240711042549.png" alt=""> 本文深入探讨了激活函数在深度学习中的作用，特别是针对YOLOv5模型，包括sigmoid, tanh, ReLU, SiLU, swish, hardswish, Mish, ELU, AconC/MetaAconC和Softplus等的优缺点，以及更换激活函数的步骤。激活函数选择需考虑模型的表达能力和梯度消失问题，ReLU因其计算效率而广泛使用，而SiLU和Swish等新激活函数在某些场景下表现更优。" 6113963,91790,计算两条线段的交点算法,"['几何计算', '算法', '二维坐标系'] 
+        </div> 
+        <p> 摘要生成于 <a href="https://ai.csdn.net?utm_source=cknow_pc_ai_abstract" data-report-query="spm=3001.10128" data-report-view="{&quot;spm&quot;:&quot;3001.10128&quot;,&quot;extra&quot;:{&quot;location&quot;:&quot;ai_abstract&quot;}}" data-report-click="{&quot;spm&quot;:&quot;3001.10128&quot;,&quot;extra&quot;:{&quot;location&quot;:&quot;ai_abstract&quot;,&quot;text&quot;:&quot;C知道&quot;}}" target="_blank"> C知道</a> ，由 DeepSeek-R1 满血版支持， <a href="https://ai.csdn.net?utm_source=cknow_pc_ai_abstract" data-report-query="spm=3001.10128" data-report-click="{&quot;spm&quot;:&quot;3001.10128&quot;,&quot;extra&quot;:{&quot;location&quot;:&quot;ai_abstract&quot;,&quot;text&quot;:&quot;前往体验&quot;}}" target="_blank"> 前往体验 &gt;</a></p> 
+       </div> 
+      </div> 
+      <article class="baidu_pl"> 
+       <div id="article_content" class="article_content clearfix"> 
+        <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/kdoc_html_views-1a98987dfd.css"> 
+        <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/ck_htmledit_views-704d5b9767.css"> 
+        <div id="content_views" class="htmledit_views"> 
+         <h2 id="articleContentId" style="text-align:center;"><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/48e585e38350110b9c34346851458120.gif"></h2> 
+         <p style="text-align:center;"><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/2f71e907dd7066c3099f6ef050a4ba42.png"></p> 
+         <p><img alt="962f7cb1b48f44e29d9beb1d499d0530.gif" height="62" src="https://i-blog.csdnimg.cn/blog_migrate/ac3c5d6bfbcbf982e8e9e3632d7f20d1.gif" width="62"><strong>【YOLOv5改进系列】前期回顾：</strong></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/130564848?spm=1001.2014.3001.5501" title="YOLOv5改进系列（0）——重要性能指标与训练结果评价及分析">YOLOv5改进系列（0）——重要性能指标与训练结果评价及分析</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/130551913?spm=1001.2014.3001.5501" title="YOLOv5改进系列（1）——添加SE注意力机制">YOLOv5改进系列（1）——添加SE注意力机制</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/130587102?spm=1001.2014.3001.5501" title="YOLOv5改进系列（2）——添加CBAM注意力机制">YOLOv5改进系列（2）——添加CBAM注意力机制</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/130619604?spm=1001.2014.3001.5501" title="YOLOv5改进系列（3）——添加CA注意力机制">YOLOv5改进系列（3）——添加CA注意力机制</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/130641318?spm=1001.2014.3001.5501" title="YOLOv5改进系列（4）——添加ECA注意力机制">YOLOv5改进系列（4）——添加ECA注意力机制</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/130832933?spm=1001.2014.3001.5501" title="YOLOv5改进系列（5）——替换主干网络之 MobileNetV3">YOLOv5改进系列（5）——替换主干网络之 MobileNetV3</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/131008642?spm=1001.2014.3001.5501" title="YOLOv5改进系列（6）——替换主干网络之 ShuffleNetV2">YOLOv5改进系列（6）——替换主干网络之 ShuffleNetV2</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/131031541?spm=1001.2014.3001.5501" title="YOLOv5改进系列（7）——添加SimAM注意力机制">YOLOv5改进系列（7）——添加SimAM注意力机制</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/131053284?spm=1001.2014.3001.5501" title="YOLOv5改进系列（8）——添加SOCA注意力机制">YOLOv5改进系列（8）——添加SOCA注意力机制</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/131207097?csdn_share_tail=%7B%22type%22%3A%22blog%22%2C%22rType%22%3A%22article%22%2C%22rId%22%3A%22131207097%22%2C%22source%22%3A%22weixin_43334693%22%7D" title="YOLOv5改进系列（9）——替换主干网络之EfficientNetv2">YOLOv5改进系列（9）——替换主干网络之EfficientNetv2</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/131235113?spm=1001.2014.3001.5501" title="​​​​​​YOLOv5改进系列（10）——替换主干网络之GhostNet">​​​​​​YOLOv5改进系列（10）——替换主干网络之GhostNet</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/131350224?spm=1001.2014.3001.5501" title="YOLOv5改进系列（11）——添加损失函数之EIoU、AlphaIoU、SIoU、WIoU">YOLOv5改进系列（11）——添加损失函数之EIoU、AlphaIoU、SIoU、WIoU</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/131461294?spm=1001.2014.3001.5501" title="YOLOv5改进系列（12）——更换Neck之BiFPN">YOLOv5改进系列（12）——更换Neck之BiFPN</a></p> 
+         <p class="img-center"><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/6e7df20d56b4203546bb53ba6b10bb0e.gif"></p> 
+         <hr> 
+         <p id="main-toc"><strong>目录</strong></p> 
+         <p id="%F0%9F%8C%B2%E4%B8%80%E3%80%81%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0%E7%9A%84%E7%AE%80%E4%BB%8B-toc" style="margin-left:0px;"><a href="#%F0%9F%8C%B2%E4%B8%80%E3%80%81%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0%E7%9A%84%E7%AE%80%E4%BB%8B" rel="nofollow">🌲一、激活函数的简介</a></p> 
+         <p id="%F0%9F%8C%BB1.1%20%E4%BB%80%E4%B9%88%E6%98%AF%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0%EF%BC%9F-toc" style="margin-left:40px;"><a href="#%F0%9F%8C%BB1.1%20%E4%BB%80%E4%B9%88%E6%98%AF%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0%EF%BC%9F" rel="nofollow">1.1 什么是激活函数？</a></p> 
+         <p id="%F0%9F%8C%BB1.2%20%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0%E6%9C%89%E4%BB%80%E4%B9%88%E7%94%A8%EF%BC%9F-toc" style="margin-left:40px;"><a href="#%F0%9F%8C%BB1.2%20%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0%E6%9C%89%E4%BB%80%E4%B9%88%E7%94%A8%EF%BC%9F" rel="nofollow">1.2 激活函数有什么用？</a></p> 
+         <p id="%F0%9F%8C%B2%E4%BA%8C%E3%80%81%E4%B8%80%E4%BA%9B%E5%B8%B8%E8%A7%81%E7%9A%84%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0-toc" style="margin-left:0px;"><a href="#%F0%9F%8C%B2%E4%BA%8C%E3%80%81%E4%B8%80%E4%BA%9B%E5%B8%B8%E8%A7%81%E7%9A%84%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0" rel="nofollow">🌲二、一些常见的激活函数</a></p> 
+         <p id="%F0%9F%8C%BB2.1%20sigmoid%E5%87%BD%E6%95%B0-toc" style="margin-left:40px;"><a href="#%F0%9F%8C%BB2.1%20sigmoid%E5%87%BD%E6%95%B0" rel="nofollow">🌻2.1 sigmoid函数</a></p> 
+         <p id="%F0%9F%8C%BB2.2%20tanh%20%2F%20%E5%8F%8C%E6%9B%B2%E6%AD%A3%E5%88%87%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0-toc" style="margin-left:40px;"><a href="#%F0%9F%8C%BB2.2%20tanh%20%2F%20%E5%8F%8C%E6%9B%B2%E6%AD%A3%E5%88%87%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0" rel="nofollow">🌻2.2 tanh / 双曲正切激活函数</a></p> 
+         <p id="%F0%9F%8C%BB2.3%C2%A0ReLU%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0-toc" style="margin-left:40px;"><a href="#%F0%9F%8C%BB2.3%C2%A0ReLU%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0" rel="nofollow">🌻2.3&nbsp;ReLU激活函数</a></p> 
+         <p id="%F0%9F%8C%BB2.4%20SiLU%C2%A0-toc" style="margin-left:40px;"><a href="#%F0%9F%8C%BB2.4%20SiLU%C2%A0" rel="nofollow">🌻2.4 SiLU&nbsp;</a></p> 
+         <p id="%F0%9F%8C%BB2.5%20swish%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0-toc" style="margin-left:40px;"><a href="#%F0%9F%8C%BB2.5%20swish%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0" rel="nofollow">🌻2.5 swish激活函数</a></p> 
+         <p id="%F0%9F%8C%BB2.6%C2%A0hardswish%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0-toc" style="margin-left:40px;"><a href="#%F0%9F%8C%BB2.6%C2%A0hardswish%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0" rel="nofollow">🌻2.6&nbsp;hardswish激活函数</a></p> 
+         <p id="%F0%9F%8C%BB2.7%C2%A0Mish%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0-toc" style="margin-left:40px;"><a href="#%F0%9F%8C%BB2.7%C2%A0Mish%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0" rel="nofollow">🌻2.7&nbsp;Mish激活函数</a></p> 
+         <p id="%F0%9F%8C%BB2.8%C2%A0ELU%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0-toc" style="margin-left:40px;"><a href="#%F0%9F%8C%BB2.8%C2%A0ELU%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0" rel="nofollow">🌻2.8&nbsp;ELU激活函数</a></p> 
+         <p id="%F0%9F%8C%BB2.9%C2%A0AconC%2FMetaAconC%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0-toc" style="margin-left:40px;"><a href="#%F0%9F%8C%BB2.9%C2%A0AconC%2FMetaAconC%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0" rel="nofollow">🌻2.9&nbsp;AconC/MetaAconC激活函数</a></p> 
+         <p id="%F0%9F%8C%BB2.10%C2%A0Softplus%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0-toc" style="margin-left:40px;"><a href="#%F0%9F%8C%BB2.10%C2%A0Softplus%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0" rel="nofollow">🌻2.10&nbsp;Softplus激活函数</a></p> 
+         <p id="%F0%9F%8C%B2%E4%B8%89%E3%80%81%E6%9B%B4%E6%8D%A2%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0%E7%9A%84%E6%AD%A5%E9%AA%A4-toc" style="margin-left:0px;"><a href="#%F0%9F%8C%B2%E4%B8%89%E3%80%81%E6%9B%B4%E6%8D%A2%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0%E7%9A%84%E6%AD%A5%E9%AA%A4" rel="nofollow">🌲三、更换激活函数的步骤</a></p> 
+         <p id="%E7%AC%AC%E2%91%A0%E6%AD%A5%20%E6%89%93%E5%BC%80activations.py%E6%96%87%E4%BB%B6%EF%BC%8C%E6%9F%A5%E7%9C%8B%E5%B7%B2%E6%9C%89%E5%87%BD%E6%95%B0-toc" style="margin-left:80px;"><a href="#%E7%AC%AC%E2%91%A0%E6%AD%A5%20%E6%89%93%E5%BC%80activations.py%E6%96%87%E4%BB%B6%EF%BC%8C%E6%9F%A5%E7%9C%8B%E5%B7%B2%E6%9C%89%E5%87%BD%E6%95%B0" rel="nofollow">第①步 打开activations.py文件，查看已有函数</a></p> 
+         <p id="%E7%AC%AC%E2%91%A1%E6%AD%A5%20%E5%9C%A8common.py%E4%B8%AD%E6%9B%B4%E6%8D%A2%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0%C2%A0-toc" style="margin-left:80px;"><a href="#%E7%AC%AC%E2%91%A1%E6%AD%A5%20%E5%9C%A8common.py%E4%B8%AD%E6%9B%B4%E6%8D%A2%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0%C2%A0" rel="nofollow">第②步 在common.py中更换激活函数&nbsp;</a></p> 
+         <p id="%F0%9F%8C%B2%E5%9B%9B%E3%80%81%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E5%90%88%E9%80%82%E7%9A%84%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0-toc" style="margin-left:0px;"><a href="#%F0%9F%8C%B2%E5%9B%9B%E3%80%81%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E5%90%88%E9%80%82%E7%9A%84%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0" rel="nofollow">🌲四、如何选择合适的激活函数</a></p> 
+         <p id="%F0%9F%8C%9F%E6%9C%AC%E4%BA%BAYOLOv5%E7%B3%BB%E5%88%97%E5%AF%BC%E8%88%AA-toc" style="margin-left:0px;"><a href="#%F0%9F%8C%9F%E6%9C%AC%E4%BA%BAYOLOv5%E7%B3%BB%E5%88%97%E5%AF%BC%E8%88%AA" rel="nofollow">🌟本人YOLOv5系列导航</a></p> 
+         <p><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/c33f146aba4d74ba22a17dfd12431d32.gif"></p> 
+         <h2 id="%F0%9F%8C%B2%E4%B8%80%E3%80%81%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0%E7%9A%84%E7%AE%80%E4%BB%8B">🌲一、激活函数的简介</h2> 
+         <h3 id="%F0%9F%8C%BB1.1%20%E4%BB%80%E4%B9%88%E6%98%AF%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0%EF%BC%9F"><strong>1.1 什么是激活函数？</strong></h3> 
+         <p>在接触到深度学习（Deep Learning）后，特别是神经网络中，我们会发现在每一层的神经网络输出后都会使用一个函数（比如sigmoid，tanh，Relu等等）对结果进行运算，这个函数就是激活函数（Activation Function）。那么为什么需要添加激活函数呢？如果不添加又会产生什么问题呢？</p> 
+         <p>首先，我们知道神经网络模拟了人类神经元的工作机理，<span style="color:#fe2c24;"><strong>激活函数（Activation Function）是一种添加到人工神经网络中的函数，旨在帮助网络学习数据中的复杂模式。</strong></span><span style="color:#1a439c;"><strong>在神经元中，输入的input经过一系列加权求和后作用于另一个函数，这个函数就是这里的激活函数</strong>。</span><span style="color:#1c7331;"><strong>激活函数是一种特殊的非线性函数，它能够在神经网络中使用，其作用是将输入信号转化成输出信号。</strong></span>类似于人类大脑中基于神经元的模型，它将神经元中的输入信号转换为一个有意义的输出，从而使得神经网络能够学习和识别复杂的模式。激活函数最终决定了是否传递信号以及要发射给下一个神经元的内容。<span style="color:#1c7892;"><strong>在人工神经网络中，一个节点的激活函数定义了该节点在给定的输入或输入集合下的输出。</strong></span></p> 
+         <p>激活函数可以分为<span style="color:#ad720d;"><strong>线性激活函数</strong></span>以及<strong><span style="color:#b95514;">非线性激活函数</span>，</strong>常用的激活函数有 <strong>Sigmoid、ReLU、Leaky ReLU 和 ELU</strong> 等。</p> 
+         <p class="img-center"><img alt="在这里插入图片描述" src="https://i-blog.csdnimg.cn/blog_migrate/4eff32a218577cc627cf4e464eff111b.png"></p> 
+         <hr> 
+         <h3 id="%F0%9F%8C%BB1.2%20%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0%E6%9C%89%E4%BB%80%E4%B9%88%E7%94%A8%EF%BC%9F">1.2 激活函数有什么用？</h3> 
+         <p><strong>一句话总结：</strong><span style="color:#fe2c24;">为了提高模型的表达能力。</span></p> 
+         <p><span style="color:#e6b223;"><strong>激活函数能让中间输出多样化，从而能够处理更复杂的问题</strong></span>。如果不使用激活函数，那么每一层的输出都是上一层输入的线性函数，最后的输出也只是最开始输入数据的线性组合而已。<span style="color:#4da8ee;"><strong>而激活函数可以给神经元引入非线性因素，当加入到多层神经网络时，就可以让神经网络拟合任何线性函数或非线性函数，</strong></span><strong><span style="color:#9c8ec1;">从而使得网络可以适合更多的非线性问题，而不仅仅是线性问题</span></strong>。</p> 
+         <p>激活函数被定义为一个几乎处处可微的函数。</p> 
+         <hr> 
+         <h2 id="%F0%9F%8C%B2%E4%BA%8C%E3%80%81%E4%B8%80%E4%BA%9B%E5%B8%B8%E8%A7%81%E7%9A%84%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0">🌲二、一些常见的激活函数</h2> 
+         <h3 id="%F0%9F%8C%BB2.1%20sigmoid%E5%87%BD%E6%95%B0">🌻<span style="color:#4da8ee;">2.1 sigmoid函数</span></h3> 
+         <p><span style="color:#fe2c24;"><strong>sigmoid </strong></span>是使用范围最广的一类激活函数，具有<strong>指数函数</strong>形状，它在物理意义上最为接近生物神经元，是一个在生物学中常见的S型的函数，也称为S型生长曲线。此外，<strong>(0, 1) 的输出还可以被表示作概率，或用于输入的归一化</strong>，代表性的如Sigmoid交叉熵损失函数。</p> 
+         <p><strong><span style="background-color:#38d8f0;">函数的表达式如下：</span></strong><img alt="" height="69" src="https://i-blog.csdnimg.cn/blog_migrate/0cd4ad0d906dc93c477e94ed8b32102f.png" width="151"></p> 
+         <p><strong><span style="background-color:#ffd900;">图像如下：</span></strong><img alt="" height="305" src="https://i-blog.csdnimg.cn/blog_migrate/c05a80937c8285b73a3b0fd40f4d8d0d.png" width="795"></p> 
+         <p id="sigmoid%E4%BC%98%E7%82%B9%EF%BC%9A"><strong><span style="background-color:#faa572;">sigmoid优点：</span></strong></p> 
+         <p>（1） 值域在0和1之间</p> 
+         <p>（2）函数具有非常好的<span style="color:#fe2c24;">对称性</span></p> 
+         <p>（3）sigmoid的优点在于<span style="color:#fe2c24;">输出范围有限</span>，所以数据在传递的过程中不容易发散。当然也有相应的缺点，就是饱和的时候梯度太小</p> 
+         <p>（4）<span style="color:#fe2c24;">求导容易</span></p> 
+         <p><strong><span style="background-color:#a2e043;">sigmoid缺点：</span></strong></p> 
+         <p>（1）容易出现梯度消失</p> 
+         <p>（2）函数输出并不是zero-centered（零均值）</p> 
+         <p>（3）幂运算相对来讲比较耗时</p> 
+         <hr> 
+         <h3 id="%F0%9F%8C%BB2.2%20tanh%20%2F%20%E5%8F%8C%E6%9B%B2%E6%AD%A3%E5%88%87%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0">🌻<span style="color:#98c091;">2.2 tanh / 双曲正切激活函数</span></h3> 
+         <p><span style="color:#fe2c24;"><strong>tanh</strong></span>激活函数又叫作双曲正切激活函数，在sigmoid基础上做出改进，与sigmoid相比，tanh输出均值为0，能够加快网络的收敛速度。然而，tanh同样存在梯度消失现象。</p> 
+         <p><strong><span style="background-color:#38d8f0;">函数的表达式如下：</span></strong><img alt="" height="81" src="https://i-blog.csdnimg.cn/blog_migrate/3887e8b1a36b80091b77a6e9473fd9b8.png" width="419"></p> 
+         <p><strong><span style="background-color:#ffd900;">图像如下：</span></strong></p> 
+         <p style="text-align:center;"><img alt="" height="322" src="https://i-blog.csdnimg.cn/blog_migrate/e58d7204fef7f7410e92b4bf82e91938.png" width="452"></p> 
+         <p><strong><span style="background-color:#faa572;">tanh</span></strong><strong><span style="background-color:#faa572;">优点：</span></strong></p> 
+         <p>（1）当输入较大或较小时，输出几乎是平滑的并且梯度较小，这不利于权重更新。<span style="color:#fe2c24;">tanh 的输出间隔为 1，并且整个函数以 0 为中心，比 sigmoid 函数更好</span></p> 
+         <p>（2）在 tanh 图中，<span style="color:#fe2c24;">负输入将被强映射为负，而零输入被映射为接近零</span>。</p> 
+         <p><strong><span style="background-color:#a2e043;">tanh缺点：</span></strong></p> 
+         <p>（1）仍然存在梯度饱和的问题</p> 
+         <p>（2）依然进行的是指数运算</p> 
+         <hr> 
+         <h3 id="%F0%9F%8C%BB2.3%C2%A0ReLU%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0">🌻<span style="color:#e6b223;"><strong>2.3&nbsp;ReLU激活函数</strong></span></h3> 
+         <p><span style="color:#fe2c24;"><strong>ReLU函数</strong></span>又称为修正线性单元（Rectified Linear Unit），是一种<strong>分段线性函数</strong>，通常指代<strong>以斜坡函数及其变种为代表的非线性函数</strong>。其弥补了sigmoid函数以及tanh函数的梯度消失问题，在目前的深度神经网络中被广泛使用。</p> 
+         <p><strong><span style="background-color:#38d8f0;">函数的表达式如下：</span></strong><img alt="" height="116" src="https://i-blog.csdnimg.cn/blog_migrate/76f9a79ce2f903889b2cffee84d617d6.png" width="206"></p> 
+         <p><strong><span style="background-color:#ffd900;">图像如下：</span></strong></p> 
+         <p class="img-center"><img alt="" height="289" src="https://i-blog.csdnimg.cn/blog_migrate/7a640919a29d8b463560d839eba4b2ce.png" width="380"></p> 
+         <p><strong><span style="color:#0d0016;"><span style="background-color:#faa572;">ReLU</span></span><span style="background-color:#faa572;">优点：&nbsp;</span></strong></p> 
+         <p>（1）当输入为正时，导数为1，一定程度上<span style="color:#fe2c24;">改善了梯度消失问题</span>，<span style="color:#fe2c24;">加速梯度下降的收敛速度</span></p> 
+         <p>（2）<span style="color:#fe2c24;">计算速度快得多</span>。ReLU 函数中只存在线性关系，因此它的计算速度比 sigmoid 和 tanh 更快</p> 
+         <p>（3）被认为具有生物学合理性（Biological Plausibility），比如单侧抑制、宽兴奋边界（即兴奋程度可以非常高）</p> 
+         <p><strong><span style="background-color:#a2e043;">ReLU缺点：</span></strong></p> 
+         <p>（1）当输入为负时，ReLU 完全失效，在正向传播过程中，这不是问题。有些区域很敏感，有些则不敏感。但是在反向传播过程中，如果输入负数，则梯度将完全为零</p> 
+         <p>（2）不以零为中心：和 Sigmoid 激活函数类似，ReLU 函数的输出不以零为中心，ReLU 函数的输出为 0 或正数，给后一层的神经网络引入偏置偏移，会影响梯度下降的效率&nbsp;</p> 
+         <hr> 
+         <h3 id="%F0%9F%8C%BB2.4%20SiLU%C2%A0">🌻<span style="color:#9c8ec1;">2.4 SiLU&nbsp;</span></h3> 
+         <p><span style="color:#fe2c24;"><strong>SiLU</strong></span>激活函数（又称Sigmoid-weighted Linear Unit）是一种新型的<strong>非线性激活函数</strong>，它是Sigmoid和ReLU的改进版。SiLU具备无上界有下界、平滑、非单调的特性。SiLU在深层模型上的效果优于 ReLU。可以看做是平滑的ReLU激活函数。SiLU激活函数的特征是它在<strong>低数值区域中表现较为平滑，而在高数值区域中表现起来十分“锐利”</strong>，从而能够有效地<strong>避免过度学习</strong>的问题。</p> 
+         <p><strong><span style="background-color:#38d8f0;">函数的表达式如下：</span></strong></p> 
+         <p class="img-center"><img alt="" height="84" src="https://i-blog.csdnimg.cn/blog_migrate/a64ae1a6f5772a0af2e491ab8019fc1f.png" width="346"></p> 
+         <p><strong><span style="background-color:#ffd900;">图像如下：</span></strong></p> 
+         <p class="img-center"><img alt="在这里插入图片描述" height="297" src="https://i-blog.csdnimg.cn/blog_migrate/8e3be6f40a6e939ee22ba0f347d75708.gif" width="392"></p> 
+         <p><strong><span style="background-color:#faa572;">Si</span><span style="color:#0d0016;"><span style="background-color:#faa572;">LU</span></span><span style="background-color:#faa572;">优点：</span></strong></p> 
+         <p>（1）相对于ReLU函数，<span style="color:#fe2c24;">SiLU函数在接近零时具有更平滑的曲线</span>，并且由于其使用了sigmoid函数，可以<span style="color:#fe2c24;">使网络的输出范围在0和1之间</span>。</p> 
+         <p><span style="background-color:#a2e043;"><strong>Si</strong><strong>LU缺点：</strong></span></p> 
+         <p>（1）引入了指数函数，增加了计算量。</p> 
+         <hr> 
+         <h3 id="%F0%9F%8C%BB2.5%20swish%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0">🌻<span style="color:#79c6cd;">2.5 swish激活函数</span></h3> 
+         <p><span style="color:#fe2c24;"><strong>swish </strong></span>是一个<strong>平滑的、非单调</strong>的函数，在深度网络上始终匹配或优于 ReLU，适用于各种具有挑战性的领域，如图像分类和机器翻译。通过self-gating，它只需要一个标量输入，而在多选通场景中，它需要多个双标量输入。</p> 
+         <p><strong><span style="background-color:#38d8f0;">函数的表达式如下：</span></strong><img alt="" height="69" src="https://i-blog.csdnimg.cn/blog_migrate/38784dfff8a52785e50cdeb7627be0d6.png" width="262"></p> 
+         <p><strong><span style="background-color:#ffd900;">图像如下：</span></strong></p> 
+         <p class="img-center"><img alt="" height="201" src="https://i-blog.csdnimg.cn/blog_migrate/02c7c57fff29fa2ec2bbfa4d96c51fb4.png" width="463"></p> 
+         <p><strong><span style="background-color:#faa572;">swish优点：</span></strong></p> 
+         <p>（1）<span style="color:#fe2c24;">无上界</span>（避免过拟合）</p> 
+         <p>（2）<span style="color:#fe2c24;">有下界</span>（产生更强的正则化效果）</p> 
+         <p>（3）<span style="color:#fe2c24;">平滑</span>（处处可导 更容易训练）</p> 
+         <p>（4）<span style="color:#fe2c24;">x&lt;0具有非单调性</span>（对分布有重要意义 这点也是Swish和ReLU的最大区别）</p> 
+         <hr> 
+         <h3 id="%F0%9F%8C%BB2.6%C2%A0hardswish%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0">🌻<span style="color:#1c7331;">2.6&nbsp;hardswish激活函数</span></h3> 
+         <p><span style="color:#fe2c24;"><strong>hardswish</strong></span>激活函数是<strong>对swish激活函数的改进</strong>，尽管swish非线性激活函数提高了检测精度，但不适合在嵌入式移动设备上使用，因为“S”型函数在嵌入式移动设备上的计算成本更高，求导较为复杂，在量化时计算较慢。但是如果在实验中使用hardswish非线性激活函数在准确性没差别的情况下部署在嵌入式移动设备上却会具有多重优势。</p> 
+         <p><strong><span style="background-color:#38d8f0;">函数的表达式如下：</span></strong><img alt="" height="93" src="https://i-blog.csdnimg.cn/blog_migrate/4d7c8e3117f01fe4a765e9fc556b4293.png" width="382"></p> 
+         <p><strong><span style="background-color:#ffd900;">图像如下：</span></strong></p> 
+         <p class="img-center"><img alt="" height="342" src="https://i-blog.csdnimg.cn/blog_migrate/07fe00cb49bf8aa68b53c1071ff93bdb.png#pic_center" width="444"></p> 
+         <p><span style="color:#0d0016;"><span style="background-color:#faa572;">&nbsp;</span></span><strong><span style="background-color:#faa572;"><span style="color:#0d0016;">hardswish</span>优点：</span></strong></p> 
+         <p>（1）hardswish相较于swish函数，具有<span style="color:#fe2c24;">数值稳定性好</span>，<span style="color:#fe2c24;">计算速度快</span>等优点</p> 
+         <p>（2）消除了由于近似Sigmoid形的不同实现而导致的潜在数值精度损失</p> 
+         <p>（3）在实践中，hardswish激活函数可以实现为<span style="color:#fe2c24;">分段功能</span>，以<span style="color:#fe2c24;">减少内存访问次数</span>，从而大大降低了等待时间成本</p> 
+         <hr> 
+         <h3 id="%F0%9F%8C%BB2.7%C2%A0Mish%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0">🌻<span style="color:#b95514;">2.7&nbsp;Mish激活函数</span></h3> 
+         <p><span style="color:#fe2c24;"><strong>Mish</strong></span>一种<strong>新型的自正则化的非单调</strong>激活函数，拥有无上界(unbounded above)、有下界(bounded below)、平滑(smooth)和非单调(nonmonotonic)四个优点。其在ImageNet上的效果比ReLU和Swish都要好。</p> 
+         <p><strong><span style="background-color:#38d8f0;">函数的表达式如下：</span></strong><img alt="" height="88" src="https://i-blog.csdnimg.cn/blog_migrate/160a28094f106d52d3d97e59972da3ea.png" width="347"></p> 
+         <p><strong><span style="background-color:#ffd900;">图像如下：</span></strong></p> 
+         <p class="img-center"><img alt="" height="371" src="https://i-blog.csdnimg.cn/blog_migrate/ff0969f1f5c111aea6ffbd74b49b4a62.png" width="493"></p> 
+         <p><span style="color:#0d0016;"><span style="background-color:#faa572;">&nbsp;<strong>Mish</strong></span></span><strong><span style="background-color:#faa572;">优点：</span></strong></p> 
+         <p>（1）没有上限</p> 
+         <p>（2）有下限</p> 
+         <p>（3）非单调性</p> 
+         <p>（4）无穷阶连续性和光滑性</p> 
+         <hr> 
+         <h3 id="%F0%9F%8C%BB2.8%C2%A0ELU%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0">🌻<span style="color:#ad720d;">2.8&nbsp;ELU激活函数</span></h3> 
+         <p><span style="color:#fe2c24;"><strong>ELU</strong></span><span style="color:#0d0016;">（Exponential Linear Unit）激活函数是<strong>一种添加了指数项的非线性激活函数</strong>，ELU 激活函数的特征<strong>在于输入为负时会有正值的输出</strong>，<strong>而不是 0</strong>。这样可以有效地避免神经元死亡问题。 ELU 激活函数有助于神经元学习复杂的非线性函数，可以帮助神经元学习复杂的非线性特征。</span><br> &nbsp;</p> 
+         <p><strong><span style="background-color:#38d8f0;">函数的表达式如下：</span></strong><img alt="" height="139" src="https://i-blog.csdnimg.cn/blog_migrate/d05dc88f0acb2785416d01d94ca9b673.png" width="506"></p> 
+         <p><strong><span style="background-color:#ffd900;">图像如下：</span></strong>&nbsp;</p> 
+         <p class="img-center"><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/db9da4114256737ea93e41b65d9e9b91.png"></p> 
+         <p><span style="color:#0d0016;"><span style="background-color:#faa572;">&nbsp;<strong>ELU</strong></span></span><strong><span style="background-color:#faa572;">优点：</span></strong>&nbsp;</p> 
+         <p>（1）<span style="color:#fe2c24;">不会有Dead ReLU问题</span></p> 
+         <p>（2）<span style="color:#fe2c24;">输出的均值接近0</span>。 能得到负值输出，这能帮助网络向正确的方向推动权重和偏置变化</p> 
+         <p><span style="background-color:#a2e043;"><strong>ELU缺点：</strong></span></p> 
+         <p>（1）由于包含指数运算，所以计算量稍大</p> 
+         <p>（2）无法避免梯度爆炸问题</p> 
+         <p>（3）神经网络不学习 α 值</p> 
+         <hr> 
+         <h3 id="%F0%9F%8C%BB2.9%C2%A0AconC%2FMetaAconC%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0">🌻2<span style="color:#511b78;">.9&nbsp;AconC/MetaAconC激活函数</span></h3> 
+         <p>这是2021年新出的一个激活函数，先从ReLU函数出发，采用Smoth maximum近似平滑公式证明了Swish就是ReLU函数的近似平滑表示，这也算提出一种新颖的Swish函数解释（Swish不再是一个黑盒）。之后进一步分析ReLU的一般形式Maxout系列激活函数，再次利用Smoth maximum将Maxout系列扩展得到简单且有效的ACON系列激活函数：ACON-A、ACON-B、ACON-C。最终提出meta-ACON，动态的学习（自适应）激活函数的线性/非线性，显著提高了表现。</p> 
+         <p><strong><span style="background-color:#38d8f0;">函数的表达式如下：</span></strong><br><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/27aebeaf3c3431cc93a468ba18526bb6.png#pic_center"></p> 
+         <p>&nbsp;<strong><span style="background-color:#ffd900;">图像如下：</span></strong>&nbsp;</p> 
+         <p><img alt="在这里插入图片描述" src="https://i-blog.csdnimg.cn/blog_migrate/2a2c3fe5ab50ea3e55d9df00d826fbb7.png#pic_center"></p> 
+         <p>&nbsp;<span style="color:#0d0016;"><span style="background-color:#faa572;">&nbsp;</span><strong><span style="background-color:#faa572;">AconC/MetaAconC</span></strong></span><strong><span style="background-color:#faa572;">优点：</span></strong>&nbsp;</p> 
+         <p>（1）动态的学习（自适应）激活函数的线性/非线性，显著提高了表现</p> 
+         <p>（2）ACON的参数P1和P2负责控制函数的上下限，也就是允许神经元自适应激活或者不激活，这个动态控制函数线性与非线性能力的参数就可以进行一个自适应学习</p> 
+         <hr> 
+         <h3 id="%F0%9F%8C%BB2.10%C2%A0Softplus%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0">🌻<span style="color:#1a439c;">2.10&nbsp;Softplus激活函数</span></h3> 
+         <p><span style="color:#fe2c24;"><strong>Softplus</strong></span>函数可以看作是<strong>ReLU函数的平滑</strong>。根据神经科学家的相关研究，Softplus函数和ReLU函数与脑神经元激活频率函数有神似的地方。也就是说，相比于早期的激活函数，Softplus函数和ReLU函数更加接近脑神经元的激活模型，而神经网络正是基于脑神经科学发展而来，这两个激活函数的应用促成了神经网络研究的新浪潮。</p> 
+         <p><strong><span style="background-color:#38d8f0;">函数的表达式如下：</span></strong><img alt="" height="89" src="https://i-blog.csdnimg.cn/blog_migrate/a6cf6c24e3e1ebed210b6d35d2cd08d2.png" width="359"></p> 
+         <p><strong><span style="background-color:#ffd900;">图像如下：</span></strong></p> 
+         <p class="img-center"><img alt="" height="329" src="https://i-blog.csdnimg.cn/blog_migrate/913c7ba025d14e6ee0456ed575d6958c.png" width="442"></p> 
+         <p><strong><span style="color:#0d0016;"><span style="background-color:#faa572;">Softplus</span></span><span style="background-color:#faa572;">优点：</span></strong>&nbsp;</p> 
+         <p>（1）对于有些输出，需要更加平滑和连续性，而&nbsp;Softplus相对于Relu，是一种更加平滑的激活函数</p> 
+         <p><strong><span style="color:#0d0016;"><span style="background-color:#a2e043;">Softplus</span></span></strong><span style="background-color:#a2e043;"><strong>缺点：</strong></span></p> 
+         <p>（1）计算复杂，涉及到e的指数计算，计算量大</p> 
+         <p>（2）这个函数对于硬件化也不友好</p> 
+         <hr> 
+         <h2 id="%F0%9F%8C%B2%E4%B8%89%E3%80%81%E6%9B%B4%E6%8D%A2%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0%E7%9A%84%E6%AD%A5%E9%AA%A4">🌲三、更换激活函数的步骤</h2> 
+         <h4 id="%E7%AC%AC%E2%91%A0%E6%AD%A5%20%E6%89%93%E5%BC%80activations.py%E6%96%87%E4%BB%B6%EF%BC%8C%E6%9F%A5%E7%9C%8B%E5%B7%B2%E6%9C%89%E5%87%BD%E6%95%B0"><span style="background-color:#38d8f0;">第①步 打开activations.py文件，查看已有函数</span></h4> 
+         <p>首先我们找到<strong><span style="color:#1c7331;">utils/activations.py</span></strong>文件，位置如下图所示：</p> 
+         <p class="img-center"><img alt="" height="374" src="https://i-blog.csdnimg.cn/blog_migrate/85fceb8d01b5e0621d0672af42338ebd.png" width="238"></p> 
+         <p>打开这个文件，我们可以发现，<strong><span style="background-color:#fef2f0;">SiLU，Hardswish，Mish，MemoryEfficientMish，FReLU，AconC，MetaAconC&nbsp;&nbsp;</span></strong>已经在文件里定义了，这是我们可以直接用的。</p> 
+         <p class="img-center"><img alt="" height="510" src="https://i-blog.csdnimg.cn/blog_migrate/4d26a48523b5325de84e54fcb2e63c36.png" width="487"></p> 
+         <hr> 
+         <h4 id="%E7%AC%AC%E2%91%A1%E6%AD%A5%20%E5%9C%A8common.py%E4%B8%AD%E6%9B%B4%E6%8D%A2%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0%C2%A0"><strong><span style="background-color:#a2e043;">第②步 在common.py中更换激活函数&nbsp;</span></strong></h4> 
+         <p>先导入要更换的函数，这里以<strong>MetaAconC</strong>为例：</p> 
+         <pre><code class="language-python">from utils.activations import MetaAconC</code ></pre> 
+         <p>然后再在相应位置修改，如下图所示：</p> 
+         <p><img alt="" height="903" src="https://i-blog.csdnimg.cn/blog_migrate/c9f2c1b365d782698fc3162079afd58d.png" width="1200"></p> 
+         <p>如果想更换其他激活函数，也可以参照下面代码，步骤都是一样的：</p> 
+         <pre><code  style="height: 50vh;" class="language-python">class Conv(nn.Module):
+    # Standard convolution
+    def __init__(self, c1, c2, k=1, s=1, p=None, g=1, act=True):  # ch_in, ch_out, kernel, stride, padding, groups
+        super().__init__()
+        self.conv = nn.Conv2d(c1, c2, k, s, autopad(k, p), groups=g, bias=False)
+        self.bn = nn.BatchNorm2d(c2)
+        #self.act = nn.SiLU() if act is True else (act if isinstance(act, nn.Module) else nn.Identity())
+        # self.act = nn.Identity() if act is True else (act if isinstance(act, nn.Module) else nn.Identity())
+        # self.act = nn.Tanh() if act is True else (act if isinstance(act, nn.Module) else nn.Identity())
+        # self.act = nn.Sigmoid() if act is True else (act if isinstance(act, nn.Module) else nn.Identity())
+        # self.act = nn.ReLU() if act is True else (act if isinstance(act, nn.Module) else nn.Identity())
+        # self.act = nn.LeakyReLU(0.1) if act is True else (act if isinstance(act, nn.Module) else nn.Identity())
+        # self.act = nn.Hardswish() if act is True else (act if isinstance(act, nn.Module) else nn.Identity())
+        # self.act = nn.SiLU() if act is True else (act if isinstance(act, nn.Module) else nn.Identity())
+        # self.act = Mish() if act is True else (act if isinstance(act, nn.Module) else nn.Identity())
+        # self.act = FReLU(c2) if act is True else (act if isinstance(act, nn.Module) else nn.Identity())
+        # self.act = AconC(c2) if act is True else (act if isinstance(act, nn.Module) else nn.Identity())
+        self.act = MetaAconC(c2) if act is True else (act if isinstance(act, nn.Module) else nn.Identity())
+        # self.act = SiLU_beta(c2) if act is True else (act if isinstance(act, nn.Module) else nn.Identity())
+        #self.act = FReLU_noBN_biasFalse(c2) if act is True else (act if isinstance(act, nn.Module) else nn.Identity())
+        # self.act = FReLU_noBN_biasTrue(c2) if act is True else (act if isinstance(act, nn.Module) else nn.Identity())
+    def forward(self, x):
+        return self.act(self.bn(self.conv(x)))
+ 
+    def forward_fuse(self, x):
+        return self.act(self.conv(x))
+ </code ></pre> 
+         <hr> 
+         <h2 id="%F0%9F%8C%B2%E5%9B%9B%E3%80%81%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E5%90%88%E9%80%82%E7%9A%84%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0">🌲四、如何选择合适的激活函数</h2> 
+         <p>其实关于激活函数的选择是调参中的玄学，不同的数据集效果不同，以下是我参考一些资料总结的一点经验，也欢迎大家在评论区补充噢！</p> 
+         <blockquote> 
+          <ol>
+           <li>小白可以从ReLU函数开始，如果ReLU函数没有提供最优结果，再尝试其他激活函数。</li>
+           <li>如果使用 ReLU，那么一定要小心设置 learning rate，而且要注意不要让网络出现很多 dead神经元，如果出现这个问题，那么可以试试 Leaky ReLU、PReLU 或者 Maxout（貌似PReLU效果最好）。</li>
+           <li>ReLU函数只能在隐藏层中使用。</li>
+           <li>在搭建神经网络时，如果搭建的神经网络层数不多，选择&nbsp;Sigmoid、Tanh、ReLU，LeakyReLU，Softmax&nbsp;都可以；而如果搭建的网络层次较多，那就需要小心，选择不当就可导致梯度消失问题。</li>
+           <li>由于梯度消失问题，有时要避免使用sigmoid和tanh函数。</li>
+           <li>用于分类器时，Sigmoid函数及其组合通常效果更好。（除非在二分类问题中，否则请小心使用Sigmoid函数）</li>
+          </ol> 
+         </blockquote> 
+         <hr> 
+         <blockquote> 
+          <p><strong>本文参考：</strong></p> 
+          <p><a href="https://zhuanlan.zhihu.com/p/364620596" rel="nofollow" title="深度学习笔记：如何理解激活函数？（附常用激活函数） - 知乎 (zhihu.com)">深度学习笔记：如何理解激活函数？（附常用激活函数） - 知乎 (zhihu.com)</a></p> 
+          <p><a href="https://blog.csdn.net/weixin_43694096/article/details/124413941?spm=1001.2014.3001.5502" title="YOLOv5/v7 更换激活函数_yolov5修改激活函数_迪菲赫尔曼的博客-CSDN博客">YOLOv5/v7 更换激活函数_yolov5修改激活函数_迪菲赫尔曼的博客-CSDN博客</a></p> 
+         </blockquote> 
+         <h2 id="%F0%9F%8C%9F%E6%9C%AC%E4%BA%BAYOLOv5%E7%B3%BB%E5%88%97%E5%AF%BC%E8%88%AA">🌟本人YOLOv5系列导航</h2> 
+         <p><img alt="962f7cb1b48f44e29d9beb1d499d0530.gif" height="69" src="https://i-blog.csdnimg.cn/blog_migrate/ac3c5d6bfbcbf982e8e9e3632d7f20d1.gif" width="69">​&nbsp; &nbsp;🍀<strong><strong><strong><strong><a href="https://so.csdn.net/so/search?q=YOLOv5%E6%BA%90%E7%A0%81&amp;spm=1001.2101.3001.7020" title="YOLOv5源码">YOLOv5源码</a></strong></strong></strong>详解系列：</strong>&nbsp;&nbsp;</p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/129356033?spm=1001.2014.3001.5501" title="YOLOv5源码逐行超详细注释与解读（1）——项目目录结构解析">YOLOv5源码逐行超详细注释与解读（1）——项目目录结构解析</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/129349094?spm=1001.2014.3001.5501" title="​​​​​​YOLOv5源码逐行超详细注释与解读（2）——推理部分detect.py">​​​​​​YOLOv5源码逐行超详细注释与解读（2）——推理部分detect.py</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/129460666?spm=1001.2014.3001.5501" title="YOLOv5源码逐行超详细注释与解读（3）——训练部分train.py">YOLOv5源码逐行超详细注释与解读（3）——训练部分train.py</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/129649553?spm=1001.2014.3001.5501" title="YOLOv5源码逐行超详细注释与解读（4）——验证部分val（test）.py">YOLOv5源码逐行超详细注释与解读（4）——验证部分val（test）.py</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/129697521?spm=1001.2014.3001.5501" title="YOLOv5源码逐行超详细注释与解读（5）——配置文件yolov5s.yaml">YOLOv5源码逐行超详细注释与解读（5）——配置文件yolov5s.yaml</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/129803802?spm=1001.2014.3001.5501" title="YOLOv5源码逐行超详细注释与解读（6）——网络结构（1）yolo.py">YOLOv5源码逐行超详细注释与解读（6）——网络结构（1）yolo.py</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/129854764?spm=1001.2014.3001.5501" title="YOLOv5源码逐行超详细注释与解读（7）——网络结构（2）common.py">YOLOv5源码逐行超详细注释与解读（7）——网络结构（2）common.py</a></p> 
+         <hr> 
+         <p><img alt="962f7cb1b48f44e29d9beb1d499d0530.gif" height="69" src="https://i-blog.csdnimg.cn/blog_migrate/ac3c5d6bfbcbf982e8e9e3632d7f20d1.gif" width="69">​​&nbsp; &nbsp;🍀<strong><strong><strong><strong><strong><strong><strong><strong><a href="https://so.csdn.net/so/search?q=YOLOv5%E6%BA%90%E7%A0%81&amp;spm=1001.2101.3001.7020" title="YOLOv5入门实践">YOLOv5入门实践</a></strong></strong></strong></strong></strong></strong></strong>系列：</strong>&nbsp;&nbsp;</p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/129981848?spm=1001.2014.3001.5501" title="YOLOv5入门实践（1）——手把手带你环境配置搭建">YOLOv5入门实践（1）——手把手带你环境配置搭建</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/129995604?spm=1001.2014.3001.5501" title="YOLOv5入门实践（2）——手把手教你利用labelimg标注数据集">YOLOv5入门实践（2）——手把手教你利用labelimg标注数据集</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/130025866?spm=1001.2014.3001.5501" title="YOLOv5入门实践（3）——手把手教你划分自己的数据集">YOLOv5入门实践（3）——手把手教你划分自己的数据集</a></p> 
+         <p>&nbsp;<a href="https://blog.csdn.net/weixin_43334693/article/details/130043351?spm=1001.2014.3001.5501" title="YOLOv5入门实践（4）——手把手教你训练自己的数据集">YOLOv5入门实践（4）——手把手教你训练自己的数据集</a></p> 
+         <p><a href="https://blog.csdn.net/weixin_43334693/article/details/130044342?spm=1001.2014.3001.5501" title="YOLOv5入门实践（5）——从零开始，手把手教你训练自己的目标检测模型（包含pyqt5界面）">YOLOv5入门实践（5）——从零开始，手把手教你训练自己的目标检测模型（包含pyqt5界面）</a></p> 
+         <p style="text-align:center;"><img alt="" src="https://i-blog.csdnimg.cn/blog_migrate/9399627be98e63e912c64c82bd1ccf13.gif"></p> 
+        </div> 
+       </div> 
+      </article>  
+     </div> 
+     <div class="directory-boxshadow-dialog" style="display:none;"> 
+      <div class="directory-boxshadow-dialog-box"> 
+      </div> 
+      <div class="vip-limited-time-offer-box-new" id="vip-limited-time-offer-box-new"> 
+       <img class="limited-img limited-img-new" src="https://csdnimg.cn/release/blogv2/dist/pc/img/vip-limited-close-newWhite.png"> 
+       <div class="vip-limited-time-top">
+         确定要放弃本次机会？ 
+       </div> 
+       <span class="vip-limited-time-text">福利倒计时</span> 
+       <div class="limited-time-box-new"> 
+        <span class="time-hour"></span> 
+        <i>:</i> 
+        <span class="time-minite"></span> 
+        <i>:</i> 
+        <span class="time-second"></span> 
+       </div> 
+       <div class="limited-time-vip-box"> 
+        <p> <img class="coupon-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/vip-limited-close-roup.png"> <span class="def">立减 ¥</span> <span class="active limited-num"></span> </p> 
+        <span class="">普通VIP年卡可用</span> 
+       </div> 
+       <a class="limited-time-btn-new" href="https://mall.csdn.net/vip" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.9621&quot;}" data-report-query="spm=1001.2101.3001.9621">立即使用</a> 
+      </div> 
+     </div> 
+     <div class="more-toolbox-new more-toolbar" id="toolBarBox"> 
+      <div class="left-toolbox"> 
+       <div class="toolbox-left"> 
+        <div class="profile-box"> 
+         <a class="profile-href" target="_blank" href="https://jrs0511.blog.csdn.net"><img class="profile-img" src="https://profile-avatar.csdnimg.cn/da983c398fca4f14a19ea48d137f6ca3_weixin_43334693.jpg!1"> <span class="profile-name"> 路人贾'ω' </span> </a> 
+        </div> 
+        <div class="profile-attend"> 
+         <a class="tool-attend tool-bt-button tool-unbt-attend" href="javascript:;" data-report-view="{&quot;mod&quot;:&quot;1592215036_002&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4232&quot;,&quot;extend1&quot;:&quot;已关注&quot;}">已关注</a> 
+         <a class="tool-item-follow active-animation" style="display:none;">关注</a> 
+        </div> 
+       </div> 
+       <div class="toolbox-middle"> 
+        <ul class="toolbox-list"> 
+         <li class="tool-item tool-item-size tool-active is-like" id="is-like"> <a class="tool-item-href"> <img style="display:none;" id="is-like-imgactive-animation-like" class="animation-dom active-animation" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarThumbUpactive.png" alt=""> <img class="isactive" style="display:none" id="is-like-imgactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/like-active.png" alt=""> <img class="isdefault" style="display:block" id="is-like-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/like.png" alt=""> <span id="spanCount" class="count "> 6 </span> </a> 
+          <div class="tool-hover-tip">
+           <span class="text space">点赞</span>
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active is-unlike" id="is-unlike"> <a class="tool-item-href"> <img class="isactive" style="margin-right:0px;display:none" id="is-unlike-imgactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/unlike-active.png" alt=""> <img class="isdefault" style="margin-right:0px;display:block" id="is-unlike-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/unlike.png" alt=""> <span id="unlikeCount" class="count "></span> </a> 
+          <div class="tool-hover-tip">
+           <span class="text space">踩</span>
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active is-collection "> <a class="tool-item-href" href="javascript:;" data-report-click="{&quot;mod&quot;:&quot;popu_824&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4130&quot;,&quot;ab&quot;:&quot;new&quot;}"> <img style="display:none" id="is-collection-img-collection" class="animation-dom active-animation" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/collect-active.png" alt=""> <img class="isdefault" id="is-collection-img" style="display:block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/collect.png" alt=""> <img class="isactive" id="is-collection-imgactive" style="display:none" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newCollectActive.png" alt=""> <span class="count get-collection " data-num="26" id="get-collection"> 26 </span> </a> 
+          <div class="tool-hover-tip collect"> 
+           <div class="collect-operate-box"> 
+            <span class="collect-text" id="is-collection"> 收藏 </span> 
+           </div> 
+          </div> 
+          <div class="tool-active-list"> 
+           <div class="text">
+             觉得还不错? 
+            <span class="collect-text" id="tool-active-list-collection"> 一键收藏 </span> 
+            <img id="tool-active-list-close" src="https://csdnimg.cn/release/blogv2/dist/pc/img/collectionCloseWhite.png" alt=""> 
+           </div> 
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active tool-item-comment"> 
+          <div class="guide-rr-first"> 
+           <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/guideRedReward01.png" alt=""> 
+           <button class="btn-guide-known">知道了</button> 
+          </div> <a class="tool-item-href go-side-comment" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.7009&quot;}"> <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/comment.png" alt=""> <span class="count"> 0 </span> </a> 
+          <div class="tool-hover-tip">
+           <span class="text space">评论</span>
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active tool-QRcode" data-type="article" id="tool-share"> <a class="tool-item-href" href="javascript:;" data-report-view="{&quot;spm&quot;:&quot;3001.4129&quot;,&quot;extra&quot;:{&quot;type&quot;:&quot;blogdetail&quot;}}"> <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/share.png" alt=""> <span class="count">分享</span> </a> 
+          <div class="QRcode" id="tool-QRcode"> 
+           <div class="share-bg-box"> 
+            <div class="share-content"> 
+             <a id="copyPosterUrl" data-type="link" class="btn-share">复制链接</a> 
+            </div> 
+            <div class="share-content"> 
+             <a class="btn-share" data-type="qq">分享到 QQ</a> 
+            </div> 
+            <div class="share-content"> 
+             <a class="btn-share" data-type="weibo">分享到新浪微博</a> 
+            </div> 
+            <div class="share-code"> 
+             <div class="share-code-box" id="shareCode"></div> 
+             <div class="share-code-text"> 
+              <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/share/icon-wechat.png" alt="">扫一扫 
+             </div> 
+            </div> 
+           </div> 
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active tool-item-reward"> <a class="tool-item-href" href="javascript:;" data-report-click="{&quot;mod&quot;:&quot;popu_830&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4237&quot;,&quot;dest&quot;:&quot;&quot;,&quot;ab&quot;:&quot;new&quot;}"> <img class="isdefault reward-bt" id="rewardBtNew" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/reward.png" alt="打赏"> <span class="count">打赏</span> </a> 
+          <div class="tool-hover-tip">
+           <span class="text space">打赏</span>
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active is-more" id="is-more"> <a class="tool-item-href"> <img class="isdefault" style="margin-right:0px;display:block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/more.png" alt=""> <span class="count"></span> </a> 
+          <div class="more-opt-box"> 
+           <div class="mini-box"> 
+            <a class="tool-item-href" id="rewardBtNewHide" data-report-click="{&quot;spm&quot;:&quot;3001.4237&quot;,&quot;extra&quot;:&quot;{\&quot;type\&quot;:\&quot;hide\&quot;}&quot;}"> <img class="isdefault reward-bt" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/reward.png" alt="打赏"> <span class="count">打赏</span> </a> 
+            <a class="tool-item-href" id="toolReportBtnHide"> <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/report.png" alt=""> <span class="count">举报</span> </a> 
+           </div> 
+           <div class="normal-box"> 
+            <a class="tool-item-href" id="toolReportBtnHideNormal"> <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/report.png" alt=""> <span class="count">举报</span> </a> 
+           </div> 
+          </div> </li> 
+        </ul> 
+       </div> 
+       <div class="toolbox-right"> 
+        <div class="tool-directory"> 
+         <a class="bt-columnlist-show" data-id="12233704" data-free="false" data-description="全网最详细的手把手带你从0开始学习YOLOv5教程。文章平均质量分97！专栏内含网络结构解读+源代码逐行解析+入门实践+各种最新改进算法等等。持续更新，欢迎订阅！" data-subscribe="true" data-title="YOLOv5入门＋实践＋改进" data-img="https://i-blog.csdnimg.cn/blog_column_migrate/2d39764ecc8e8d41d72673a523e05b4b.png?x-oss-process=image/resize,m_fixed,h_224,w_224" data-url="https://blog.csdn.net/weixin_43334693/category_12233704.html" data-sum="47" data-people="1123" data-price="99.90" data-hotrank="76" data-status="true" data-oldprice="299.90" data-join="true" data-studyvip="true" data-studysubscribe="true" data-report-view="{&quot;spm&quot;:&quot;1001.2101.3001.6334&quot;,&quot;extend1&quot;:&quot;专栏目录&quot;}" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.6334&quot;,&quot;extend1&quot;:&quot;专栏目录&quot;}">专栏目录</a> 
+        </div> 
+        <div class="tool-column"> 
+         <a class="tool-bt-button tool-unbt-subscribe" href="javascript:;" data-report-view="{&quot;mod&quot;:&quot;1592215036_001&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4405&quot;,&quot;extend1&quot;:&quot;已订阅&quot;}" data-report-click="{&quot;mod&quot;:&quot;1592215036_001&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4405&quot;,&quot;extend1&quot;:&quot;已订阅&quot;}">已订阅</a> 
+        </div> 
+       </div> 
+      </div> 
+     </div>   
+     <a id="commentBox" name="commentBox"></a> 
+     <div id="pcCommentBox" class="comment-box comment-box-new2 login-comment-box-new" style="display:none"> 
+      <div class="has-comment" style="display:block"> 
+       <div class="one-line-box"> 
+        <div class="has-comment-tit go-side-comment"> 
+         <span class="count">0</span>&nbsp;条评论 
+        </div> 
+        <div class="has-comment-con comment-operate-item"></div> 
+        <a class="has-comment-bt-right go-side-comment focus">写评论</a> 
+       </div> 
+      </div> 
+     </div> 
+     <div class="first-recommend-box recommend-box recommend-highlight-default"> 
+      <div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_44302770/article/details/135002328" data-report-view="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6661.1&quot;,&quot;mod&quot;:&quot;popu_871&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant_t0.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-135002328-blog-131513850.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743597531096_83058\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743597531096_83058&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_44302770/article/details/135002328&quot;}"> 
+       <div class="content-box"> 
+        <div class="content-blog display-flex"> 
+         <div class="title-box"> 
+          <span class="type"> <img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt=""> <span class="tip">博客</span> </span> 
+          <a href="https://blog.csdn.net/weixin_44302770/article/details/135002328" class="tit" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6661.1&quot;,&quot;mod&quot;:&quot;popu_871&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant_t0.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-135002328-blog-131513850.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743597531096_83058\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743597531096_83058&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_44302770/article/details/135002328&quot;}" data-report-query="spm=1001.2101.3001.6661.1&amp;utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-135002328-blog-131513850.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-135002328-blog-131513850.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+           <div class="left ellipsis-online ellipsis-online-1">
+            <em>YOLOv5</em>
+            <em>改进</em>
+            <em>系列</em>(二) 
+            <em>更换</em>
+            <em>激活函数</em>
+            <em>SiLU</em>，R
+            <em>eLU</em>，
+            <em>ELU</em>，
+            <em>Ha</em>
+            <em>rds</em>
+            <em>wish</em>，
+            <em>Mish</em>，So
+            <em>ftp</em>
+            <em>lus</em>，
+            <em>AconC</em>等
+           </div> </a> 
+         </div> 
+         <div class="info-box display-flex"> 
+          <div class="info"> 
+           <a href="https://blog.csdn.net/weixin_44302770" target="_blank"><span class="blog-title">weixin_44302770的博客</span></a> 
+          </div> 
+          <div class="info display-flex"> 
+           <span class="info-block time">12-14</span> 
+           <span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> 7489 </span> 
+          </div> 
+         </div> 
+        </div> 
+        <div class="desc-box"> 
+         <a href="https://blog.csdn.net/weixin_44302770/article/details/135002328" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6661.1&quot;,&quot;mod&quot;:&quot;popu_871&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant_t0.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-135002328-blog-131513850.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743597531096_83058\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743597531096_83058&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_44302770/article/details/135002328&quot;}" data-report-query="spm=1001.2101.3001.6661.1&amp;utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-135002328-blog-131513850.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-135002328-blog-131513850.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+          <div class="desc ellipsis-online ellipsis-online-1">
+           1.1 什么是
+           <em>激活函数</em>？在接触到
+           <em>深度学习</em>（Deep Learning）后，特别是神经网络中，我们会发现在每一层的神经网络输出后都会使用一个函数（比如sigmoid，tanh，R
+           <em>elu</em>等等）对结果进行运算，这个函数就是
+           <em>激活函数</em>（Activation Function）。那么为什么需要添加
+           <em>激活函数</em>呢？如果不添加又会产生什么问题呢？首先，我们知道神经网络模拟了人类神经元的工作机理，**
+           <em>激活函数</em>（Activation Function）是一种添加到人工神经网络中的函数，旨在帮助网络学习数据中的复杂模式。**
+          </div> </a> 
+        </div> 
+       </div> 
+      </div> 
+     </div>  
+     <div class="second-recommend-box recommend-box recommend-highlight-default"> 
+      <div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/m0_53578855/article/details/127552931" data-report-view="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.1&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-127552931-blog-131513850.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743597531096_83058\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743597531096_83058&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/m0_53578855/article/details/127552931&quot;}"> 
+       <div class="content-box"> 
+        <div class="content-blog display-flex"> 
+         <div class="title-box"> 
+          <span class="type"> <img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt=""> <span class="tip">博客</span> </span> 
+          <a href="https://blog.csdn.net/m0_53578855/article/details/127552931" class="tit" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.1&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-127552931-blog-131513850.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743597531096_83058\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743597531096_83058&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/m0_53578855/article/details/127552931&quot;}" data-report-query="spm=1001.2101.3001.6650.1&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-127552931-blog-131513850.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-127552931-blog-131513850.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+           <div class="left ellipsis-online ellipsis-online-1">
+            <em>目标检测</em>算法——
+            <em>YOLOv5</em>/
+            <em>YOLO</em>v7
+            <em>改进</em>之
+            <em>更换</em>FR
+            <em>eLU</em>
+            <em>激活函数</em>
+           </div> 
+           <div class="tag">
+            热门推荐
+           </div> </a> 
+         </div> 
+         <div class="info-box display-flex"> 
+          <div class="info"> 
+           <a href="https://blog.csdn.net/m0_53578855" target="_blank"><span class="blog-title">加勒比海带66——【YOLO魔法搭配&amp;论文投稿咨询】</span></a> 
+          </div> 
+          <div class="info display-flex"> 
+           <span class="info-block time">10-27</span> 
+           <span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> 1万+ </span> 
+          </div> 
+         </div> 
+        </div> 
+        <div class="desc-box"> 
+         <a href="https://blog.csdn.net/m0_53578855/article/details/127552931" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.1&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-127552931-blog-131513850.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743597531096_83058\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743597531096_83058&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/m0_53578855/article/details/127552931&quot;}" data-report-query="spm=1001.2101.3001.6650.1&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-127552931-blog-131513850.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-127552931-blog-131513850.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+          <div class="desc ellipsis-online ellipsis-online-1">
+           <em>目标检测</em>算法——
+           <em>YOLOv5</em>/
+           <em>YOLO</em>v7
+           <em>更换</em>FR
+           <em>eLU</em>
+           <em>激活函数</em>。
+          </div> </a> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <div class="recommend-box insert-baidu-box  recommend-highlight-default"> 
+      <div class="recommend-item-box no-index" style="display:none"></div> 
+      <div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/m0_70388905/article/details/128753641" data-report-view="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.2&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-2-128753641-blog-131513850.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743597531096_83058\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743597531096_83058&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;2&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/m0_70388905/article/details/128753641&quot;}"> 
+       <div class="content-box"> 
+        <div class="content-blog display-flex"> 
+         <div class="title-box"> 
+          <span class="type"> <img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt=""> <span class="tip">博客</span> </span> 
+          <a href="https://blog.csdn.net/m0_70388905/article/details/128753641" class="tit" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.2&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-2-128753641-blog-131513850.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743597531096_83058\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743597531096_83058&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;2&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/m0_70388905/article/details/128753641&quot;}" data-report-query="spm=1001.2101.3001.6650.2&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-2-128753641-blog-131513850.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-2-128753641-blog-131513850.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+           <div class="left ellipsis-online ellipsis-online-1">
+            【
+            <em>YOLO</em>v7/
+            <em>YOLOv5</em>
+            <em>系列</em>算法
+            <em>改进</em>NO.54】
+            <em>改进</em>
+            <em>激活函数</em>为R
+            <em>eLU</em>、RR
+            <em>eLU</em>、
+            <em>Ha</em>rdtanh、R
+            <em>eLU</em>6、Sigmoid、Tanh、
+            <em>Mish</em>、
+            <em>Ha</em>
+            <em>rds</em>
+            <em>wish</em>、
+            <em>ELU</em>、C
+            <em>ELU</em>等
+           </div> </a> 
+         </div> 
+         <div class="info-box display-flex"> 
+          <div class="info"> 
+           <a href="https://blog.csdn.net/m0_70388905" target="_blank"><span class="blog-title">m0_70388905的博客</span></a> 
+          </div> 
+          <div class="info display-flex"> 
+           <span class="info-block time">01-23</span> 
+           <span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> 5956 </span> 
+          </div> 
+         </div> 
+        </div> 
+        <div class="desc-box"> 
+         <a href="https://blog.csdn.net/m0_70388905/article/details/128753641" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.2&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-2-128753641-blog-131513850.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743597531096_83058\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743597531096_83058&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;2&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/m0_70388905/article/details/128753641&quot;}" data-report-query="spm=1001.2101.3001.6650.2&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-2-128753641-blog-131513850.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-2-128753641-blog-131513850.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+          <div class="desc ellipsis-online ellipsis-online-1">
+           更多
+           <em>激活函数</em>选择——数十种
+           <em>激活函数</em>
+           <em>改进</em>方法。
+          </div> </a> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <div class="blog-footer-bottom" style="margin-top:10px;"></div>   
+    </main> 
+    <aside class="blog_container_aside"> 
+     <div id="asideProfile" class="aside-box active"> 
+      <div class="profile-intro d-flex"> 
+       <div class="avatar-box d-flex justify-content-center flex-column"> 
+        <a href="https://jrs0511.blog.csdn.net" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_379&quot;,&quot;spm&quot;:&quot;3001.4121&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net&quot;,&quot;ab&quot;:&quot;new&quot;}"> <img src="https://profile-avatar.csdnimg.cn/da983c398fca4f14a19ea48d137f6ca3_weixin_43334693.jpg!1" class="avatar_pic"> </a>
+        <a href="https://jrs0511.blog.csdn.net" data-report-click="{&quot;spm&quot;:&quot;3001.9180&quot;}" target="_blank"><img class="identity" src="https://csdnimg.cn/release/blogv2/dist/mobile/img/vipIcon.png" alt=""></a>  
+       </div> 
+       <div class="user-info d-flex flex-column profile-intro-name-box"> 
+        <div class="profile-intro-name-boxTop"> 
+         <a href="https://jrs0511.blog.csdn.net" target="_blank" class="" id="uid" title="路人贾'ω'" data-report-click="{&quot;mod&quot;:&quot;popu_379&quot;,&quot;spm&quot;:&quot;3001.4122&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net&quot;,&quot;ab&quot;:&quot;new&quot;}"> <span class="name" username="weixin_43334693">路人贾'ω'</span> </a> 
+        </div> 
+        <div class="profile-intro-name-boxFooter-new"> 
+         <p class="profile-intro-name-leve"> <span> 博客等级 </span> <img class="level" src="https://csdnimg.cn/identity/blog7.png"> </p> 
+         <span class="profile-intro-name-years" title="已加入 CSDN 7年">码龄7年</span> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="profile-intro-Identity-information"> 
+       <p class="profile-information-box"> <img class="information-img" data-report-click="{&quot;spm&quot;:&quot;3001.4296&quot;}" src="https://img-home.csdnimg.cn/images/20210412060958.png" alt=""> <span>人工智能领域优质创作者</span> </p> 
+      </div> 
+      <div class="profile-intro-rank-information"> 
+       <dl> 
+        <a href="https://jrs0511.blog.csdn.net" data-report-click="{&quot;mod&quot;:&quot;1598321000_001&quot;,&quot;spm&quot;:&quot;3001.4310&quot;}" data-report-query="t=1"> 
+         <dd>
+          <span>120</span>
+         </dd> 
+         <dt>
+          原创
+         </dt> </a> 
+       </dl> 
+       <dl title="9103"> 
+        <dd>
+         9103
+        </dd> 
+        <dt>
+         点赞
+        </dt> 
+       </dl> 
+       <dl title="36278"> 
+        <dd>
+         3万+
+        </dd> 
+        <dt>
+         收藏
+        </dt> 
+       </dl> 
+       <dl id="fanBox" title="158545"> 
+        <dd>
+         <span id="fan">15万+</span>
+        </dd> 
+        <dt>
+         粉丝
+        </dt> 
+       </dl> 
+      </div> 
+      <div class="profile-intro-name-boxOpration"> 
+       <div class="opt-letter-watch-box"> 
+        <a class="attented personal-watch bt-button" id="btnAttent">已关注</a> 
+       </div> 
+       <div class="opt-letter-watch-box"> 
+        <a rel="noopener" class="bt-button personal-letter" href="https://im.csdn.net/chat/weixin_43334693" target="_blank">私信</a> 
+       </div> 
+      </div> 
+     </div> 
+     <div class="swiper-slide-box-remuneration"> 
+      <a data-report-click="{&quot;spm&quot;:&quot;3001.9728&quot;,&quot;extra&quot;:{&quot;index&quot;:&quot;0&quot;}}" data-report-view="{&quot;spm&quot;:&quot;3001.9728&quot;,&quot;extra&quot;:{&quot;index&quot;:&quot;0&quot;}}" href="https://ai.csdn.net/" target="_blank"> <img src="https://i-operation.csdnimg.cn/images/2dd892a9769b4cce9c086db94eab887f.png" alt=""> </a> 
+     </div> 
+     <div id="asideHotArticle" class="aside-box"> 
+      <h3 class="aside-title">热门文章</h3> 
+      <div class="aside-content"> 
+       <ul class="hotArticle-list"> 
+        <li> <a href="https://jrs0511.blog.csdn.net/article/details/129312409" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;3001.4139&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/129312409&quot;,&quot;ab&quot;:&quot;new&quot;}"> 【YOLO系列】YOLOv5超详细解读（源码详解＋入门实践＋改进） <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">191050</span> </a> </li> 
+        <li> <a href="https://jrs0511.blog.csdn.net/article/details/130189238" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;3001.4139&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/130189238&quot;,&quot;ab&quot;:&quot;new&quot;}"> 【Transformer系列（2）】注意力机制、自注意力机制、多头注意力机制、通道注意力机制、空间注意力机制超详细讲解 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">132906</span> </a> </li> 
+        <li> <a href="https://jrs0511.blog.csdn.net/article/details/129356033" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;3001.4139&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/129356033&quot;,&quot;ab&quot;:&quot;new&quot;}"> YOLOv5源码逐行超详细注释与解读（1）——项目目录结构解析 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">84049</span> </a> </li> 
+        <li> <a href="https://jrs0511.blog.csdn.net/article/details/136383022" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;3001.4139&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/136383022&quot;,&quot;ab&quot;:&quot;new&quot;}"> 【YOLO系列】YOLOv9论文超详细解读（翻译 ＋学习笔记） <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">53110</span> </a> </li> 
+        <li> <a href="https://jrs0511.blog.csdn.net/article/details/129011644" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;3001.4139&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/129011644&quot;,&quot;ab&quot;:&quot;new&quot;}"> 【YOLO系列】YOLOv1论文超详细解读（翻译 ＋学习笔记） <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">47685</span> </a> </li> 
+       </ul> 
+      </div> 
+     </div> 
+     <div id="asideCategory" class="aside-box flexible-box"> 
+      <h3 class="aside-title">分类专栏</h3> 
+      <div class="aside-content"> 
+       <ul> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12233704.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12233704.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/2d39764ecc8e8d41d72673a523e05b4b.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> YOLOv5入门＋实践＋改进 </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">47篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12534739.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12534739.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/9c2589275bee6d84a2f42be4f7fdd306.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 低照度图像增强 </span> </a> <span class="special-column-num">14篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12202773.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12202773.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/31534c7b408a58aa373bf5f58c00bf44.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 目标检测论文 </span> </a> <span class="special-column-num">18篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12127342.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12127342.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/4cc3e83223e8d0023a6303cdd4658cce.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 图像分类经典论文 </span> </a> <span class="special-column-num">9篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12462707.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12462707.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756930.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 论文必备 </span> </a> <span class="special-column-num">4篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12288776.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12288776.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/892c3e48b8251069b7506e1e68c5355a.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> transformer </span> </a> <span class="special-column-num">9篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12186888.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12186888.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/8cc13d2259e721c3b070257331ba2fcf.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> Pytorch </span> </a> <span class="special-column-num">9篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12151162.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12151162.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/b9346faac8287efffed28c8b2d898da7.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 论文代码复现 </span> </a> <span class="special-column-num">6篇</span> </li> 
+       </ul> 
+      </div> 
+      <p class="text-center"> <a class="flexible-btn" data-fbox="aside-archive"><img class="look-more" src="https://csdnimg.cn/release/blogv2/dist/pc/img/arrowDownWhite.png" alt=""></a> </p> 
+     </div> 
+     <div id="asideNewComments" class="aside-box"> 
+      <h3 class="aside-title">最新评论</h3> 
+      <div class="aside-content"> 
+       <ul class="newcomment-list"> 
+        <li> <a class="title text-truncate" target="_blank" href="https://jrs0511.blog.csdn.net/article/details/129349094#comments_36790608" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/129349094#comments_36790608&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/129349094#comments_36790608&quot;,&quot;ab&quot;:&quot;new&quot;}">YOLOv5源码逐行超详细注释与解读（2）——推理部分detect.py</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/qq_58411487" class="user-name" target="_blank">qq_58411487: </a> <span class="code-comments">下个插件就行了</span> </p> </li> 
+        <li> <a class="title text-truncate" target="_blank" href="https://jrs0511.blog.csdn.net/article/details/130208816#comments_36778242" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/130208816#comments_36778242&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/130208816#comments_36778242&quot;,&quot;ab&quot;:&quot;new&quot;}">【Transformer系列（3）】 《Attention Is All You Need》论文超详细解读（翻译＋精读）</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/m0_64252296" class="user-name" target="_blank">荷西、: </a> <span class="code-comments">这篇论文从哪找</span> </p> </li> 
+        <li> <a class="title text-truncate" target="_blank" href="https://jrs0511.blog.csdn.net/article/details/133516890#comments_36767793" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/133516890#comments_36767793&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/133516890#comments_36767793&quot;,&quot;ab&quot;:&quot;new&quot;}">[论文必备]最强科研绘图分析工具Origin（1）——安装教程</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/X224513" class="user-name" target="_blank">X224513: </a> <span class="code-comments">求安装包链接，谢谢！</span> </p> </li> 
+        <li> <a class="title text-truncate" target="_blank" href="https://jrs0511.blog.csdn.net/article/details/133516890#comments_36722559" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/133516890#comments_36722559&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/133516890#comments_36722559&quot;,&quot;ab&quot;:&quot;new&quot;}">[论文必备]最强科研绘图分析工具Origin（1）——安装教程</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/ant_c2" class="user-name" target="_blank">ant_c2: </a> <span class="code-comments">求安装包链接，谢谢！</span> </p> </li> 
+        <li> <a class="title text-truncate" target="_blank" href="https://jrs0511.blog.csdn.net/article/details/133516890#comments_36710842" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/133516890#comments_36710842&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/133516890#comments_36710842&quot;,&quot;ab&quot;:&quot;new&quot;}">[论文必备]最强科研绘图分析工具Origin（1）——安装教程</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/sdtzlxx" class="user-name" target="_blank">sdtzlxx: </a> <span class="code-comments">求安装包链接！！！！！谢谢大佬！</span> </p> </li> 
+       </ul> 
+      </div> 
+     </div> 
+     <div id="asideHotArticle" class="aside-box"> 
+      <h3 class="aside-title">大家在看</h3> 
+      <div class="aside-content"> 
+       <ul class="hotArticle-list"> 
+        <li> <a href="https://blog.csdn.net/m0_72763148/article/details/146963537" target="_blank" data-report-click="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/m0_72763148/article/details/146963537&quot;,&quot;strategy&quot;:&quot;202_1052723-2643743_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/m0_72763148/article/details/146963537&quot;,&quot;strategy&quot;:&quot;202_1052723-2643743_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}"> jQuery - AJAX get() 和 post() 方法 </a> </li> 
+        <li> <a href="https://blog.csdn.net/Baixue5209/article/details/146839767" target="_blank" data-report-click="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/Baixue5209/article/details/146839767&quot;,&quot;strategy&quot;:&quot;202_1052723-2643617_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/Baixue5209/article/details/146839767&quot;,&quot;strategy&quot;:&quot;202_1052723-2643617_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}"> AI SEO落地实施步骤 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">724</span> </a> </li> 
+        <li> <a href="https://blog.csdn.net/zhenggaoxiao232/article/details/146605681" target="_blank" data-report-click="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/zhenggaoxiao232/article/details/146605681&quot;,&quot;strategy&quot;:&quot;202_1052723-2643787_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/zhenggaoxiao232/article/details/146605681&quot;,&quot;strategy&quot;:&quot;202_1052723-2643787_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}"> 鸿蒙开发0基础【进程模型】 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">112</span> </a> </li> 
+        <li> <a href="https://blog.csdn.net/weixin_42104694/article/details/146960255" target="_blank" data-report-click="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_42104694/article/details/146960255&quot;,&quot;strategy&quot;:&quot;202_1052723-2643757_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_42104694/article/details/146960255&quot;,&quot;strategy&quot;:&quot;202_1052723-2643757_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}"> 桂云OSG：认定公益一类事业单位是否为经营活动的判断依据和公益一类事业单位不作为政府购买服务的购买主体和承接主体规定 </a> </li> 
+        <li> <a href="https://blog.csdn.net/u010479989/article/details/146957484" target="_blank" data-report-click="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/u010479989/article/details/146957484&quot;,&quot;strategy&quot;:&quot;202_1052723-2643724_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/u010479989/article/details/146957484&quot;,&quot;strategy&quot;:&quot;202_1052723-2643724_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}"> OpenManus安装部署和基础使用说明 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">105</span> </a> </li> 
+       </ul> 
+      </div> 
+     </div> 
+     <div id="asideArchive" class="aside-box" style="display:block!important; width:300px;"> 
+      <h3 class="aside-title">最新文章</h3> 
+      <div class="aside-content"> 
+       <ul class="inf_list clearfix"> 
+        <li class="clearfix"> <a href="https://jrs0511.blog.csdn.net/article/details/140203276" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;spm&quot;:&quot;3001.4136&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/140203276&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/140203276&quot;,&quot;ab&quot;:&quot;new&quot;}">【低照度图像增强系列（8）】URetinex-Net算法详解与代码实现（2022|CVPR）</a> </li> 
+        <li class="clearfix"> <a href="https://jrs0511.blog.csdn.net/article/details/140229971" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;spm&quot;:&quot;3001.4136&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/140229971&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/140229971&quot;,&quot;ab&quot;:&quot;new&quot;}">CVPR|《URetinex-Net: Retinex-based Deep Unfolding Network for Low-light Image Enhance》论文超详细解读（翻译＋精读）</a> </li> 
+        <li class="clearfix"> <a href="https://jrs0511.blog.csdn.net/article/details/139832512" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;spm&quot;:&quot;3001.4136&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/139832512&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net/article/details/139832512&quot;,&quot;ab&quot;:&quot;new&quot;}">YOLOv5改进系列（32）——替换主干网络之PKINet（CVPR2024 | 面向遥感旋转框主干，有效捕获不同尺度上的密集纹理特征）</a> </li> 
+       </ul> 
+       <div class="archive-bar"></div> 
+       <div class="archive-box"> 
+        <div class="archive-list-item">
+         <a href="https://jrs0511.blog.csdn.net?type=blog&amp;year=2024&amp;month=07" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net?type=blog&amp;year=2024&amp;month=07&quot;}"><span class="year">2024年</span><span class="num">23篇</span></a>
+        </div> 
+        <div class="archive-list-item">
+         <a href="https://jrs0511.blog.csdn.net?type=blog&amp;year=2023&amp;month=12" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net?type=blog&amp;year=2023&amp;month=12&quot;}"><span class="year">2023年</span><span class="num">87篇</span></a>
+        </div> 
+        <div class="archive-list-item">
+         <a href="https://jrs0511.blog.csdn.net?type=blog&amp;year=2022&amp;month=12" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net?type=blog&amp;year=2022&amp;month=12&quot;}"><span class="year">2022年</span><span class="num">10篇</span></a>
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 详情页显示目录 --> 
+     <!--文章目录--> 
+     <div id="asidedirectory" class="aside-box"> 
+      <div class="groupfile" id="directory"> 
+       <h3 class="aside-title">目录</h3> 
+       <div class="align-items-stretch group_item"> 
+        <div class="pos-box"> 
+         <div class="scroll-box"> 
+          <div class="toc-box"></div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </aside>    
+   </div> 
+   <div class="recommend-right align-items-stretch clearfix" id="rightAside" data-type="recommend"> 
+    <aside class="recommend-right_aside"> 
+     <div class="rightside-fixed-hide"> 
+     </div> 
+     <div id="recommend-right"> 
+      <div class="flex-column aside-box groupfile" id="groupfile"> 
+       <div class="groupfile-div"> 
+        <h3 class="aside-title">目录</h3> 
+        <div class="align-items-stretch group_item"> 
+         <div class="pos-box"> 
+          <div class="scroll-box"> 
+           <div class="toc-box"></div> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="aside-box kind_person d-flex flex-column"> 
+       <h3 class="aside-title">分类专栏</h3> 
+       <div class="align-items-stretch kindof_item" id="kind_person_column"> 
+        <div class="aside-content"> 
+         <ul> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12233704.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12233704.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/2d39764ecc8e8d41d72673a523e05b4b.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> YOLOv5入门＋实践＋改进 </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">47篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12534739.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12534739.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/9c2589275bee6d84a2f42be4f7fdd306.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 低照度图像增强 </span> </a> <span class="special-column-num">14篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12202773.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12202773.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/31534c7b408a58aa373bf5f58c00bf44.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 目标检测论文 </span> </a> <span class="special-column-num">18篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12127342.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12127342.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/4cc3e83223e8d0023a6303cdd4658cce.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 图像分类经典论文 </span> </a> <span class="special-column-num">9篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12462707.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12462707.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756930.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 论文必备 </span> </a> <span class="special-column-num">4篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12288776.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12288776.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/892c3e48b8251069b7506e1e68c5355a.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> transformer </span> </a> <span class="special-column-num">9篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12186888.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12186888.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/8cc13d2259e721c3b070257331ba2fcf.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> Pytorch </span> </a> <span class="special-column-num">9篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/weixin_43334693/category_12151162.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_43334693/category_12151162.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://i-blog.csdnimg.cn/blog_column_migrate/b9346faac8287efffed28c8b2d898da7.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 论文代码复现 </span> </a> <span class="special-column-num">6篇</span> </li> 
+         </ul> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </aside> 
+   </div> 
+   <div class="recommend-right1  align-items-stretch clearfix" id="rightAsideConcision" data-type="recommend"> 
+    <aside class="recommend-right_aside"> 
+     <div id="recommend-right-concision"> 
+      <div class="flex-column aside-box groupfile" id="groupfileConcision"> 
+       <div class="groupfile-div1"> 
+        <h3 class="aside-title">目录</h3> 
+        <div class="align-items-stretch group_item"> 
+         <div class="pos-box"> 
+          <div class="scroll-box"> 
+           <div class="toc-box"></div> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </aside> 
+   </div> 
+  </div> 
+  <div class="mask-dark"></div> 
+  <div class="skin-boxshadow"></div> 
+  <div class="directory-boxshadow"></div> 
+  <div class="comment-side-box-shadow comment-side-tit-close" id="commentSideBoxshadow"> 
+   <div class="comment-side-content"> 
+    <div class="comment-side-tit"> 
+     <span class="comment-side-tit-count">评论</span> 
+     <img class="comment-side-tit-close" src="https://csdnimg.cn/release/blogv2/dist/pc/img/closeBt.png">
+    </div> 
+    <div id="pcCommentSideBox" class="comment-box comment-box-new2 " style="display:block"> 
+     <div class="comment-edit-box d-flex"> 
+      <div class="user-img"> 
+       <a href="https://blog.csdn.net/2401_84444578" target="_blank"> <img src="https://profile-avatar.csdnimg.cn/default.jpg!1"> </a> 
+      </div> 
+      <form id="commentform"> 
+       <textarea class="comment-content" name="comment_content" id="comment_content" placeholder="欢迎高质量的评论，低质的评论会被折叠" maxlength="1000"></textarea> 
+       <div class="comment-reward-box" style="background-image: url('https://img-home.csdnimg.cn/images/20230131025301.png');"> 
+        <a class="btn-remove-reward"></a> 
+        <div class="form-reward-box"> 
+         <div class="info">
+           成就一亿技术人! 
+         </div> 
+         <div class="price-info">
+           拼手气红包
+          <span class="price">6.0元</span> 
+         </div> 
+        </div> 
+       </div> 
+       <div class="comment-operate-box"> 
+        <div class="comment-operate-l"> 
+         <span id="tip_comment" class="tip">还能输入<em>1000</em>个字符</span> 
+        </div> 
+        <div class="comment-operate-c">
+          &nbsp; 
+        </div> 
+        <div class="comment-operate-r"> 
+         <div class="comment-operate-item comment-reward"> 
+          <img class="comment-operate-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentReward.png" alt="红包"> 
+          <span class="comment-operate-tip">添加红包</span> 
+         </div> 
+         <div class="comment-operate-item comment-emoticon"> 
+          <img class="comment-operate-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentEmotionIcon.png" alt="表情包"> 
+          <span class="comment-operate-tip">插入表情</span> 
+          <div class="comment-emoticon-box comment-operate-isshow"> 
+           <div class="comment-emoticon-img-box"></div> 
+          </div> 
+         </div> 
+         <div class="comment-operate-item comment-code"> 
+          <img class="comment-operate-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentCodeIcon.png" alt="表情包"> 
+          <span class="comment-operate-tip">代码片</span> 
+          <div class="comment-code-box comment-operate-isshow"> 
+           <ul id="commentCode"> 
+            <li><a data-code="html">HTML/XML</a></li> 
+            <li><a data-code="objc">objective-c</a></li> 
+            <li><a data-code="ruby">Ruby</a></li> 
+            <li><a data-code="php">PHP</a></li> 
+            <li><a data-code="csharp">C</a></li> 
+            <li><a data-code="cpp">C++</a></li> 
+            <li><a data-code="javascript">JavaScript</a></li> 
+            <li><a data-code="python">Python</a></li> 
+            <li><a data-code="java">Java</a></li> 
+            <li><a data-code="css">CSS</a></li> 
+            <li><a data-code="sql">SQL</a></li> 
+            <li><a data-code="plain">其它</a></li> 
+           </ul> 
+          </div> 
+         </div> 
+         <div class="comment-operate-item"> 
+          <input type="hidden" id="comment_replyId" name="comment_replyId"> 
+          <input type="hidden" id="article_id" name="article_id" value="131513850"> 
+          <input type="hidden" id="comment_userId" name="comment_userId" value=""> 
+          <input type="hidden" id="commentId" name="commentId" value=""> 
+          <a data-report-click="{&quot;mod&quot;:&quot;1582594662_003&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4227&quot;,&quot;ab&quot;:&quot;new&quot;}"> <input type="submit" class="btn-comment btn-comment-input" value="评论"> </a> 
+         </div> 
+        </div> 
+       </div> 
+      </form> 
+     </div> 
+     <div class="comment-list-container"> 
+      <div class="comment-list-box comment-operate-item"> 
+      </div> 
+      <div id="lookFlodComment" class="look-flod-comment"> 
+       <span class="count"></span>&nbsp;条评论被折叠&nbsp;
+       <a class="look-more-flodcomment">查看</a> 
+      </div> 
+      <div class="opt-box text-center"> 
+       <div class="btn btn-sm btn-link-blue" id="btnMoreComment"></div> 
+      </div> 
+     </div> 
+    </div> 
+    <div id="pcFlodCommentSideBox" class="pc-flodcomment-sidebox"> 
+     <div class="comment-fold-tit">
+      <span id="lookUnFlodComment" class="back"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowLeftWhite.png" alt=""></span>被折叠的&nbsp;
+      <span class="count"></span>&nbsp;条评论 
+      <a href="https://blogdev.blog.csdn.net/article/details/122245662" class="tip" target="_blank">为什么被折叠?</a> 
+      <a href="https://bbs.csdn.net/forums/FreeZone" class="park" target="_blank"> <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/iconPark.png">到【灌水乐园】发言</a> 
+     </div> 
+     <div class="comment-fold-content"></div> 
+     <div id="lookBadComment" class="look-bad-comment side-look-comment"> 
+      <a class="look-more-comment">查看更多评论<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowDownWhite.png" alt=""></a> 
+     </div> 
+    </div> 
+   </div> 
+   <div class="comment-rewarddialog-box"> 
+    <div class="form-box"> 
+     <div class="title-box">
+       添加红包 
+      <a class="btn-form-close"></a> 
+     </div> 
+     <form id="commentRewardForm"> 
+      <div class="ipt-box"> 
+       <label for="txtName">祝福语</label> 
+       <div class="ipt-btn-box"> 
+        <input type="text" name="name" id="txtName" autocomplete="off" maxlength="50"> 
+        <a class="btn-ipt btn-random"></a> 
+       </div> 
+       <p class="notice">请填写红包祝福语或标题</p> 
+      </div> 
+      <div class="ipt-box"> 
+       <label for="txtSendAmount">红包数量</label> 
+       <div class="ipt-txt-box"> 
+        <input type="text" name="sendAmount" maxlength="4" id="txtSendAmount" placeholder="请填写红包数量(最小10个)" autocomplete="off"> 
+        <span class="after-txt">个</span> 
+       </div> 
+       <p class="notice">红包个数最小为10个</p> 
+      </div> 
+      <div class="ipt-box"> 
+       <label for="txtMoney">红包总金额</label> 
+       <div class="ipt-txt-box error"> 
+        <input type="text" name="money" maxlength="5" id="txtMoney" placeholder="请填写总金额(最低5元)" autocomplete="off"> 
+        <span class="after-txt">元</span> 
+       </div> 
+       <p class="notice">红包金额最低5元</p> 
+      </div> 
+      <div class="balance-info-box"> 
+       <label>余额支付</label> 
+       <div class="balance-info">
+         当前余额
+        <span class="balance">3.43</span>元 
+        <a href="https://i.csdn.net/#/wallet/balance/recharge" class="link-charge" target="_blank">前往充值 &gt;</a> 
+       </div> 
+      </div> 
+      <div class="opt-box"> 
+       <div class="pay-info">
+         需支付：
+        <span class="price">10.00</span>元 
+       </div> 
+       <button type="button" class="ml-auto btn-cancel">取消</button> 
+       <button type="button" class="ml8 btn-submit" disabled="true">确定</button> 
+      </div> 
+     </form> 
+    </div> 
+   </div> 
+   <div class="rr-guide-box"> 
+    <div class="rr-first-box"> 
+     <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/guideRedReward02.png" alt=""> 
+     <button class="btn-guide-known next">下一步</button> 
+    </div> 
+    <div class="rr-second-box"> 
+     <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/guideRedReward03.png" alt=""> 
+     <button class="btn-guide-known known">知道了</button> 
+    </div> 
+   </div> 
+  </div> 
+  <div class="redEnvolope" id="redEnvolope"> 
+   <div class="env-box"> 
+    <div class="env-container"> 
+     <div class="pre-open" id="preOpen"> 
+      <div class="top"> 
+       <header> 
+        <img class="clearTpaErr" :src="redpacketAuthor.avatar" alt=""> 
+        <div class="author">
+         成就一亿技术人!
+        </div> 
+       </header> 
+       <div class="bot-icon"></div> 
+      </div> 
+      <footer> 
+       <div class="red-openbtn open-start"></div> 
+       <div class="tip">
+         领取后你会自动成为博主和红包主的粉丝 
+        <a class="rule" target="_blank">规则</a> 
+       </div> 
+      </footer> 
+     </div> 
+     <div class="opened" id="opened"> 
+      <div class="bot-icon"> 
+       <header> 
+        <a class="creatorUrl" href="" target="_blank"> <img class="clearTpaErr" src="https://profile-avatar.csdnimg.cn/default.jpg!2" alt=""> </a> 
+        <div class="author"> 
+         <div class="tt">
+          hope_wisdom
+         </div> 发出的红包 
+        </div> 
+       </header> 
+      </div> 
+      <div class="receive-box"> 
+       <header></header> 
+       <div class="receive-list"> 
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+    <div class="close-btn"></div> 
+   </div> 
+  </div> 
+  <div id="rewardNew" class="reward-popupbox-new"> 
+   <p class="rewad-title">打赏作者<span class="reward-close"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/closeBt.png"></span></p> 
+   <dl class="profile-box"> 
+    <dd> 
+     <a href="https://jrs0511.blog.csdn.net" data-report-click="{&quot;mod&quot;:&quot;popu_379&quot;,&quot;dest&quot;:&quot;https://jrs0511.blog.csdn.net&quot;,&quot;ab&quot;:&quot;new&quot;}"> <img src="https://profile-avatar.csdnimg.cn/da983c398fca4f14a19ea48d137f6ca3_weixin_43334693.jpg!1" class="avatar_pic"> </a> 
+    </dd> 
+    <dt> 
+     <p class="blog-name">路人贾'ω'</p> 
+     <p class="blog-discript">你的鼓励将是我创作的最大动力</p> 
+    </dt> 
+   </dl> 
+   <div class="reward-box-new"> 
+    <div class="reward-content">
+     <div class="reward-right"></div>
+    </div> 
+   </div> 
+   <div class="money-box"> 
+    <span class="choose-money choosed" data-id="1">¥1</span> 
+    <span class="choose-money " data-id="2">¥2</span> 
+    <span class="choose-money " data-id="4">¥4</span> 
+    <span class="choose-money " data-id="6">¥6</span> 
+    <span class="choose-money " data-id="10">¥10</span> 
+    <span class="choose-money " data-id="20">¥20</span> 
+   </div> 
+   <div class="sure-box"> 
+    <div class="sure-box-money"> 
+     <div class="code-box"> 
+      <div class="code-num-box"> 
+       <span class="code-name">扫码支付：</span>
+       <span class="code-num">¥1</span> 
+      </div> 
+      <div class="code-img-box"> 
+       <div class="renovate"> 
+        <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-time-out.png"> 
+        <span>获取中</span> 
+       </div> 
+      </div> 
+      <div class="code-pay-box"> 
+       <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/newWeiXin.png" alt=""> 
+       <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/newZhiFuBao.png" alt=""> 
+       <span>扫码支付</span> 
+      </div> 
+     </div> 
+    </div> 
+    <div class="sure-box-blance"> 
+     <p class="tip">您的余额不足，请更换扫码支付或<a target="_blank" data-report-click="{&quot;mod&quot;:&quot;1597646289_003&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4302&quot;}" href="https://i.csdn.net/#/wallet/balance/recharge?utm_source=RewardVip" class="go-invest">充值</a></p> 
+     <p class="is-have-money"><a class="reward-sure">打赏作者</a></p> 
+    </div> 
+   </div> 
+  </div> 
+  <div class="pay-code"> 
+   <div class="pay-money">
+    实付
+    <span class="pay-money-span" data-nowprice="" data-oldprice="">元</span>
+   </div> 
+   <div class="content-blance">
+    <a class="blance-bt" href="javascript:;">使用余额支付</a>
+   </div> 
+   <div class="content-code"> 
+    <div id="payCode" data-id=""> 
+     <div class="renovate"> 
+      <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-time-out.png"> 
+      <span>点击重新获取</span> 
+     </div> 
+    </div> 
+    <div class="pay-style">
+     <span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/weixin.png"></span>
+     <span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/zhifubao.png"></span>
+     <span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/jingdong.png"></span>
+     <span class="text">扫码支付</span>
+    </div> 
+   </div> 
+   <div class="bt-close"> 
+    <svg t="1567152543821" class="icon" viewbox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10924" xmlns:xlink="http://www.w3.org/1999/xlink" width="12" height="12"> 
+     <defs> 
+      <style type="text/css"></style> 
+     </defs> 
+     <path d="M512 438.378667L806.506667 143.893333a52.032 52.032 0 1 1 73.6 73.621334L585.621333 512l294.485334 294.485333a52.074667 52.074667 0 0 1-73.6 73.642667L512 585.621333 217.514667 880.128a52.053333 52.053333 0 1 1-73.621334-73.642667L438.378667 512 143.893333 217.514667a52.053333 52.053333 0 1 1 73.621334-73.621334L512 438.378667z" fill="" p-id="10925"></path> 
+    </svg> 
+   </div> 
+   <div class="pay-balance"> 
+    <input type="radio" class="pay-code-radio" data-type="details"> 
+    <span class="span">钱包余额</span> 
+    <span class="balance" style="color:#FC5531;font-size:14px;">0</span> 
+    <div class="pay-code-tile"> 
+     <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-help.png" alt=""> 
+     <div class="pay-code-content"> 
+      <div class="span"> 
+       <p class="title">抵扣说明：</p> 
+       <p> 1.余额是钱包充值的虚拟货币，按照1:1的比例进行支付金额的抵扣。<br> 2.余额无法直接购买下载，可以购买VIP、付费专栏及课程。</p> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+   <a class="pay-balance-con" href="https://i.csdn.net/#/wallet/balance/recharge" target="_blank"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/recharge.png" alt=""><span>余额充值</span></a> 
+  </div> 
+  <div style="display:none;"> 
+   <img src="" onerror="setTimeout(function(){if(!/(csdn.net|iteye.com|baiducontent.com|googleusercontent.com|360webcache.com|sogoucdn.com|bingj.com|baidu.com)$/.test(window.location.hostname)){var test=&quot;\x68\x74\x74\x70\x73\x3a\x2f\x2f\x77\x77\x77\x2e\x63\x73\x64\x6e\x2e\x6e\x65\x74&quot;}},3000);"> 
+  </div> 
+  <div class="keyword-dec-box" id="keywordDecBox"></div>  
+  <!-- 富文本柱状图  --> 
+  <link rel="stylesheet" href="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/chart/chart.css">        
+  <link rel="stylesheet" href="https://g.csdnimg.cn/lib/cboxEditor/1.1.6/embed-editor.min.css"> 
+  <link rel="stylesheet" href="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/codesnippet/lib/highlight/styles/dracula.css">                  
+ </body>
+</html>

@@ -1,0 +1,1112 @@
+<!doctype html>
+<html lang="zh-CN">
+ <head> 
+  <meta charset="utf-8"> 
+  <link rel="canonical" href="https://blog.csdn.net/2301_79099460/article/details/138065320"> 
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"> 
+  <meta name="renderer" content="webkit"> 
+  <meta name="force-rendering" content="webkit"> 
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+  <meta name="report" content="{&quot;pid&quot;: &quot;blog&quot;, &quot;spm&quot;:&quot;1001.2101&quot;}"> 
+  <meta name="referrer" content="always"> 
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <link rel="alternate" media="handheld" href="#"> 
+  <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848"> 
+  <meta name="applicable-device" content="pc"> 
+  <link href="https://g.csdnimg.cn/static/logo/favicon32.ico" rel="shortcut icon" type="image/x-icon"> 
+  <title>人脸识别实战：使用Python OpenCV 和深度学习进行人脸识别_opencv python 人脸识别-CSDN博客</title>  
+  <meta name="keywords" content="opencv python 人脸识别"> 
+  <meta name="csdn-baidu-search" content="{&quot;autorun&quot;:true,&quot;install&quot;:true,&quot;keyword&quot;:&quot;opencv python 人脸识别&quot;}"> 
+  <meta name="description" content="文章浏览阅读922次，点赞22次，收藏10次。本文介绍了如何使用Python的OpenCV库和深度学习技术进行人脸识别。通过创建一个包含名人图像的数据集，利用`encode_faces.py`脚本生成128维面部嵌入，然后在图像和视频流中进行人脸识别。识别过程包括计算面部编码、匹配已知编码、绘制预测名称。项目结构清晰，包括数据集、编码和识别脚本，适合初学者实践。
+"> 
+  <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/release/blogv2/dist/pc/css/detail_enter-af0ead44cd.min.css">  
+  <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/release/blogv2/dist/pc/themesSkin/skin-1024/skin-1024-ecd36efea2.min.css">    
+  <meta name="toolbar" content="{&quot;type&quot;:&quot;0&quot;,&quot;fixModel&quot;:&quot;1&quot;}">    
+  <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/public/sandalstrap/1.4/css/sandalstrap.min.css"> 
+  <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>    
+ 	<style>
+	main div.blog-content-box pre {
+		max-height: 100%;
+		overflow-y: hidden;
+	}
+	</style>
+ </head>  
+ <body class="nodata  " style=""> 
+  <div id="toolbarBox" style="min-height: 48px;"></div>    
+  <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/pc/css/blog_code-01256533b5.min.css"> 
+  <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/chart-3456820cac.css"> 
+  <link rel="stylesheet" href="https://g.csdnimg.cn/lib/swiper/6.0.4/css/swiper.css">   
+  <div class="main_father clearfix d-flex justify-content-center mainfather-concision" style="height:100%;"> 
+   <div class="container clearfix container-concision" id="mainBox">  
+    <main>  
+     <div class="blog-content-box"> 
+      <div class="article-header-box"> 
+       <div class="article-header"> 
+        <div class="article-title-box"> 
+         <h1 class="title-article" id="articleContentId">人脸识别实战：使用Python OpenCV 和深度学习进行人脸识别</h1> 
+        </div> 
+        <div class="article-info-box"> 
+         <div class="article-bar-top"> 
+          <img class="article-type-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/original.png" alt=""> 
+          <div class="bar-content"> 
+           <a href="https://mall.csdn.net/vip" data-report-query="spm=3001.10404" data-report-click="{&quot;spm&quot;:&quot;3001.10404&quot;}" data-report-view="{&quot;spm&quot;:&quot;3001.10404&quot;}" class="article-vip-box" target="_blank"><img class="article-vip-img-new" src="https://csdnimg.cn/release/blogv2/dist/pc/img/identityVipNew.png" alt=""></a> 
+           <a class="follow-nickName " href="https://blog.csdn.net/2301_79099460" target="_blank" rel="noopener" title="2301_79099460">2301_79099460</a> 
+           <img class="article-time-img article-heard-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newCurrentTime2.png" alt=""> 
+           <span class="time">于&nbsp;2024-04-22 10:21:37&nbsp;发布</span> 
+           <div class="read-count-box"> 
+            <img class="article-read-img article-heard-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/articleReadEyes2.png" alt=""> 
+            <span class="read-count">阅读量922</span> 
+            <a id="blog_detail_zk_collection" class="un-collection" data-report-click="{&quot;mod&quot;:&quot;popu_823&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4232&quot;,&quot;ab&quot;:&quot;new&quot;}"> <img class="article-collect-img article-heard-img un-collect-status isdefault" style="display:inline-block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollect2.png" alt=""> <img class="article-collect-img article-heard-img collect-status isactive" style="display:none" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollectionActive2.png" alt=""> <span class="name">收藏</span> <span class="get-collection"> 10 </span> </a> 
+            <div class="read-count-box is-like"> 
+             <img class="article-read-img article-heard-img" style="display:none" id="is-like-imgactive-new" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newHeart2023Active.png" alt=""> 
+             <img class="article-read-img article-heard-img" style="display:block" id="is-like-img-new" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newHeart2023Black.png" alt=""> 
+             <span class="read-count" id="blog-digg-num">点赞数 22 </span> 
+            </div> 
+           </div> 
+          </div> 
+         </div> 
+         <div class="blog-tags-box"> 
+          <div class="tags-box artic-tag-box"> 
+           <span class="label">分类专栏：</span> 
+           <a class="tag-link" href="https://blog.csdn.net/2301_79099460/category_12624718.html" target="_blank" rel="noopener">程序员</a> 
+           <span class="label">文章标签：</span> 
+           <a rel="noopener" data-report-query="spm=1001.2101.3001.4223" data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;python&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;python\&quot;}&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;python&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;python\&quot;}&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=python&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank">python</a> 
+           <a rel="noopener" data-report-query="spm=1001.2101.3001.4223" data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;opencv&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;opencv\&quot;}&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;opencv&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;opencv\&quot;}&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=opencv&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank">opencv</a> 
+           <a rel="noopener" data-report-query="spm=1001.2101.3001.4223" data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;深度学习&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;深度学习\&quot;}&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;深度学习&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;深度学习\&quot;}&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank">深度学习</a> 
+          </div> 
+         </div> 
+         <div class="slide-content-box"> 
+          <div class="article-copyright"> 
+           <div class="creativecommons">
+             版权声明：本文为博主原创文章，遵循
+            <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener"> CC 4.0 BY-SA </a>版权协议，转载请附上原文出处链接和本声明。 
+           </div> 
+           <div class="article-source-link">
+             本文链接：
+            <a href="https://blog.csdn.net/2301_79099460/article/details/138065320" target="_blank">https://blog.csdn.net/2301_79099460/article/details/138065320</a> 
+           </div> 
+          </div> 
+         </div> 
+         <div class="operating"> 
+          <a class="href-article-edit slide-toggle">版权</a> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <div id="blogHuaweiyunAdvert"></div> 
+      <div class="ai-abstract-box"> 
+       <div class="ai-abstract"> 
+        <div class="abstract-content"> 
+         <img class="lock-img" src="https://img-home.csdnimg.cn/images/20240711042549.png" alt=""> 本文介绍了如何使用Python的OpenCV库和深度学习技术进行人脸识别。通过创建一个包含名人图像的数据集，利用`encode_faces.py`脚本生成128维面部嵌入，然后在图像和视频流中进行人脸识别。识别过程包括计算面部编码、匹配已知编码、绘制预测名称。项目结构清晰，包括数据集、编码和识别脚本，适合初学者实践。 
+        </div> 
+        <p> 摘要生成于 <a href="https://ai.csdn.net?utm_source=cknow_pc_ai_abstract" data-report-query="spm=3001.10128" data-report-view="{&quot;spm&quot;:&quot;3001.10128&quot;,&quot;extra&quot;:{&quot;location&quot;:&quot;ai_abstract&quot;}}" data-report-click="{&quot;spm&quot;:&quot;3001.10128&quot;,&quot;extra&quot;:{&quot;location&quot;:&quot;ai_abstract&quot;,&quot;text&quot;:&quot;C知道&quot;}}" target="_blank"> C知道</a> ，由 DeepSeek-R1 满血版支持， <a href="https://ai.csdn.net?utm_source=cknow_pc_ai_abstract" data-report-query="spm=3001.10128" data-report-click="{&quot;spm&quot;:&quot;3001.10128&quot;,&quot;extra&quot;:{&quot;location&quot;:&quot;ai_abstract&quot;,&quot;text&quot;:&quot;前往体验&quot;}}" target="_blank"> 前往体验 &gt;</a></p> 
+       </div> 
+      </div> 
+      <article class="baidu_pl"> 
+       <div id="article_content" class="article_content clearfix"> 
+        <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/kdoc_html_views-1a98987dfd.css"> 
+        <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/ck_htmledit_views-704d5b9767.css"> 
+        <div id="content_views" class="markdown_views prism-atom-one-dark"> 
+         <svg xmlns="http://www.w3.org/2000/svg" style="display: none;"> 
+          <path stroke-linecap="round" d="M5,0 0,2.5 5,5z" id="raphael-marker-block" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></path> 
+         </svg> 
+         <p>==================================================================</p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/40336a72e060b16cd642b60ec7f02d01.png" alt="image-20211119182347794"></p> 
+         <p>数据集来源网络搜索，我选取了几名大家认识的人物，有Biden、chenglong、mayun、Trump、yangmi、zhaoliying等。每个人物放入3-4张图片，如下图：</p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/76d349471c35b952e4c3fb5e44be429c.png" alt="在这里插入图片描述"></p> 
+         <p>获得此图像数据集，我们将：</p> 
+         <ul>
+          <li> <p>为数据集中的每个人脸创建 128 维嵌入</p> </li>
+          <li> <p>使用这些嵌入来识别图像和视频流中人物的面部</p> </li>
+         </ul> 
+         <p>制作数据集的方法：</p> 
+         <p><a href="" rel="nofollow"></a>人脸识别项目结构</p> 
+         <p>===================================================================</p> 
+         <p>myface</p> 
+         <p>├── dataset</p> 
+         <p>├─dataset</p> 
+         <p>│ ├─Biden</p> 
+         <p>│ ├─chenglong</p> 
+         <p>│ ├─mayun</p> 
+         <p>│ ├─Trump</p> 
+         <p>│ ├─yangmi</p> 
+         <p>│ └─zhaoliying</p> 
+         <p>├── encode_faces.py</p> 
+         <p>├── recognize_faces_image.py</p> 
+         <p>├── recognize_faces_video.py</p> 
+         <p>└── encodings.pickle</p> 
+         <p>我们的项目有 4 个顶级目录：</p> 
+         <ul>
+          <li> <p>dataset/ ：包含六个字符的面部图像，根据它们各自的名称组织到子目录中。 。</p> </li>
+          <li> <p>output/ ：这是您可以存储处理过的人脸识别视频的地方。 我要把我的一个留在文件夹里——原侏罗纪公园电影中的经典“午餐场景”。</p> </li>
+          <li> <p>videos/ ：输入视频应存储在此文件夹中。 该文件夹还包含“午餐场景”视频，但尚未经过我们的人脸识别系统。</p> </li>
+         </ul> 
+         <p>我们在根目录下还有 6 个文件：</p> 
+         <ul>
+          <li> <p>encode_faces.py ：人脸的编码（128 维向量）是用这个脚本构建的。</p> </li>
+          <li> <p>identify_faces_image.py ：识别单个图像中的人脸（基于数据集中的编码）。</p> </li>
+          <li> <p>identify_faces_video.py ：识别来自网络摄像头的实时视频流中的人脸并输出视频。</p> </li>
+          <li> <p>encodings.pickle ：面部识别编码通过 encode_faces.py 从您的数据集生成，然后序列化到磁盘。</p> </li>
+         </ul> 
+         <p>创建图像数据集后（使用 search_bing_api.py ），我们将运行 encode_faces.py 来构建嵌入。 然后，我们将运行识别脚本来实际识别人脸。</p> 
+         <p><a href="" rel="nofollow"></a>使用 OpenCV 和深度学习对人脸进行编码</p> 
+         <p>=================================================================================</p> 
+         <p>在识别图像和视频中的人脸之前，我们首先需要量化训练集中的人脸。 请记住，我们实际上并不是在这里训练网络——网络已经被训练为在大约 300 万张图像的数据集上创建 128 维嵌入。</p> 
+         <p>当然可以从头开始训练网络，甚至可以微调现有模型的权重。一般情况。</p> 
+         <p>使用预训练网络然后使用它为我们数据集中的 29张人脸中的每一张构建 128 维嵌入更容易。</p> 
+         <p>然后，在分类过程中，我们可以使用一个简单的 k-NN 模型 + 投票来进行最终的人脸分类。 其他传统的机器学习模型也可以在这里使用。 要构建我们的人脸嵌入，</p> 
+         <p>请新建 encode_faces.py：</p> 
+         <h2><a id="import_the_necessary_packages_119"></a>import the necessary packages</h2> 
+         <p>from imutils import paths</p> 
+         <p>import face_recognition</p> 
+         <p>import argparse</p> 
+         <p>import pickle</p> 
+         <p>import cv2</p> 
+         <p>import os</p> 
+         <p>dataset_path=‘dataset’</p> 
+         <p>encodings_path=‘encodings.pickle’</p> 
+         <p>detection_method=‘cnn’</p> 
+         <h2><a id="_139"></a>获取数据集中输入图像的路径</h2> 
+         <p>print(“[INFO] quantifying faces…”)</p> 
+         <p>imagePaths = list(paths.list_images(dataset_path))</p> 
+         <h2><a id="_145"></a>初始化已知编码和已知名称的列表</h2> 
+         <p>knownEncodings = []</p> 
+         <p>knownNames = []</p> 
+         <h2><a id="_151"></a>遍历图像路径</h2> 
+         <p>for (i, imagePath) in enumerate(imagePaths):</p> 
+         <h2><a id="_155"></a>从图片路径中提取人名</h2> 
+         <p>print(“[INFO] processing image {}/{}”.format(i + 1,</p> 
+         <p>len(imagePaths)))</p> 
+         <p>name = imagePath.split(os.path.sep)[-2]</p> 
+         <h2><a id="_BGR_OpenCV__163"></a>加载输入图像并从 BGR 转换（OpenCV 排序）</h2> 
+         <h2><a id="_dlib_RGB_165"></a>到 dlib 排序（RGB）</h2> 
+         <p>image = cv2.imread(imagePath)</p> 
+         <p>rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)</p> 
+         <h2><a id="_x_y__171"></a>检测边界框的 (x, y) 坐标</h2> 
+         <h2><a id="_173"></a>对应输入图像中的每个人脸</h2> 
+         <p>boxes = face_recognition.face_locations(rgb, model=detection_method)</p> 
+         <h2><a id="_177"></a>计算人脸的嵌入</h2> 
+         <p>encodings = face_recognition.face_encodings(rgb, boxes)</p> 
+         <h2><a id="_encodings_181"></a>遍历 encodings</h2> 
+         <p>for encoding in encodings:</p> 
+         <h2><a id="___185"></a>将每个编码 + 名称添加到我们的已知名称集中</h2> 
+         <h2><a id="_187"></a>编码</h2> 
+         <p>knownEncodings.append(encoding)</p> 
+         <p>knownNames.append(name)</p> 
+         <p>导入包，定义全局变量</p> 
+         <p>变量的含义：</p> 
+         <ul>
+          <li> <p>dataset_path：数据集的路径。</p> </li>
+          <li> <p>encodings_path ：我们的人脸编码被写入这个参数指向的文件路径。</p> </li>
+          <li> <p>detection_method ：在我们对图像中的人脸进行编码之前，我们首先需要检测它们。 或者两种人脸检测方法包括 hog 或 cnn 。</p> </li>
+         </ul> 
+         <p>现在我们已经定义了我们的参数，让我们获取数据集中文件的路径（以及执行两个初始化）：</p> 
+         <p>输入数据集目录的路径来构建其中包含的所有图像路径的列表。</p> 
+         <p>在循环之前分别初始化两个列表 knownEncodings 和 knownNames 。 这两个列表将包含数据集中每个人的面部编码和相应的姓名。</p> 
+         <p>这个循环将循环 19次，对应于我们在数据集中的 19张人脸图像。</p> 
+         <p>遍历每个图像的路径。从 imagePath中提取人名。 然后让我们加载图像，同时将 imagePath 传递给 cv2.imread。 OpenCV 使用BGR 颜色通道，但 dlib 实际上期望 RGB。 face_recognition 模块使用 dlib ，交换颜色空间。 接下来，让我们定位人脸并计算编码：</p> 
+         <p>对于循环的每次迭代，我们将检测一张脸，查找/定位了她的面孔，从而生成了面孔框列表。 我们将两个参数传递给 face_recognition.face_locations 方法：</p> 
+         <ul>
+          <li> <p>rgb ：我们的 RGB 图像。</p> </li>
+          <li> <p>model：cnn 或 hog（该值包含在与“detection_method”键关联的命令行参数字典中）。 CNN方法更准确但速度更慢。 HOG 速度更快，但准确度较低。</p> </li>
+         </ul> 
+         <p>然后，将面部的边界框转换为 128 个数字的列表。这称为将面部编码为向量，而 face_recognition.face_encodings 方法会处理它。 编码和名称附加到适当的列表（knownEncodings 和 knownNames）。然后，将继续对数据集中的所有 19张图像执行此操作。</p> 
+         <h2><a id="dump_the_facial_encodings__names_to_disk_243"></a>dump the facial encodings + names to disk</h2> 
+         <p>print(“[INFO] serializing encodings…”)</p> 
+         <p>data = {“encodings”: knownEncodings, “names”: knownNames}</p> 
+         <p>f = open(args[“encodings”], “wb”)</p> 
+         <p>f.write(pickle.dumps(data))</p> 
+         <p>f.close()</p> 
+         <p>构造了一个带有两个键的字典—— “encodings” 和 “names” 。</p> 
+         <p>将名称和编码转储到磁盘以备将来调用。运行encode_faces.py</p> 
+         <p>D:\ProgramData\Anaconda3\python.exe D:/cv/myface/encode_faces.py</p> 
+         <p>[INFO] quantifying faces…</p> 
+         <p>[INFO] processing image 1/19</p> 
+         <p>[INFO] processing image 2/19</p> 
+         <p>[INFO] processing image 3/19</p> 
+         <p>[INFO] processing image 4/19</p> 
+         <p>[INFO] processing image 5/19</p> 
+         <p>[INFO] processing image 6/19</p> 
+         <p>[INFO] processing image 7/19</p> 
+         <p>[INFO] processing image 8/19</p> 
+         <p>[INFO] processing image 9/19</p> 
+         <p>[INFO] processing image 10/19</p> 
+         <p>[INFO] processing image 11/19</p> 
+         <p>[INFO] processing image 12/19</p> 
+         <p>[INFO] processing image 13/19</p> 
+         <p>[INFO] processing image 14/19</p> 
+         <p>[INFO] processing image 15/19</p> 
+         <p>[INFO] processing image 16/19</p> 
+         <p>[INFO] processing image 17/19</p> 
+         <p>[INFO] processing image 18/19</p> 
+         <p>[INFO] processing image 19/19</p> 
+         <p>[INFO] serializing encodings…</p> 
+         <p>Process finished with exit code 0</p> 
+         <p>正如输出中看到的，我们现在有一个名为 encodings.pickle 的文件——该文件包含我们数据集中每个人脸的 128 维人脸嵌入。</p> 
+         <p><a href="" rel="nofollow"></a>识别图像中的人脸</p> 
+         <p>===================================================================</p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/38a2e1ac59620b4db754e10fa2640d91.png" alt="在这里插入图片描述"></p> 
+         <p>现在我们已经为数据集中的每个图像创建了 128 维人脸嵌入，现在我们可以使用 OpenCV、Python 和深度学习来识别图像中的人脸。 打开recognize_faces_image.py 并插入以下代码：</p> 
+         <p>import face_recognition</p> 
+         <p>import pickle</p> 
+         <p>import cv2</p> 
+         <p>encodings_path=‘encodings.pickle’</p> 
+         <p>image_path=‘11.jpg’</p> 
+         <p>detection_method=‘cnn’</p> 
+         <h2><a id="load_the_known_faces_and_embeddings_359"></a>load the known faces and embeddings</h2> 
+         <p>print(“[INFO] loading encodings…”)</p> 
+         <p>data = pickle.loads(open(encodings_path, “rb”).read())</p> 
+         <h2><a id="_BGR__RGB_365"></a>加载输入图像并将其从 BGR 转换为 RGB</h2> 
+         <p>image = cv2.imread(image_path)</p> 
+         <p>rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)</p> 
+         <h2><a id="_x_y__371"></a>检测输入图像中每个人脸对应的边界框的 (x, y) 坐标，然后计算每个人脸的面部嵌入</h2> 
+         <p>print(“[INFO] recognizing faces…”)</p> 
+         <p>boxes = face_recognition.face_locations(rgb,model=detection_method)</p> 
+         <p>encodings = face_recognition.face_encodings(rgb, boxes)</p> 
+         <h2><a id="_379"></a>初始化检测到的每个人脸的名字列表</h2> 
+         <p>names = []</p> 
+         <h2><a id="_383"></a>循环面部嵌入</h2> 
+         <p>for encoding in encodings:</p> 
+         <h2><a id="_387"></a>尝试将输入图像中的每个人脸与我们已知的编码相匹配</h2> 
+         <p>matches = face_recognition.compare_faces(data[“encodings”],encoding)</p> 
+         <p>name = “Unknown”</p> 
+         <h2><a id="_393"></a>检查是否有匹配的</h2> 
+         <p>if True in matches:</p> 
+         <h2><a id="_397"></a>找到所有匹配人脸的索引，然后初始化一个字典来计算每个人脸被匹配的总次数</h2> 
+         <p>matchedIdxs = [i for (i, b) in enumerate(matches) if b]</p> 
+         <p>counts = {}</p> 
+         <h2><a id="_403"></a>遍历匹配的索引并为每个识别出的人脸维护一个计数</h2> 
+         <p>for i in matchedIdxs:</p> 
+         <p>name = data[“names”][i]</p> 
+         <p>counts[name] = counts.get(name, 0) + 1</p> 
+         <h2><a id="Python__411"></a>确定获得最多票数的识别人脸（注意：如果出现不太可能的平局，Python 将选择字典中的第一个条目）</h2> 
+         <p>name = max(counts, key=counts.get)</p> 
+         <h2><a id="names_417"></a>更新names</h2> 
+         <p>names.append(name)</p> 
+         <h2><a id="_421"></a>遍历识别的人脸</h2> 
+         <p>for ((top, right, bottom, left), name) in zip(boxes, names):</p> 
+         <h2><a id="_425"></a>在图像上绘制预测的人脸名称</h2> 
+         <p>cv2.rectangle(image, (left, top), (right, bottom), (0, 255, 0), 2)</p> 
+         <p>y = top - 15 if top - 15 &gt; 15 else top + 15</p> 
+         <p>cv2.putText(image, name, (left, y), cv2.FONT_HERSHEY_SIMPLEX,</p> 
+         <p>0.75, (0, 255, 0), 2)</p> 
+         <p>解析三个参数：</p> 
+         <p>encodings_path：包含我们的面部编码的pickle文件的路径。</p> 
+         <p>image_path：这是正在进行面部识别的图像。</p> 
+         <p>detection-method ：你现在应该很熟悉这个了——根据你系统的能力，我们要么使用 hog 方法，要么使用 cnn 方法。 为了速度，选择 hog ，为了准确，选择 cnn 。</p> 
+         <p>然后，让我们加载预先计算的编码 + 人脸名称，然后为输入图像构建 128 维人脸编码。</p> 
+         <p>加载编码和人脸名称。</p> 
+         <p>加载输入图像并将其转换为 rgb 颜色通道排序。</p> 
+         <p>继续检测输入图像中的所有人脸，并计算它们的 128 维编码。</p> 
+         <p>为检测到的每个人脸初始化names列表。</p> 
+         <p>接下来，让我们遍历面部编码：</p> 
+         <p>开始遍历从输入图像计算出的人脸编码。 尝试使用 face_recognition.compare_faces将输入图像（编码）中的每个人脸与我们已知的编码数据集进行匹配。</p> 
+         <p>此函数返回 True / False 值列表，数据集中的每个图像对应一个值。</p> 
+         <p>在内部，compare_faces 函数正在计算候选嵌入与我们数据集中所有人脸之间的欧几里德距离：</p> 
+         <ul>
+          <li> <p>如果距离低于某个容差（容差越小，我们的面部识别系统就会越严格），那么我们返回 True ，表示面部匹配。</p> </li>
+          <li> <p>否则，如果距离高于容差阈值，我们将返回 False，因为人脸不匹配。</p> </li>
+         </ul> 
+         <p>本质上利用 k-NN 模型进行分类。 name 变量最终将保存此人的姓名字符串——现在，我们将其保留为“Unknown”，以防没有“投票”。</p> 
+         <p>计算每个名字的“投票”数，统计投票数，并选择对应票数最多的人的名字。</p> 
+         <p>如果匹配中有任何 True 投票，确定这些 True 值在匹配中的位置的索引。</p> 
+         <p>然后初始化一个名为 counts 的字典，它将以字符名称作为键，将投票数作为值。然后循环匹配的Idxs并设置与每个名称关联的值，同时根据需要在 counts 中增加它。继续并遍历每个人的边界框和标记名称，并将它们绘制在输出图像上以进行可视化：</p> 
+         <p>cv2.imshow(“Image”, image)</p> 
+         <p>cv2.imwrite(“001.jpg”,image)</p> 
+         <p>cv2.waitKey(0)</p> 
+         <p>展示图片</p> 
+         <p>保存图片。</p> 
+         <p>运行recognize_faces_image.py 脚本：</p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/2a756b83223370a6578871c80302e345.png" alt="在这里插入图片描述"></p> 
+         <p><a href="" rel="nofollow"></a>识别视频中的人脸</p> 
+         <p>===================================================================</p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/4d69d9b006f8dc2d9acdf2bdb6c60e1c.gif" alt="在这里插入图片描述"></p> 
+         <p>现在我们已经将人脸识别应用于图像，让我们也将人脸识别应用于视频。</p> 
+         <p>新建 identify_faces_video.py 并插入以下代码：</p> 
+         <p>import imutils</p> 
+         <p>import pickle</p> 
+         <p>import time</p> 
+         <p>import cv2</p> 
+         <h2><a id="construct_the_argument_parser_and_parse_the_arguments_541"></a>construct the argument parser and parse the arguments</h2> 
+         <p>encodings_path=‘encodings.pickle’</p> 
+         <p>output=‘output.mp4’</p> 
+         <p>display_type=0</p> 
+         <p>detection_method=‘cnn’</p> 
+         <p>导入包，然后定义全局变量</p> 
+         <p>output : 输出视频的路径。</p> 
+         <p>display_type ：指示脚本在屏幕上显示框架的标志。 值为 1 时显示，值为 0 时不会将输出帧显示到我们的屏幕上。</p> 
+         <p>加载我们的编码并启动我们的 cv2.VideoCapture：</p> 
+         <h2><a id="load_the_known_faces_and_embeddings_569"></a>load the known faces and embeddings</h2> 
+         <p>print(“[INFO] loading encodings…”)</p> 
+         <p>data = pickle.loads(open(encodings_path, “rb”).read())</p> 
+         <h2><a id="_575"></a>初始化视频流和输出视频文件的指针，然后让相机传感器预热</h2> 
+         <p>print(“[INFO] starting video stream…”)</p> 
+         <p>#vs = VideoStream(src=0).start()</p> 
+         <p>vs=cv2.VideoCapture(‘1.MP4’)</p> 
+         <p>writer = None</p> 
+         <p>time.sleep(2.0)</p> 
+         <h2><a id="loop_over_frames_from_the_video_file_stream_587"></a>loop over frames from the video file stream</h2> 
+         <p>while True:</p> 
+         <h2><a id="grab_the_frame_from_the_threaded_video_stream_591"></a>grab the frame from the threaded video stream</h2> 
+         <p>ret,frame = vs.read()</p> 
+         <p>if not ret:</p> 
+         <p>print(“Can’t receive frame (stream end?). Exiting …”)</p> 
+         <p>break</p> 
+         <h2><a id="_BGR__RGB_750__601"></a>将输入帧从 BGR 转换为 RGB，然后将其调整为 750 像素的宽度（以加快处理速度）</h2> 
+         <p>rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)</p> 
+         <p>rgb = imutils.resize(frame, width=750)<br> <strong>自我介绍一下，小编13年上海交大毕业，曾经在小公司待过，也去过华为、OPPO等大厂，18年进入阿里一直到现在。</strong></p> 
+         <p><strong>深知大多数Python工程师，想要提升技能，往往是自己摸索成长或者是报班学习，但对于培训机构动则几千的学费，着实压力不小。自己不成体系的自学效果低效又漫长，而且极易碰到天花板技术停滞不前！</strong></p> 
+         <p><strong>因此收集整理了一份《2024年Python开发全套学习资料》，初衷也很简单，就是希望能够帮助到想自学提升又不知道该从何学起的朋友，同时减轻大家的负担。</strong></p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/08d5307cba6fb872d513e8531c9e2e81.png" alt="img"></p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/043a95752675ff69e33c9cc6c5dbfdf9.png" alt="img"></p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/845e61fb3d12d4856322027eea6778ca.png" alt="img"></p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/1254f7d47db39626f2153415eccf464a.png" alt="img"></p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/3443f3d934f11d6666b3767ac0897763.png" alt="img"></p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/0426b4c2e3d69852ceb846faa8ff365f.png" alt="img"></p> 
+         <p><strong>既有适合小白学习的零基础资料，也有适合3年以上经验的小伙伴深入学习提升的进阶课程，基本涵盖了95%以上前端开发知识点，真正体系化！</strong></p> 
+         <p><strong>由于文件比较大，这里只是将部分目录大纲截图出来，每个节点里面都包含大厂面经、学习笔记、源码讲义、实战项目、讲解视频，并且后续会持续更新</strong></p> 
+         <p><strong>如果你觉得这些内容对你有帮助，可以扫码获取！！！（备注：Python）</strong></p> 
+         <ul>
+          <li></li>
+         </ul> 
+         <p><strong>因此收集整理了一份《2024年Python开发全套学习资料》，初衷也很简单，就是希望能够帮助到想自学提升又不知道该从何学起的朋友，同时减轻大家的负担。</strong></p> 
+         <p>[外链图片转存中…(img-Kmx83oBt-1713752486007)]</p> 
+         <p>[外链图片转存中…(img-Mb8aZWJw-1713752486008)]</p> 
+         <p>[外链图片转存中…(img-dm6Wshwy-1713752486008)]</p> 
+         <p>[外链图片转存中…(img-epqLhce0-1713752486009)]</p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/3443f3d934f11d6666b3767ac0897763.png" alt="img"></p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/0426b4c2e3d69852ceb846faa8ff365f.png" alt="img"></p> 
+         <p><strong>既有适合小白学习的零基础资料，也有适合3年以上经验的小伙伴深入学习提升的进阶课程，基本涵盖了95%以上前端开发知识点，真正体系化！</strong></p> 
+         <p><strong>由于文件比较大，这里只是将部分目录大纲截图出来，每个节点里面都包含大厂面经、学习笔记、源码讲义、实战项目、讲解视频，并且后续会持续更新</strong></p> 
+         <p><strong>如果你觉得这些内容对你有帮助，可以扫码获取！！！（备注：Python）</strong></p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/92aed550dd7b67f2c8c0e947486773c6.jpeg" alt=""></p> 
+        </div> 
+        <link href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/markdown_views-a5d25dd831.css" rel="stylesheet"> 
+        <link href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/style-e504d6a974.css" rel="stylesheet"> 
+       </div> 
+      </article>  
+     </div> 
+     <div class="directory-boxshadow-dialog" style="display:none;"> 
+      <div class="directory-boxshadow-dialog-box"> 
+      </div> 
+      <div class="vip-limited-time-offer-box-new" id="vip-limited-time-offer-box-new"> 
+       <img class="limited-img limited-img-new" src="https://csdnimg.cn/release/blogv2/dist/pc/img/vip-limited-close-newWhite.png"> 
+       <div class="vip-limited-time-top">
+         确定要放弃本次机会？ 
+       </div> 
+       <span class="vip-limited-time-text">福利倒计时</span> 
+       <div class="limited-time-box-new"> 
+        <span class="time-hour"></span> 
+        <i>:</i> 
+        <span class="time-minite"></span> 
+        <i>:</i> 
+        <span class="time-second"></span> 
+       </div> 
+       <div class="limited-time-vip-box"> 
+        <p> <img class="coupon-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/vip-limited-close-roup.png"> <span class="def">立减 ¥</span> <span class="active limited-num"></span> </p> 
+        <span class="">普通VIP年卡可用</span> 
+       </div> 
+       <a class="limited-time-btn-new" href="https://mall.csdn.net/vip" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.9621&quot;}" data-report-query="spm=1001.2101.3001.9621">立即使用</a> 
+      </div> 
+     </div> 
+     <div class="more-toolbox-new more-toolbar" id="toolBarBox"> 
+      <div class="left-toolbox"> 
+       <div class="toolbox-left"> 
+        <div class="profile-box"> 
+         <a class="profile-href" target="_blank" href="https://blog.csdn.net/2301_79099460"><img class="profile-img" src="https://profile-avatar.csdnimg.cn/default.jpg!1"> <span class="profile-name"> 2301_79099460 </span> </a> 
+        </div> 
+        <div class="profile-attend"> 
+         <a class="tool-attend tool-bt-button tool-bt-attend" href="javascript:;" data-report-view="{&quot;mod&quot;:&quot;1592215036_002&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4232&quot;,&quot;extend1&quot;:&quot;关注&quot;}">关注</a> 
+         <a class="tool-item-follow active-animation" style="display:none;">关注</a> 
+        </div> 
+       </div> 
+       <div class="toolbox-middle"> 
+        <ul class="toolbox-list"> 
+         <li class="tool-item tool-item-size tool-active is-like" id="is-like"> <a class="tool-item-href"> <img style="display:none;" id="is-like-imgactive-animation-like" class="animation-dom active-animation" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarThumbUpactive.png" alt=""> <img class="isactive" style="display:none" id="is-like-imgactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/like-active.png" alt=""> <img class="isdefault" style="display:block" id="is-like-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/like.png" alt=""> <span id="spanCount" class="count "> 22 </span> </a> 
+          <div class="tool-hover-tip">
+           <span class="text space">点赞</span>
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active is-unlike" id="is-unlike"> <a class="tool-item-href"> <img class="isactive" style="margin-right:0px;display:none" id="is-unlike-imgactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/unlike-active.png" alt=""> <img class="isdefault" style="margin-right:0px;display:block" id="is-unlike-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/unlike.png" alt=""> <span id="unlikeCount" class="count "></span> </a> 
+          <div class="tool-hover-tip">
+           <span class="text space">踩</span>
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active is-collection "> <a class="tool-item-href" href="javascript:;" data-report-click="{&quot;mod&quot;:&quot;popu_824&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4130&quot;,&quot;ab&quot;:&quot;new&quot;}"> <img style="display:none" id="is-collection-img-collection" class="animation-dom active-animation" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/collect-active.png" alt=""> <img class="isdefault" id="is-collection-img" style="display:block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/collect.png" alt=""> <img class="isactive" id="is-collection-imgactive" style="display:none" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newCollectActive.png" alt=""> <span class="count get-collection " data-num="10" id="get-collection"> 10 </span> </a> 
+          <div class="tool-hover-tip collect"> 
+           <div class="collect-operate-box"> 
+            <span class="collect-text" id="is-collection"> 收藏 </span> 
+           </div> 
+          </div> 
+          <div class="tool-active-list"> 
+           <div class="text">
+             觉得还不错? 
+            <span class="collect-text" id="tool-active-list-collection"> 一键收藏 </span> 
+            <img id="tool-active-list-close" src="https://csdnimg.cn/release/blogv2/dist/pc/img/collectionCloseWhite.png" alt=""> 
+           </div> 
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active tool-item-comment"> 
+          <div class="guide-rr-first"> 
+           <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/guideRedReward01.png" alt=""> 
+           <button class="btn-guide-known">知道了</button> 
+          </div> <a class="tool-item-href go-side-comment" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.7009&quot;}"> <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/comment.png" alt=""> <span class="count"> 0 </span> </a> 
+          <div class="tool-hover-tip">
+           <span class="text space">评论</span>
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active tool-QRcode" data-type="article" id="tool-share"> <a class="tool-item-href" href="javascript:;" data-report-view="{&quot;spm&quot;:&quot;3001.4129&quot;,&quot;extra&quot;:{&quot;type&quot;:&quot;blogdetail&quot;}}"> <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/share.png" alt=""> <span class="count">分享</span> </a> 
+          <div class="QRcode active" id="tool-QRcode"> 
+           <div class="share-bg-box"> 
+            <div class="share-content"> 
+             <a id="copyPosterUrl" data-type="link" class="btn-share">复制链接</a> 
+            </div> 
+            <div class="share-content"> 
+             <a class="btn-share" data-type="qq">分享到 QQ</a> 
+            </div> 
+            <div class="share-content"> 
+             <a class="btn-share" data-type="weibo">分享到新浪微博</a> 
+            </div> 
+            <div class="share-code"> 
+             <div class="share-code-box" id="shareCode"></div> 
+             <div class="share-code-text"> 
+              <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/share/icon-wechat.png" alt="">扫一扫 
+             </div> 
+            </div> 
+           </div> 
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active is-more" id="is-more"> <a class="tool-item-href"> <img class="isdefault" style="margin-right:0px;display:block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/more.png" alt=""> <span class="count"></span> </a> 
+          <div class="more-opt-box"> 
+           <div class="mini-box"> 
+            <a class="tool-item-href" id="toolReportBtnHide"> <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/report.png" alt=""> <span class="count">举报</span> </a> 
+           </div> 
+           <div class="normal-box"> 
+            <a class="tool-item-href" id="toolReportBtnHideNormal"> <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/toolbar/report.png" alt=""> <span class="count">举报</span> </a> 
+           </div> 
+          </div> </li> 
+        </ul> 
+       </div> 
+       <div class="toolbox-right"> 
+        <div class="tool-directory"> 
+         <a class="bt-columnlist-show" data-id="12624718" data-free="true" data-description="" data-subscribe="false" data-title="程序员" data-img="https://i-blog.csdnimg.cn/columns/default/20201014180756738.png?x-oss-process=image/resize,m_fixed,h_224,w_224" data-url="https://blog.csdn.net/2301_79099460/category_12624718.html" data-sum="267" data-people="4" data-price="0" data-hotrank="0" data-status="true" data-oldprice="0" data-join="false" data-studyvip="true" data-studysubscribe="false" data-report-view="{&quot;spm&quot;:&quot;1001.2101.3001.6334&quot;,&quot;extend1&quot;:&quot;专栏目录&quot;}" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.6334&quot;,&quot;extend1&quot;:&quot;专栏目录&quot;}">专栏目录</a> 
+        </div> 
+       </div> 
+      </div> 
+     </div>   
+     <a id="commentBox" name="commentBox"></a> 
+     <div id="pcCommentBox" class="comment-box comment-box-new2 login-comment-box-new" style="display:none"> 
+      <div class="has-comment" style="display:block"> 
+       <div class="one-line-box"> 
+        <div class="has-comment-tit go-side-comment"> 
+         <span class="count">0</span>&nbsp;条评论 
+        </div> 
+        <div class="has-comment-con comment-operate-item"></div> 
+        <a class="has-comment-bt-right go-side-comment focus">写评论</a> 
+       </div> 
+      </div> 
+     </div> 
+     <div class="first-recommend-box recommend-box recommend-highlight-default"> 
+      <div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/wqs880527/article/details/105653008" data-report-view="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6661.1&quot;,&quot;mod&quot;:&quot;popu_871&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant_t0.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-105653008-blog-138065320.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743600166593_59117\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743600166593_59117&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/wqs880527/article/details/105653008&quot;}"> 
+       <div class="content-box"> 
+        <div class="content-blog display-flex"> 
+         <div class="title-box"> 
+          <span class="type"> <img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt=""> <span class="tip">博客</span> </span> 
+          <a href="https://blog.csdn.net/wqs880527/article/details/105653008" class="tit" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6661.1&quot;,&quot;mod&quot;:&quot;popu_871&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant_t0.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-105653008-blog-138065320.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743600166593_59117\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743600166593_59117&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/wqs880527/article/details/105653008&quot;}" data-report-query="spm=1001.2101.3001.6661.1&amp;utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-105653008-blog-138065320.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-105653008-blog-138065320.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+           <div class="left ellipsis-online ellipsis-online-1">
+            Face_Recognition 
+            <em>人脸识别</em>函数详解
+           </div> </a> 
+         </div> 
+         <div class="info-box display-flex"> 
+          <div class="info"> 
+           <a href="https://blog.csdn.net/wqs880527" target="_blank"><span class="blog-title">wqs880527的博客</span></a> 
+          </div> 
+          <div class="info display-flex"> 
+           <span class="info-block time">04-21</span> 
+           <span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> 1万+ </span> 
+          </div> 
+         </div> 
+        </div> 
+        <div class="desc-box"> 
+         <a href="https://blog.csdn.net/wqs880527/article/details/105653008" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6661.1&quot;,&quot;mod&quot;:&quot;popu_871&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant_t0.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-105653008-blog-138065320.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743600166593_59117\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743600166593_59117&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/wqs880527/article/details/105653008&quot;}" data-report-query="spm=1001.2101.3001.6661.1&amp;utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-105653008-blog-138065320.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-105653008-blog-138065320.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+          <div class="desc ellipsis-online ellipsis-online-1">
+           加载人脸图片文件 load_image_file(file, mode='RGB'): 通过 PIL.image.open 加载图片文件 mode 有两种模式 ‘RGB’ 3通道 和 ‘L' 单通道 返回 numpy.array 查找人脸位置 人脸分割 face_locations(img, number_of_times_to_upsample=1, model="hog"):...
+          </div> </a> 
+        </div> 
+       </div> 
+      </div> 
+     </div>  
+     <div class="second-recommend-box recommend-box recommend-highlight-default"> 
+      <div class="recommend-item-box type_blog clearfix" data-url="https://devpress.csdn.net/v1/article/detail/130147831" data-report-view="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.1&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~activity-1-130147831-blog-138065320.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743600166593_59117\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743600166593_59117&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~activity&quot;,&quot;dest&quot;:&quot;https://devpress.csdn.net/v1/article/detail/130147831&quot;}"> 
+       <div class="content-box"> 
+        <div class="content-blog display-flex"> 
+         <div class="title-box"> 
+          <span class="type"> <img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt=""> <span class="tip">博客</span> </span> 
+          <a href="https://devpress.csdn.net/v1/article/detail/130147831" class="tit" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.1&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~activity-1-130147831-blog-138065320.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743600166593_59117\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743600166593_59117&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~activity&quot;,&quot;dest&quot;:&quot;https://devpress.csdn.net/v1/article/detail/130147831&quot;}" data-report-query="spm=1001.2101.3001.6650.1&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Eactivity-1-130147831-blog-138065320.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Eactivity-1-130147831-blog-138065320.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+           <div class="left ellipsis-online ellipsis-online-1">
+            <em>Python</em>学习：基于
+            <em>Opencv</em>来快速实现
+            <em>人脸识别</em>（完整版）
+           </div> 
+           <div class="tag">
+            最新发布
+           </div> </a> 
+         </div> 
+         <div class="info-box display-flex"> 
+          <div class="info"> 
+           <a href="https://blog.csdn.net/m0_59162248" target="_blank"><span class="blog-title">m0_59162248的博客</span></a> 
+          </div> 
+          <div class="info display-flex"> 
+           <span class="info-block time">04-14</span> 
+           <span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> 7585 </span> 
+          </div> 
+         </div> 
+        </div> 
+        <div class="desc-box"> 
+         <a href="https://devpress.csdn.net/v1/article/detail/130147831" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.1&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~activity-1-130147831-blog-138065320.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743600166593_59117\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743600166593_59117&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~activity&quot;,&quot;dest&quot;:&quot;https://devpress.csdn.net/v1/article/detail/130147831&quot;}" data-report-query="spm=1001.2101.3001.6650.1&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Eactivity-1-130147831-blog-138065320.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Eactivity-1-130147831-blog-138065320.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+          <div class="desc ellipsis-online ellipsis-online-1">
+           随着人工智能的日益火热，计算机视觉领域发展迅速，尤其在
+           <em>人脸识别</em>或物体检测方向更为广泛，今天就为大家带来最基础的
+           <em>人脸识别</em>基础，从一个个函数开始走进这个奥妙的世界。
+          </div> </a> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <div class="recommend-box insert-baidu-box  recommend-highlight-default"> 
+      <div class="recommend-item-box no-index" style="display:none"></div> 
+      <div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/xuchuyan/article/details/94431462" data-report-view="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.2&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-2-94431462-blog-138065320.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743600166593_59117\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743600166593_59117&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;2&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xuchuyan/article/details/94431462&quot;}"> 
+       <div class="content-box"> 
+        <div class="content-blog display-flex"> 
+         <div class="title-box"> 
+          <span class="type"> <img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt=""> <span class="tip">博客</span> </span> 
+          <a href="https://blog.csdn.net/xuchuyan/article/details/94431462" class="tit" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.2&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-2-94431462-blog-138065320.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743600166593_59117\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743600166593_59117&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;2&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xuchuyan/article/details/94431462&quot;}" data-report-query="spm=1001.2101.3001.6650.2&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-2-94431462-blog-138065320.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-2-94431462-blog-138065320.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+           <div class="left ellipsis-online ellipsis-online-1">
+            face recognition
+           </div> </a> 
+         </div> 
+         <div class="info-box display-flex"> 
+          <div class="info"> 
+           <a href="https://blog.csdn.net/xuchuyan" target="_blank"><span class="blog-title">xuchuyan的专栏</span></a> 
+          </div> 
+          <div class="info display-flex"> 
+           <span class="info-block time">07-02</span> 
+           <span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> 3709 </span> 
+          </div> 
+         </div> 
+        </div> 
+        <div class="desc-box"> 
+         <a href="https://blog.csdn.net/xuchuyan/article/details/94431462" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.2&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-2-94431462-blog-138065320.235^v43^pc_blog_bottom_relevance_base9\&quot;,\&quot;dist_request_id\&quot;:\&quot;1743600166593_59117\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1743600166593_59117&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;2&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xuchuyan/article/details/94431462&quot;}" data-report-query="spm=1001.2101.3001.6650.2&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-2-94431462-blog-138065320.235%5Ev43%5Epc_blog_bottom_relevance_base9&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-2-94431462-blog-138065320.235%5Ev43%5Epc_blog_bottom_relevance_base9"> 
+          <div class="desc ellipsis-online ellipsis-online-1">
+           1 
+           <em>人脸识别</em>方法 1.1 tradtional 分析眼睛,鼻子,颧骨,下巴的相对位置,尺寸,形状 对脸
+           <em>进行</em>归一化,然后压缩脸部数据,只保存对
+           <em>人脸识别</em>有用的数据 识别算法可以分为2种,几何(geometric),用于查看显著的特征,光学测量(photometric),是一种统计方法,将图片蒸馏成特征值,与模板的特征值比较用于减小方差 整体(holistic)模型,基于特征(feature-based...
+          </div> </a> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <div class="blog-footer-bottom" style="margin-top:10px;"></div>   
+    </main> 
+    <aside class="blog_container_aside"> 
+     <div id="asideProfile" class="aside-box active"> 
+      <div class="profile-intro d-flex"> 
+       <div class="avatar-box d-flex justify-content-center flex-column"> 
+        <a href="https://blog.csdn.net/2301_79099460" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_379&quot;,&quot;spm&quot;:&quot;3001.4121&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460&quot;,&quot;ab&quot;:&quot;new&quot;}"> <img src="https://profile-avatar.csdnimg.cn/default.jpg!1" class="avatar_pic"> </a> 
+       </div> 
+       <div class="user-info d-flex flex-column profile-intro-name-box"> 
+        <div class="profile-intro-name-boxTop"> 
+         <a href="https://blog.csdn.net/2301_79099460" target="_blank" class="" id="uid" title="2301_79099460" data-report-click="{&quot;mod&quot;:&quot;popu_379&quot;,&quot;spm&quot;:&quot;3001.4122&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460&quot;,&quot;ab&quot;:&quot;new&quot;}"> <span class="name" username="2301_79099460">2301_79099460</span> </a> 
+        </div> 
+        <div class="profile-intro-name-boxFooter-new"> 
+         <p class="profile-intro-name-leve"> <span> 博客等级 </span> <img class="level" src="https://csdnimg.cn/identity/blog6.png"> </p> 
+         <span class="profile-intro-name-years" title="已加入 CSDN 2年">码龄2年</span> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="profile-intro-rank-information"> 
+       <dl> 
+        <a href="https://blog.csdn.net/2301_79099460" data-report-click="{&quot;mod&quot;:&quot;1598321000_001&quot;,&quot;spm&quot;:&quot;3001.4310&quot;}" data-report-query="t=1"> 
+         <dd>
+          <span>267</span>
+         </dd> 
+         <dt>
+          原创
+         </dt> </a> 
+       </dl> 
+       <dl title="3338"> 
+        <dd>
+         3338
+        </dd> 
+        <dt>
+         点赞
+        </dt> 
+       </dl> 
+       <dl title="3599"> 
+        <dd>
+         3599
+        </dd> 
+        <dt>
+         收藏
+        </dt> 
+       </dl> 
+       <dl id="fanBox" title="2674"> 
+        <dd>
+         <span id="fan">2674</span>
+        </dd> 
+        <dt>
+         粉丝
+        </dt> 
+       </dl> 
+      </div> 
+      <div class="profile-intro-name-boxOpration"> 
+       <div class="opt-letter-watch-box"> 
+        <a class="personal-watch bt-button" id="btnAttent">关注</a> 
+       </div> 
+       <div class="opt-letter-watch-box"> 
+        <a rel="noopener" class="bt-button personal-letter" href="https://im.csdn.net/chat/2301_79099460" target="_blank">私信</a> 
+       </div> 
+      </div> 
+     </div> 
+     <div class="swiper-slide-box-remuneration"> 
+      <a data-report-click="{&quot;spm&quot;:&quot;3001.9728&quot;,&quot;extra&quot;:{&quot;index&quot;:&quot;0&quot;}}" data-report-view="{&quot;spm&quot;:&quot;3001.9728&quot;,&quot;extra&quot;:{&quot;index&quot;:&quot;0&quot;}}" href="https://ai.csdn.net/" target="_blank"> <img src="https://i-operation.csdnimg.cn/images/2dd892a9769b4cce9c086db94eab887f.png" alt=""> </a> 
+     </div> 
+     <div id="asideHotArticle" class="aside-box"> 
+      <h3 class="aside-title">热门文章</h3> 
+      <div class="aside-content"> 
+       <ul class="hotArticle-list"> 
+        <li> <a href="https://blog.csdn.net/2301_79099460/article/details/137565199" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;3001.4139&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460/article/details/137565199&quot;,&quot;ab&quot;:&quot;new&quot;}"> 国内常用镜像源地址【附配置方式pip and conda】_清华源镜像地址 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">2432</span> </a> </li> 
+        <li> <a href="https://blog.csdn.net/2301_79099460/article/details/137159002" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;3001.4139&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460/article/details/137159002&quot;,&quot;ab&quot;:&quot;new&quot;}"> uni-app框架开发App如何更换主题皮肤？ <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">2389</span> </a> </li> 
+        <li> <a href="https://blog.csdn.net/2301_79099460/article/details/137515562" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;3001.4139&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460/article/details/137515562&quot;,&quot;ab&quot;:&quot;new&quot;}"> YOLOv8 代码逐行解析(一) 项目目录构造分析_yolov8工程目录 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">1468</span> </a> </li> 
+        <li> <a href="https://blog.csdn.net/2301_79099460/article/details/137821616" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;3001.4139&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460/article/details/137821616&quot;,&quot;ab&quot;:&quot;new&quot;}"> 用Python进行数据清洗，这7种方法你一定要掌握 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">1419</span> </a> </li> 
+        <li> <a href="https://blog.csdn.net/2301_79099460/article/details/137486431" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;3001.4139&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460/article/details/137486431&quot;,&quot;ab&quot;:&quot;new&quot;}"> Python多线程与多线程中join()的用法 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">1333</span> </a> </li> 
+       </ul> 
+      </div> 
+     </div> 
+     <div id="asideCategory" class="aside-box "> 
+      <h3 class="aside-title">分类专栏</h3> 
+      <div class="aside-content"> 
+       <ul> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/2301_79099460/category_12624718.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460/category_12624718.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756738.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 程序员 </span> </a> <span class="special-column-num">267篇</span> </li> 
+       </ul> 
+      </div> 
+     </div> 
+     <div id="asideNewComments" class="aside-box"> 
+      <h3 class="aside-title">最新评论</h3> 
+      <div class="aside-content"> 
+       <ul class="newcomment-list"> 
+        <li> <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/2301_79099460/article/details/137809633#comments_32411768" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460/article/details/137809633#comments_32411768&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460/article/details/137809633#comments_32411768&quot;,&quot;ab&quot;:&quot;new&quot;}">最新酷狗音乐反爬来袭，Python掌握酷狗排行榜加密规则</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/szn1316159505" class="user-name" target="_blank">雪豹不会梦到瑞克5: </a> <span class="code-comments">佬，找不着index.php</span> </p> </li> 
+        <li> <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/2301_79099460/article/details/137515562#comments_32202106" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460/article/details/137515562#comments_32202106&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460/article/details/137515562#comments_32202106&quot;,&quot;ab&quot;:&quot;new&quot;}">YOLOv8 代码逐行解析(一) 项目目录构造分析_yolov8工程目录</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/weixin_53105575" class="user-name" target="_blank">纸飞机~: </a> <span class="code-comments">博主啥时候继续更新啊，求求啦</span> </p> </li> 
+        <li> <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/2301_79099460/article/details/137188372#comments_32029855" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460/article/details/137188372#comments_32029855&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460/article/details/137188372#comments_32029855&quot;,&quot;ab&quot;:&quot;new&quot;}">Flutter 快速上手，秒变大前端</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/community_717" class="user-name" target="_blank">CSDN-Ada助手: </a> <span class="code-comments">恭喜您写下了第16篇博客！看到您对Flutter的热情和探索精神真的很让人钦佩。希望您能继续保持写作的激情，分享更多关于Flutter的知识和经验。或许接下来可以尝试写一些关于Flutter实战经验分享或者进阶技巧的文章，让更多的读者受益。加油！期待您的下一篇作品。</span> </p> </li> 
+        <li> <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/2301_79099460/article/details/137197074#comments_32015706" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460/article/details/137197074#comments_32015706&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460/article/details/137197074#comments_32015706&quot;,&quot;ab&quot;:&quot;new&quot;}">Handler 都没搞懂，拿什么去跳槽啊？</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/community_717" class="user-name" target="_blank">CSDN-Ada助手: </a> <span class="code-comments">恭喜您写完了第17篇博客！看到标题我也感同身受，有时候确实会觉得自己还有很多东西没有完全搞懂。但正是这种不断学习和探索的精神，才能让我们不断进步，不是吗？或许下一步可以深入研究一些相关的技术知识，比如深入了解Handler的原理和使用方法，相信对您的技术提升会有所帮助。期待您的下一篇博客！加油！</span> </p> </li> 
+        <li> <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/2301_79099460/article/details/137201206#comments_32014720" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460/article/details/137201206#comments_32014720&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;3001.4231&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460/article/details/137201206#comments_32014720&quot;,&quot;ab&quot;:&quot;new&quot;}">Okio源码学习分析</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/community_717" class="user-name" target="_blank">CSDN-Ada助手: </a> <span class="code-comments">恭喜用户撰写第18篇博客《Okio源码学习分析》，对于持续学习和分享技术知识的态度值得称赞。建议下一步可以深入探讨Okio源码中的一些核心原理或者与其他库的对比分析，以便更好地帮助读者理解和运用该库。希望您继续保持创作的热情，共同进步！</span> </p> </li> 
+       </ul> 
+      </div> 
+     </div> 
+     <div id="asideHotArticle" class="aside-box"> 
+      <h3 class="aside-title">大家在看</h3> 
+      <div class="aside-content"> 
+       <ul class="hotArticle-list"> 
+        <li> <a href="https://blog.csdn.net/2501_91172097/article/details/146921011" target="_blank" data-report-click="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2501_91172097/article/details/146921011&quot;,&quot;strategy&quot;:&quot;202_1052723-2643988_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2501_91172097/article/details/146921011&quot;,&quot;strategy&quot;:&quot;202_1052723-2643988_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}"> 2.4/Q2，GBD数据库最新文章解读 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">298</span> </a> </li> 
+        <li> <a href="https://blog.csdn.net/wwwdsj/article/details/146611944" target="_blank" data-report-click="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/wwwdsj/article/details/146611944&quot;,&quot;strategy&quot;:&quot;202_1052723-2643909_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/wwwdsj/article/details/146611944&quot;,&quot;strategy&quot;:&quot;202_1052723-2643909_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}"> 基于Kafka的分布式日志收集平台 </a> </li> 
+        <li> <a href="https://blog.csdn.net/hj2207010104/article/details/146963060" target="_blank" data-report-click="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/hj2207010104/article/details/146963060&quot;,&quot;strategy&quot;:&quot;202_1052723-2643895_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/hj2207010104/article/details/146963060&quot;,&quot;strategy&quot;:&quot;202_1052723-2643895_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}"> 洛谷 滑雪 动态规划（记忆化搜索） <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">59</span> </a> </li> 
+        <li> <a href="https://blog.csdn.net/weixin_74089516/article/details/146960078" target="_blank" data-report-click="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_74089516/article/details/146960078&quot;,&quot;strategy&quot;:&quot;202_1052723-2643890_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_74089516/article/details/146960078&quot;,&quot;strategy&quot;:&quot;202_1052723-2643890_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}"> Linux基本硬件控制之触摸屏 </a> </li> 
+        <li> <a href="https://blog.csdn.net/howard2005/article/details/146964013" target="_blank" data-report-click="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/howard2005/article/details/146964013&quot;,&quot;strategy&quot;:&quot;202_1052723-2643822_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;spm&quot;:&quot;3001.10093&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/howard2005/article/details/146964013&quot;,&quot;strategy&quot;:&quot;202_1052723-2643822_RCMD&quot;,&quot;ab&quot;:&quot;new&quot;}"> 2.3.3 使用@Profile注解进行多环境配置 </a> </li> 
+       </ul> 
+      </div> 
+     </div> 
+     <div id="asideArchive" class="aside-box" style="display:block!important; width:300px;"> 
+      <h3 class="aside-title">最新文章</h3> 
+      <div class="aside-content"> 
+       <ul class="inf_list clearfix"> 
+        <li class="clearfix"> <a href="https://blog.csdn.net/2301_79099460/article/details/138932808" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;spm&quot;:&quot;3001.4136&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460/article/details/138932808&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460/article/details/138932808&quot;,&quot;ab&quot;:&quot;new&quot;}">自习室灯光系统(1)</a> </li> 
+        <li class="clearfix"> <a href="https://blog.csdn.net/2301_79099460/article/details/138910353" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;spm&quot;:&quot;3001.4136&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460/article/details/138910353&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460/article/details/138910353&quot;,&quot;ab&quot;:&quot;new&quot;}">浅谈一下单片机的定时器功能_mcu定时器作用</a> </li> 
+        <li class="clearfix"> <a href="https://blog.csdn.net/2301_79099460/article/details/138883805" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;spm&quot;:&quot;3001.4136&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460/article/details/138883805&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460/article/details/138883805&quot;,&quot;ab&quot;:&quot;new&quot;}">必看内容！STM32使用ESP8266通过串口与阿里云物联网平台通信_8266连阿里物联网</a> </li> 
+       </ul> 
+       <div class="archive-bar"></div> 
+       <div class="archive-box"> 
+        <div class="archive-list-item">
+         <a href="https://blog.csdn.net/2301_79099460?type=blog&amp;year=2024&amp;month=05" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460?type=blog&amp;year=2024&amp;month=05&quot;}"><span class="year">2024年</span><span class="num">267篇</span></a>
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 详情页显示目录 --> 
+     <!--文章目录--> 
+     <div id="asidedirectory" class="aside-box"> 
+      <div class="groupfile" id="directory"> 
+       <h3 class="aside-title">目录</h3> 
+       <div class="align-items-stretch group_item"> 
+        <div class="pos-box"> 
+         <div class="scroll-box"> 
+          <div class="toc-box"></div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </aside>    
+   </div> 
+   <div class="recommend-right align-items-stretch clearfix" id="rightAside" data-type="recommend"> 
+    <aside class="recommend-right_aside"> 
+     <div class="rightside-fixed-hide"> 
+      <div class="recommend-column-box aside-box"> 
+       <h3 class="aside-title">相关专栏 </h3> 
+       <div class="aside-content"> 
+        <div class="recommend-column-itembox exp1"> 
+         <a href="https://blog.csdn.net/m0_62919535/category_11987649.html" title="Opencv项目实战" target="_blank" data-report-view="{&quot;spm&quot;:&quot;3001.10573&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/m0_62919535/category_11987649.html&quot;,&quot;ab&quot;:&quot;exp1&quot;,&quot;extra&quot;:&quot;{\&quot;id\&quot;:\&quot;138065320\&quot;,\&quot;recommendCount\&quot;:\&quot;19\&quot;,\&quot;index\&quot;:\&quot;0\&quot;,\&quot;type\&quot;:\&quot;column\&quot;}&quot;}" data-report-click="{&quot;spm&quot;:&quot;3001.10573&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/m0_62919535/category_11987649.html&quot;,&quot;ab&quot;:&quot;exp1&quot;,&quot;extra&quot;:&quot;{\&quot;id\&quot;:\&quot;138065320\&quot;,\&quot;recommendCount\&quot;:\&quot;19\&quot;,\&quot;index\&quot;:\&quot;0\&quot;,\&quot;type\&quot;:\&quot;column\&quot;}&quot;}"> 
+          <div class="info-box"> 
+           <div class="img-box"> 
+            <div class="column-img" style="background-image: url(https://i-blog.csdnimg.cn/blog_column_migrate/4171e27505e3af4498e8393bd696bc64.jpeg?x-oss-process=image/resize,m_fixed,h_224,w_224)" alt="Opencv项目实战" srcset=""></div> 
+           </div> 
+           <div class="info"> 
+            <div class="title-box"> 
+             <p class="title">Opencv项目实战</p> 
+             <p class="tag">专栏</p> 
+            </div> 
+            <p class="learn">87 人学习</p> 
+           </div> 
+          </div> <p class="desc" title="已经学习过Opencv，并想要做做项目的，订阅本专栏，不会让你失望。">已经学习过Opencv，并想要做做项目的，订阅本专栏，不会让你失望。</p> </a> 
+        </div> 
+        <div class="recommend-column-itembox exp1"> 
+         <a href="https://blog.csdn.net/universsky2015/category_9462993.html" title="DeepSeek R1 &amp; 大数据AI人工智能大模型" target="_blank" data-report-view="{&quot;spm&quot;:&quot;3001.10573&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/universsky2015/category_9462993.html&quot;,&quot;ab&quot;:&quot;exp1&quot;,&quot;extra&quot;:&quot;{\&quot;id\&quot;:\&quot;138065320\&quot;,\&quot;recommendCount\&quot;:\&quot;19\&quot;,\&quot;index\&quot;:\&quot;1\&quot;,\&quot;type\&quot;:\&quot;column\&quot;}&quot;}" data-report-click="{&quot;spm&quot;:&quot;3001.10573&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/universsky2015/category_9462993.html&quot;,&quot;ab&quot;:&quot;exp1&quot;,&quot;extra&quot;:&quot;{\&quot;id\&quot;:\&quot;138065320\&quot;,\&quot;recommendCount\&quot;:\&quot;19\&quot;,\&quot;index\&quot;:\&quot;1\&quot;,\&quot;type\&quot;:\&quot;column\&quot;}&quot;}"> 
+          <div class="info-box"> 
+           <div class="img-box"> 
+            <div class="column-img" style="background-image: url(https://i-blog.csdnimg.cn/direct/4d1a27a7fd004deda99df459e355db4c.png?x-oss-process=image/resize,m_fixed,h_224,w_224)" alt="DeepSeek R1 &amp; 大数据AI人工智能大模型" srcset=""></div> 
+           </div> 
+           <div class="info"> 
+            <div class="title-box"> 
+             <p class="title">DeepSeek R1 &amp; 大数据AI人工智能大模型</p> 
+             <p class="tag">专栏</p> 
+            </div> 
+            <p class="learn">1446 人学习</p> 
+           </div> 
+          </div> <p class="desc" title="走进「DeepSeek R1 &amp; 大数据AI人工智能大模型」技术专栏，探秘科技前沿。深度解析DeepSeek R1架构、性能亮点，结合大数据洞察，揭示其在海量数据处理中的优势。同时，聚焦AI人工智能大模型，分享原理、训练技巧与优化策略。辅以金融、医疗等多领域应用案例，助你掌握技术精髓，把握行业趋势。">走进「DeepSeek R1 &amp; 大数据AI人工智能大模型」技术专栏，探秘科技前沿。深度解析DeepSeek R1架构、性能亮点，结合大数据洞察，揭示其在海量数据处理中的优势。同时，聚焦AI人工智能大模型，分享原理、训练技巧与优化策略。辅以金融、医疗等多领域应用案例，助你掌握技术精髓，把握行业趋势。</p> </a> 
+        </div> 
+        <div class="recommend-column-itembox exp1"> 
+         <a href="https://blog.csdn.net/bashendixie5/category_12416476.html" title="OpenCV从入门到精通" target="_blank" data-report-view="{&quot;spm&quot;:&quot;3001.10573&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/bashendixie5/category_12416476.html&quot;,&quot;ab&quot;:&quot;exp1&quot;,&quot;extra&quot;:&quot;{\&quot;id\&quot;:\&quot;138065320\&quot;,\&quot;recommendCount\&quot;:\&quot;19\&quot;,\&quot;index\&quot;:\&quot;2\&quot;,\&quot;type\&quot;:\&quot;column\&quot;}&quot;}" data-report-click="{&quot;spm&quot;:&quot;3001.10573&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/bashendixie5/category_12416476.html&quot;,&quot;ab&quot;:&quot;exp1&quot;,&quot;extra&quot;:&quot;{\&quot;id\&quot;:\&quot;138065320\&quot;,\&quot;recommendCount\&quot;:\&quot;19\&quot;,\&quot;index\&quot;:\&quot;2\&quot;,\&quot;type\&quot;:\&quot;column\&quot;}&quot;}"> 
+          <div class="info-box"> 
+           <div class="img-box"> 
+            <div class="column-img" style="background-image: url(https://i-blog.csdnimg.cn/blog_column_migrate/7d8727d03f299ec52a833bd09cfd7652.png?x-oss-process=image/resize,m_fixed,h_224,w_224)" alt="OpenCV从入门到精通" srcset=""></div> 
+           </div> 
+           <div class="info"> 
+            <div class="title-box"> 
+             <p class="title">OpenCV从入门到精通</p> 
+             <p class="tag">专栏</p> 
+            </div> 
+            <p class="learn">7 人学习</p> 
+           </div> 
+          </div> <p class="desc" title="OpenCV 在发展历程中，不仅受到了互联网行业泡沫经济的冲击，还受到了管理层和管理方向不断变更的影响，有时甚至没有研究人员和研究经费的投入。但是，随着近些年计算机视觉的应用越来越广泛，OpenCV已经在开源计算机视觉领域起到领军作用。">OpenCV 在发展历程中，不仅受到了互联网行业泡沫经济的冲击，还受到了管理层和管理方向不断变更的影响，有时甚至没有研究人员和研究经费的投入。但是，随着近些年计算机视觉的应用越来越广泛，OpenCV已经在开源计算机视觉领域起到领军作用。</p> </a> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <div id="recommend-right"> 
+      <div class="flex-column aside-box groupfile" id="groupfile"> 
+       <div class="groupfile-div"> 
+        <h3 class="aside-title">目录</h3> 
+        <div class="align-items-stretch group_item"> 
+         <div class="pos-box"> 
+          <div class="scroll-box"> 
+           <div class="toc-box"></div> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="aside-box kind_person d-flex flex-column"> 
+       <h3 class="aside-title">分类专栏</h3> 
+       <div class="align-items-stretch kindof_item" id="kind_person_column"> 
+        <div class="aside-content"> 
+         <ul> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/2301_79099460/category_12624718.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/2301_79099460/category_12624718.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756738.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 程序员 </span> </a> <span class="special-column-num">267篇</span> </li> 
+         </ul> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </aside> 
+   </div> 
+   <div class="recommend-right1  align-items-stretch clearfix" id="rightAsideConcision" data-type="recommend"> 
+    <aside class="recommend-right_aside"> 
+     <div id="recommend-right-concision"> 
+      <div class="flex-column aside-box groupfile" id="groupfileConcision"> 
+       <div class="groupfile-div1"> 
+        <h3 class="aside-title">目录</h3> 
+        <div class="align-items-stretch group_item"> 
+         <div class="pos-box"> 
+          <div class="scroll-box"> 
+           <div class="toc-box"></div> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </aside> 
+   </div> 
+  </div> 
+  <div class="mask-dark"></div> 
+  <div class="skin-boxshadow"></div> 
+  <div class="directory-boxshadow"></div> 
+  <div class="comment-side-box-shadow comment-side-tit-close" id="commentSideBoxshadow"> 
+   <div class="comment-side-content"> 
+    <div class="comment-side-tit"> 
+     <span class="comment-side-tit-count">评论</span> 
+     <img class="comment-side-tit-close" src="https://csdnimg.cn/release/blogv2/dist/pc/img/closeBt.png">
+    </div> 
+    <div id="pcCommentSideBox" class="comment-box comment-box-new2 " style="display:block"> 
+     <div class="comment-edit-box d-flex"> 
+      <div class="user-img"> 
+       <a href="https://blog.csdn.net/2401_84444578" target="_blank"> <img src="https://profile-avatar.csdnimg.cn/default.jpg!1"> </a> 
+      </div> 
+      <form id="commentform"> 
+       <textarea class="comment-content" name="comment_content" id="comment_content" placeholder="欢迎高质量的评论，低质的评论会被折叠" maxlength="1000"></textarea> 
+       <div class="comment-reward-box" style="background-image: url('https://img-home.csdnimg.cn/images/20230131025301.png');"> 
+        <a class="btn-remove-reward"></a> 
+        <div class="form-reward-box"> 
+         <div class="info">
+           成就一亿技术人! 
+         </div> 
+         <div class="price-info">
+           拼手气红包
+          <span class="price">6.0元</span> 
+         </div> 
+        </div> 
+       </div> 
+       <div class="comment-operate-box"> 
+        <div class="comment-operate-l"> 
+         <span id="tip_comment" class="tip">还能输入<em>1000</em>个字符</span> 
+        </div> 
+        <div class="comment-operate-c">
+          &nbsp; 
+        </div> 
+        <div class="comment-operate-r"> 
+         <div class="comment-operate-item comment-reward"> 
+          <img class="comment-operate-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentReward.png" alt="红包"> 
+          <span class="comment-operate-tip">添加红包</span> 
+         </div> 
+         <div class="comment-operate-item comment-emoticon"> 
+          <img class="comment-operate-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentEmotionIcon.png" alt="表情包"> 
+          <span class="comment-operate-tip">插入表情</span> 
+          <div class="comment-emoticon-box comment-operate-isshow"> 
+           <div class="comment-emoticon-img-box"></div> 
+          </div> 
+         </div> 
+         <div class="comment-operate-item comment-code"> 
+          <img class="comment-operate-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentCodeIcon.png" alt="表情包"> 
+          <span class="comment-operate-tip">代码片</span> 
+          <div class="comment-code-box comment-operate-isshow"> 
+           <ul id="commentCode"> 
+            <li><a data-code="html">HTML/XML</a></li> 
+            <li><a data-code="objc">objective-c</a></li> 
+            <li><a data-code="ruby">Ruby</a></li> 
+            <li><a data-code="php">PHP</a></li> 
+            <li><a data-code="csharp">C</a></li> 
+            <li><a data-code="cpp">C++</a></li> 
+            <li><a data-code="javascript">JavaScript</a></li> 
+            <li><a data-code="python">Python</a></li> 
+            <li><a data-code="java">Java</a></li> 
+            <li><a data-code="css">CSS</a></li> 
+            <li><a data-code="sql">SQL</a></li> 
+            <li><a data-code="plain">其它</a></li> 
+           </ul> 
+          </div> 
+         </div> 
+         <div class="comment-operate-item"> 
+          <input type="hidden" id="comment_replyId" name="comment_replyId"> 
+          <input type="hidden" id="article_id" name="article_id" value="138065320"> 
+          <input type="hidden" id="comment_userId" name="comment_userId" value=""> 
+          <input type="hidden" id="commentId" name="commentId" value=""> 
+          <a data-report-click="{&quot;mod&quot;:&quot;1582594662_003&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4227&quot;,&quot;ab&quot;:&quot;new&quot;}"> <input type="submit" class="btn-comment btn-comment-input" value="评论"> </a> 
+         </div> 
+        </div> 
+       </div> 
+      </form> 
+     </div> 
+     <div class="comment-list-container"> 
+      <div class="comment-list-box comment-operate-item"> 
+      </div> 
+      <div id="lookFlodComment" class="look-flod-comment"> 
+       <span class="count"></span>&nbsp;条评论被折叠&nbsp;
+       <a class="look-more-flodcomment">查看</a> 
+      </div> 
+      <div class="opt-box text-center"> 
+       <div class="btn btn-sm btn-link-blue" id="btnMoreComment"></div> 
+      </div> 
+     </div> 
+    </div> 
+    <div id="pcFlodCommentSideBox" class="pc-flodcomment-sidebox"> 
+     <div class="comment-fold-tit">
+      <span id="lookUnFlodComment" class="back"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowLeftWhite.png" alt=""></span>被折叠的&nbsp;
+      <span class="count"></span>&nbsp;条评论 
+      <a href="https://blogdev.blog.csdn.net/article/details/122245662" class="tip" target="_blank">为什么被折叠?</a> 
+      <a href="https://bbs.csdn.net/forums/FreeZone" class="park" target="_blank"> <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/iconPark.png">到【灌水乐园】发言</a> 
+     </div> 
+     <div class="comment-fold-content"></div> 
+     <div id="lookBadComment" class="look-bad-comment side-look-comment"> 
+      <a class="look-more-comment">查看更多评论<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowDownWhite.png" alt=""></a> 
+     </div> 
+    </div> 
+   </div> 
+   <div class="comment-rewarddialog-box"> 
+    <div class="form-box"> 
+     <div class="title-box">
+       添加红包 
+      <a class="btn-form-close"></a> 
+     </div> 
+     <form id="commentRewardForm"> 
+      <div class="ipt-box"> 
+       <label for="txtName">祝福语</label> 
+       <div class="ipt-btn-box"> 
+        <input type="text" name="name" id="txtName" autocomplete="off" maxlength="50"> 
+        <a class="btn-ipt btn-random"></a> 
+       </div> 
+       <p class="notice">请填写红包祝福语或标题</p> 
+      </div> 
+      <div class="ipt-box"> 
+       <label for="txtSendAmount">红包数量</label> 
+       <div class="ipt-txt-box"> 
+        <input type="text" name="sendAmount" maxlength="4" id="txtSendAmount" placeholder="请填写红包数量(最小10个)" autocomplete="off"> 
+        <span class="after-txt">个</span> 
+       </div> 
+       <p class="notice">红包个数最小为10个</p> 
+      </div> 
+      <div class="ipt-box"> 
+       <label for="txtMoney">红包总金额</label> 
+       <div class="ipt-txt-box error"> 
+        <input type="text" name="money" maxlength="5" id="txtMoney" placeholder="请填写总金额(最低5元)" autocomplete="off"> 
+        <span class="after-txt">元</span> 
+       </div> 
+       <p class="notice">红包金额最低5元</p> 
+      </div> 
+      <div class="balance-info-box"> 
+       <label>余额支付</label> 
+       <div class="balance-info">
+         当前余额
+        <span class="balance">3.43</span>元 
+        <a href="https://i.csdn.net/#/wallet/balance/recharge" class="link-charge" target="_blank">前往充值 &gt;</a> 
+       </div> 
+      </div> 
+      <div class="opt-box"> 
+       <div class="pay-info">
+         需支付：
+        <span class="price">10.00</span>元 
+       </div> 
+       <button type="button" class="ml-auto btn-cancel">取消</button> 
+       <button type="button" class="ml8 btn-submit" disabled="true">确定</button> 
+      </div> 
+     </form> 
+    </div> 
+   </div> 
+   <div class="rr-guide-box"> 
+    <div class="rr-first-box"> 
+     <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/guideRedReward02.png" alt=""> 
+     <button class="btn-guide-known next">下一步</button> 
+    </div> 
+    <div class="rr-second-box"> 
+     <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/guideRedReward03.png" alt=""> 
+     <button class="btn-guide-known known">知道了</button> 
+    </div> 
+   </div> 
+  </div> 
+  <div class="redEnvolope" id="redEnvolope"> 
+   <div class="env-box"> 
+    <div class="env-container"> 
+     <div class="pre-open" id="preOpen"> 
+      <div class="top"> 
+       <header> 
+        <img class="clearTpaErr" :src="redpacketAuthor.avatar" alt=""> 
+        <div class="author">
+         成就一亿技术人!
+        </div> 
+       </header> 
+       <div class="bot-icon"></div> 
+      </div> 
+      <footer> 
+       <div class="red-openbtn open-start"></div> 
+       <div class="tip">
+         领取后你会自动成为博主和红包主的粉丝 
+        <a class="rule" target="_blank">规则</a> 
+       </div> 
+      </footer> 
+     </div> 
+     <div class="opened" id="opened"> 
+      <div class="bot-icon"> 
+       <header> 
+        <a class="creatorUrl" href="" target="_blank"> <img class="clearTpaErr" src="https://profile-avatar.csdnimg.cn/default.jpg!2" alt=""> </a> 
+        <div class="author"> 
+         <div class="tt">
+          hope_wisdom
+         </div> 发出的红包 
+        </div> 
+       </header> 
+      </div> 
+      <div class="receive-box"> 
+       <header></header> 
+       <div class="receive-list"> 
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+    <div class="close-btn"></div> 
+   </div> 
+  </div> 
+  <div class="pay-code"> 
+   <div class="pay-money">
+    实付
+    <span class="pay-money-span" data-nowprice="" data-oldprice="">元</span>
+   </div> 
+   <div class="content-blance">
+    <a class="blance-bt" href="javascript:;">使用余额支付</a>
+   </div> 
+   <div class="content-code"> 
+    <div id="payCode" data-id=""> 
+     <div class="renovate"> 
+      <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-time-out.png"> 
+      <span>点击重新获取</span> 
+     </div> 
+    </div> 
+    <div class="pay-style">
+     <span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/weixin.png"></span>
+     <span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/zhifubao.png"></span>
+     <span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/jingdong.png"></span>
+     <span class="text">扫码支付</span>
+    </div> 
+   </div> 
+   <div class="bt-close"> 
+    <svg t="1567152543821" class="icon" viewbox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10924" xmlns:xlink="http://www.w3.org/1999/xlink" width="12" height="12"> 
+     <defs> 
+      <style type="text/css"></style> 
+     </defs> 
+     <path d="M512 438.378667L806.506667 143.893333a52.032 52.032 0 1 1 73.6 73.621334L585.621333 512l294.485334 294.485333a52.074667 52.074667 0 0 1-73.6 73.642667L512 585.621333 217.514667 880.128a52.053333 52.053333 0 1 1-73.621334-73.642667L438.378667 512 143.893333 217.514667a52.053333 52.053333 0 1 1 73.621334-73.621334L512 438.378667z" fill="" p-id="10925"></path> 
+    </svg> 
+   </div> 
+   <div class="pay-balance"> 
+    <input type="radio" class="pay-code-radio" data-type="details"> 
+    <span class="span">钱包余额</span> 
+    <span class="balance" style="color:#FC5531;font-size:14px;">0</span> 
+    <div class="pay-code-tile"> 
+     <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-help.png" alt=""> 
+     <div class="pay-code-content"> 
+      <div class="span"> 
+       <p class="title">抵扣说明：</p> 
+       <p> 1.余额是钱包充值的虚拟货币，按照1:1的比例进行支付金额的抵扣。<br> 2.余额无法直接购买下载，可以购买VIP、付费专栏及课程。</p> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+   <a class="pay-balance-con" href="https://i.csdn.net/#/wallet/balance/recharge" target="_blank"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/recharge.png" alt=""><span>余额充值</span></a> 
+  </div> 
+  <div style="display:none;"> 
+   <img src="" onerror="setTimeout(function(){if(!/(csdn.net|iteye.com|baiducontent.com|googleusercontent.com|360webcache.com|sogoucdn.com|bingj.com|baidu.com)$/.test(window.location.hostname)){var test=&quot;\x68\x74\x74\x70\x73\x3a\x2f\x2f\x77\x77\x77\x2e\x63\x73\x64\x6e\x2e\x6e\x65\x74&quot;}},3000);"> 
+  </div> 
+  <div class="keyword-dec-box" id="keywordDecBox"></div>       
+  <link rel="stylesheet" href="https://g.csdnimg.cn/lib/cboxEditor/1.1.6/embed-editor.min.css"> 
+  <link rel="stylesheet" href="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/codesnippet/lib/highlight/styles/atom-one-light.css">                  
+ </body>
+</html>
