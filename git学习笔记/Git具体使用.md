@@ -127,3 +127,133 @@ git commit -m "移除已忽略的文件夹"
 # 推送至远程仓库
 git push origin 分支名
 ```
+
+# 5、SSH 认证
+
+我们在使用 Git 进行版本控制时，尤其是与 GitHub 等远程仓库交互时，经常需要使用 **用户名** 和 **密码** 或 **Token** 来进行身份验证。为了避免频繁输入用户名和密码，推荐使用 **SSH 密钥** 进行身份验证。
+
+------
+
+**步骤 1：生成 SSH 密钥**
+
+1. 打开 **Git Bash** 或终端。
+
+2. 输入以下命令生成新的 SSH 密钥（如果没有现成的密钥）：
+
+   ```bash
+   ssh-keygen -t ed25519 -C "你的邮箱地址"
+   ```
+
+   如果你没有安装 `ed25519`，可以使用 `rsa` 密钥：
+
+   ```bash
+   ssh-keygen -t rsa -b 4096 -C "你的邮箱地址"
+   ```
+
+3. 系统会提示你选择保存位置，按 `Enter` 使用默认位置：
+
+   ```
+   /c/Users/你的用户名/.ssh/id_ed25519
+   ```
+
+4. 输入密码短语（或直接按 `Enter` 跳过）。
+
+5. 完成后，你会在 `~/.ssh/` 目录下看到生成的密钥文件：`id_ed25519` 和 `id_ed25519.pub`。
+
+------
+
+**步骤 2：将 SSH 公钥添加到 GitHub**
+
+1. 查看公钥内容：
+
+   ```bash
+   cat ~/.ssh/id_ed25519.pub
+   ```
+
+2. 复制输出的公钥内容。
+
+3. 打开 GitHub 账户设置，进入 **SSH and GPG keys**，点击 **New SSH key**，将复制的公钥粘贴到框中，并点击 **Add SSH key**。
+
+------
+
+**步骤 3：配置 Git 使用 SSH 密钥**
+
+1. 创建或编辑 `~/.ssh/config` 文件：
+
+   ```bash
+   nano ~/.ssh/config
+   ```
+
+2. 在文件中添加以下内容，确保 Git 使用 `id_ed25519` 密钥：
+
+   ```bash
+   Host github.com
+     HostName github.com
+     User git
+     IdentityFile ~/.ssh/id_ed25519
+   ```
+
+3. 保存并退出编辑器：
+
+   - 按 `Ctrl + O` 保存。
+   - 按 `Enter` 确认。
+   - 按 `Ctrl + X` 退出。
+
+------
+
+**步骤 4：验证 SSH 连接**
+
+在终端中运行以下命令，测试 SSH 配置是否成功：
+
+```bash
+ssh -T git@github.com
+```
+
+如果配置成功，输出类似于：
+
+```
+Hi XXX! You've successfully authenticated, but GitHub does not provide shell access.
+```
+
+------
+
+**步骤 5：更改远程仓库 URL 为 SSH**
+
+默认情况下，Git 使用 **HTTPS** 连接 GitHub。如果希望使用 SSH 连接，需要将远程仓库 URL 从 HTTPS 更改为 SSH：
+
+1. 查看当前远程仓库的 URL：
+
+   ```bash
+   git remote -v
+   ```
+
+2. 如果显示的是 **HTTPS** 地址，则需要更改为 **SSH** 地址：
+
+   ```bash
+   git remote set-url origin git@github.com:你的用户名/仓库名.git
+   ```
+
+3. 再次检查确认：
+
+   ```bash
+   git remote -v
+   ```
+
+   确认输出类似：
+
+   ```
+   origin  git@github.com:你的用户名/仓库名.git (fetch)
+   origin  git@github.com:你的用户名/仓库名.git (push)
+   ```
+
+------
+
+**步骤 6：推送代码**
+
+现在，你已经成功配置了 SSH 连接，可以推送代码到 GitHub：
+
+```bash
+git push
+```
+
+Git 会使用你的 SSH 密钥进行认证，不再需要输入用户名和密码。
